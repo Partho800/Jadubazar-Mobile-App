@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Jadubazar",
+    "slug": "Jadubazar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/image.jpeg",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./src/assets/images/image.jpeg",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./src/assets/images/image.jpeg"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./src/assets/images/image.jpeg"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./src/assets/images/image.jpeg"
+    }
+  }
+}

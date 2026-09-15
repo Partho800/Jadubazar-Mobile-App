@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { AppText } from '../common/AppText';
 import { typography } from '../../theme/theme';
 
 interface ComingSoonViewProps {
@@ -14,13 +16,23 @@ interface ComingSoonViewProps {
 export const ComingSoonView: React.FC<ComingSoonViewProps> = ({
   screenName,
   iconName,
-  description = "This section is currently under active development and will be available in an upcoming update.",
+  description,
   children,
 }) => {
   const { theme } = useTheme();
+  const { isBangla } = useLanguage();
+
+  const defaultDescription = isBangla
+    ? 'এই সার্ভিসটি শীঘ্রই আসছে। শিগগিরই আপনারা এই সার্ভিসটি ব্যবহার করতে পারবেন।'
+    : 'This section is currently under active development and will be available in an upcoming update.';
+
+  const displayDescription = description || defaultDescription;
+  const mainTitle = isBangla ? 'আসছে শীঘ্রই' : 'Coming Soon';
+  const statusLabel = isBangla ? 'উন্নয়ন কাজ চলছে' : 'In Development Phase';
+  const moduleLabel = isBangla ? `${screenName.toUpperCase()} মডিউল` : `${screenName.toUpperCase()} MODULE`;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.centeredContent}>
         {/* Decorative Icon Container */}
         <View
@@ -56,18 +68,18 @@ export const ComingSoonView: React.FC<ComingSoonViewProps> = ({
             },
           ]}
         >
-          <Text style={[styles.badgeText, { color: theme.accentBadgeText }]}>
-            {screenName.toUpperCase()} MODULE
-          </Text>
+          <AppText style={[styles.badgeText, { color: theme.accentBadgeText }]}>
+            {moduleLabel}
+          </AppText>
         </View>
 
         {/* Primary Requirement Title */}
-        <Text style={[styles.mainTitle, { color: theme.textPrimary }]}>Coming Soon</Text>
+        <AppText style={[styles.mainTitle, { color: theme.textPrimary }]}>{mainTitle}</AppText>
 
         {/* Subtitle / Context description */}
-        <Text style={[styles.descriptionText, { color: theme.textSecondary }]}>
-          {description}
-        </Text>
+        <AppText style={[styles.descriptionText, { color: theme.textSecondary }]}>
+          {displayDescription}
+        </AppText>
 
         {/* Modular status pill */}
         <View
@@ -80,24 +92,23 @@ export const ComingSoonView: React.FC<ComingSoonViewProps> = ({
           ]}
         >
           <View style={styles.statusDot} />
-          <Text style={[styles.statusText, { color: theme.textMuted }]}>
-            In Development Phase
-          </Text>
+          <AppText style={[styles.statusText, { color: theme.textMuted }]}>
+            {statusLabel}
+          </AppText>
         </View>
 
         {/* Optional Custom Controls (e.g., Theme Switch in Profile) */}
         {children}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    paddingVertical: 40,
   },
   centeredContent: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 28,

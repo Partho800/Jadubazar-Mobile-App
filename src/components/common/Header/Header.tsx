@@ -39,6 +39,18 @@ export const CATEGORIES: CategoryItem[] = [
     iconName: 'restaurant-outline',
     iconColor: '#F97316',
   },
+  {
+    id: 'pharmacy',
+    labelKey: 'pharmacy',
+    iconName: 'medical-outline',
+    iconColor: '#EF4444',
+  },
+  {
+    id: 'services',
+    labelKey: 'services',
+    iconName: 'construct-outline',
+    iconColor: '#8B5CF6',
+  },
 ];
 
 interface HeaderTopBarProps {

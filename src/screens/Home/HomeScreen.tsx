@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { HeaderTopBar, HeaderCategoryBar } from '../../components/common/Header/Header';
 import { EcommercePage } from '../../components/Ecommerce/EcommercePage';
-import { FeatureGrid } from '../../components/Ecommerce/FeatureGrid';
-import { FlashDeal } from '../../components/Ecommerce/FlashDeal';
-import { ShopByCategory } from '../../components/Ecommerce/ShopByCategory';
+import { ComingSoonView } from '../../components/ComingSoon/ComingSoonView';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export const HomeScreen: React.FC = () => {
-  const { theme, isDarkMode } = useTheme();
+  const { theme } = useTheme();
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('ecommerce');
 
   const getCategoryTitle = () => {
     switch (selectedCategory) {
       case 'grocery':
-        return 'Grocery Store';
+        return t('grocery');
       case 'food':
-        return 'Food Delivery';
+        return t('foodDelivery');
+      case 'pharmacy':
+        return t('pharmacy');
+      case 'services':
+        return t('services');
       case 'ecommerce':
       default:
-        return 'E-Commerce Store';
+        return t('ecommerce');
+    }
+  };
+
+  const getCategoryIcon = (): keyof typeof Ionicons.glyphMap => {
+    switch (selectedCategory) {
+      case 'grocery':
+        return 'cart-outline';
+      case 'food':
+        return 'restaurant-outline';
+      case 'pharmacy':
+        return 'medical-outline';
+      case 'services':
+        return 'construct-outline';
+      default:
+        return 'bag-handle-outline';
     }
   };
 
@@ -55,48 +74,10 @@ export const HomeScreen: React.FC = () => {
             }}
           />
         ) : (
-          <>
-            <View
-              style={[
-                styles.heroCard,
-                {
-                  backgroundColor: isDarkMode ? theme.card : '#F8FAFC',
-                  borderColor: theme.cardBorder,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.iconCircle,
-                  {
-                    backgroundColor: theme.primaryLight,
-                    borderColor: theme.primaryBorder,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={
-                    selectedCategory === 'grocery'
-                      ? 'cart-outline'
-                      : 'restaurant-outline'
-                  }
-                  size={36}
-                  color={selectedCategory === 'food' ? '#F97316' : '#10B981'}
-                />
-              </View>
-
-              <Text style={[styles.heroTitle, { color: theme.textPrimary }]}>
-                {getCategoryTitle()}
-              </Text>
-
-              <Text style={[styles.heroDescription, { color: theme.textSecondary }]}>
-                Welcome to Jadubazar {getCategoryTitle()}. Browse thousands of top quality products with instant online ordering.
-              </Text>
-            </View>
-            <FeatureGrid />
-            <FlashDeal />
-            <ShopByCategory />
-          </>
+          <ComingSoonView
+            screenName={getCategoryTitle()}
+            iconName={getCategoryIcon()}
+          />
         )}
       </ScrollView>
     </View>
@@ -109,35 +90,5 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 120,
-  },
-  heroCard: {
-    padding: 24,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 20,
-  },
-  iconCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  heroTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  heroDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-    maxWidth: 300,
   },
 });

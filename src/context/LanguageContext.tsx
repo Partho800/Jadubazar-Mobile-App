@@ -22,6 +22,8 @@ const translations: Record<string, { EN: string; BN: string }> = {
   ecommerce: { EN: 'E-Commerce', BN: 'ই-কমার্স' },
   grocery: { EN: 'Grocery', BN: 'গ্রোসারী' },
   foodDelivery: { EN: 'Food Delivery', BN: 'ফুড ডেলিভারি' },
+  pharmacy: { EN: 'Pharmacy', BN: 'ফার্মেসী' },
+  services: { EN: 'Services', BN: 'সার্ভিসেস' },
 
   // Hero Section
   newCollection: { EN: 'NEW COLLECTION', BN: 'নতুন কালেকশন' },

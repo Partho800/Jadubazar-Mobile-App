@@ -1,31 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import { ProductDetailView } from '../../components/product/ProductDetailView';
 
 export const ProductScreen: React.FC = () => {
-  const { theme } = useTheme();
-
-  return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.textPrimary }]}>Product Details</Text>
-      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>View detailed product information</Text>
-    </View>
-  );
+  return <ProductDetailView />;
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-  },
-});

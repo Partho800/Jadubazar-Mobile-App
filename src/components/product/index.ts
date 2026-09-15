@@ -1,2 +1,1 @@
-// Product components export
-export {};
+export { ProductDetailView } from './ProductDetailView';

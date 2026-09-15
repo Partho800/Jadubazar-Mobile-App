@@ -8,6 +8,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useProduct } from '../../context/ProductContext';
 import { AppText as Text } from '../common/AppText';
 
 export interface DealProduct {
@@ -67,6 +68,7 @@ const PRODUCTS: DealProduct[] = [
 export const FlashDeal: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
+  const { openProductDetails } = useProduct();
 
   const [timeLeft, setTimeLeft] = useState({
     days: 48,
@@ -173,6 +175,18 @@ export const FlashDeal: React.FC = () => {
           <TouchableOpacity
             key={prod.id}
             activeOpacity={0.9}
+            onPress={() =>
+              openProductDetails({
+                id: prod.id,
+                title: prod.name,
+                brand: prod.brand,
+                price: prod.salePrice,
+                oldPrice: prod.originalPrice,
+                imageUrl: typeof prod.image === 'string' ? prod.image : undefined,
+                image: typeof prod.image !== 'string' ? prod.image : undefined,
+                discountBadge: prod.discountBadge,
+              })
+            }
             style={{ borderRadius: 14 }}
             className={`w-[190px] h-[270px] border relative overflow-hidden shadow-sm ${
               isDarkMode

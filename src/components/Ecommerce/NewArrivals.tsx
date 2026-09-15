@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useProduct } from '../../context/ProductContext';
 import { AppText as Text } from '../common/AppText';
 
 export interface NewArrivalItem {
@@ -137,6 +138,7 @@ export const NewArrivals: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
+  const { openProductDetails } = useProduct();
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const [scrollIndex, setScrollIndex] = useState(0);
 
@@ -279,8 +281,23 @@ export const NewArrivals: React.FC = () => {
         {NEW_ARRIVALS_PRODUCTS.map((item) => {
           const isFav = !!favorites[item.id];
           return (
-            <View
+            <TouchableOpacity
               key={item.id}
+              activeOpacity={0.9}
+              onPress={() =>
+                openProductDetails({
+                  id: item.id,
+                  title: item.title,
+                  brand: item.brand,
+                  price: item.price,
+                  oldPrice: item.oldPrice,
+                  imageUrl: item.imageUrl,
+                  rating: item.rating,
+                  reviewsCount: item.reviewsCount,
+                  discountBadge: `${item.discount} OFF`,
+                  weight: item.weight,
+                })
+              }
               style={{ width: cardWidth, borderRadius: 14 }}
               className={`border overflow-hidden shadow-sm ${
                 isDarkMode
@@ -391,7 +408,7 @@ export const NewArrivals: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>

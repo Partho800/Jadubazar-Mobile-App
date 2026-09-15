@@ -8,6 +8,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useProduct } from '../../context/ProductContext';
 import { AppText as Text } from '../common/AppText';
 
 export interface BestSellerProductItem {
@@ -79,7 +80,8 @@ export const BestSellers: React.FC<BestSellersProps> = ({
 }) => {
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
-  const { t } = useLanguage();
+  const { t, isBangla } = useLanguage();
+  const { openProductDetails } = useProduct();
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
 
   const toggleFavorite = (id: string) => {
@@ -125,8 +127,23 @@ export const BestSellers: React.FC<BestSellersProps> = ({
         {BEST_SELLER_PRODUCTS.map((item) => {
           const isFav = !!favorites[item.id];
           return (
-            <View
+            <TouchableOpacity
               key={item.id}
+              activeOpacity={0.9}
+              onPress={() =>
+                openProductDetails({
+                  id: item.id,
+                  title: item.title,
+                  brand: item.brand,
+                  price: item.price,
+                  oldPrice: item.oldPrice,
+                  imageUrl: item.imageUrl,
+                  rating: item.rating,
+                  reviewsCount: item.reviewsCount,
+                  discountBadge: `${item.discount} OFF`,
+                  description: item.description,
+                })
+              }
               style={{ borderRadius: 24 }}
               className={`border overflow-hidden shadow-sm ${
                 isDarkMode
@@ -253,7 +270,7 @@ export const BestSellers: React.FC<BestSellersProps> = ({
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>

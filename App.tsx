@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { LanguageProvider } from './src/context/LanguageContext';
+import { ProductProvider } from './src/context/ProductContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
@@ -26,11 +27,14 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <NavigationContainer>
-            <AppNavigator />
-          </NavigationContainer>
+          <ProductProvider>
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </ProductProvider>
         </LanguageProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );
 }
+

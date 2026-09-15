@@ -3,14 +3,22 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { HeaderTopBar, HeaderCategoryBar } from '../../components/common/Header/Header';
 import { EcommercePage } from '../../components/Ecommerce/EcommercePage';
 import { ComingSoonView } from '../../components/ComingSoon/ComingSoonView';
+import { ProductDetailView } from '../../components/product/ProductDetailView';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useProduct } from '../../context/ProductContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { selectedProduct, closeProductDetails } = useProduct();
   const [selectedCategory, setSelectedCategory] = useState<string>('ecommerce');
+
+  const handleCategoryChange = (catId: string) => {
+    closeProductDetails();
+    setSelectedCategory(catId);
+  };
 
   const getCategoryTitle = () => {
     switch (selectedCategory) {
@@ -57,14 +65,16 @@ export const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Category Navigation Bar (Scrolls away under sticky HeaderTopBar) */}
+        {/* Category Navigation Bar */}
         <HeaderCategoryBar
           activeCategory={selectedCategory}
-          onCategoryChange={(catId) => setSelectedCategory(catId)}
+          onCategoryChange={handleCategoryChange}
         />
 
-        {/* E-Commerce Page View vs Other Categories */}
-        {selectedCategory === 'ecommerce' ? (
+        {/* Render Product Detail View if product selected, else Category Page */}
+        {selectedProduct ? (
+          <ProductDetailView />
+        ) : selectedCategory === 'ecommerce' ? (
           <EcommercePage
             onShopCollectionPress={() => {
               // Action for Shop Collection

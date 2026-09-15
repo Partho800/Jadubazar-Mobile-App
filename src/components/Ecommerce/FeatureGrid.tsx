@@ -1,48 +1,48 @@
 import React from 'react';
-import { StyleSheet, View, Text, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { AppText as Text } from '../common/AppText';
 
 export interface FeatureItem {
   id: string;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subKey: string;
   iconType: 'truck' | 'shield' | 'return' | 'support';
 }
 
 const FEATURES: FeatureItem[] = [
   {
     id: '1',
-    title: 'FREE SHIPPING',
-    subtitle: 'On orders over ৳2,000',
+    titleKey: 'freeShipping',
+    subKey: 'freeShippingSub',
     iconType: 'truck',
   },
   {
     id: '2',
-    title: 'SECURE PAYMENTS',
-    subtitle: '100% secure checkout',
+    titleKey: 'securePayments',
+    subKey: 'securePaymentsSub',
     iconType: 'shield',
   },
   {
     id: '3',
-    title: 'EASY RETURNS',
-    subtitle: '30-day return policy',
+    titleKey: 'easyReturns',
+    subKey: 'easyReturnsSub',
     iconType: 'return',
   },
   {
     id: '4',
-    title: '24/7 SUPPORT',
-    subtitle: 'Always here to help',
+    titleKey: 'support247',
+    subKey: 'support247Sub',
     iconType: 'support',
   },
 ];
 
 export const FeatureGrid: React.FC = () => {
-  const { isDarkMode, theme } = useTheme();
-  const { width } = useWindowDimensions();
-
-  const itemWidth = '48%';
+  const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const renderIcon = (type: FeatureItem['iconType']) => {
     const iconColor = '#2563EB';
@@ -88,46 +88,33 @@ export const FeatureGrid: React.FC = () => {
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: isDarkMode ? theme.card : '#FFFFFF',
-          borderColor: isDarkMode ? '#1E293B' : '#F1F5F9',
-        },
-      ]}
+      className={`py-5 px-4 border-y mb-5 ${
+        isDarkMode
+          ? 'bg-slate-900 border-slate-800'
+          : 'bg-white border-slate-100'
+      }`}
     >
-      <View style={styles.gridRow}>
+      <View className="flex-row flex-wrap justify-between gap-y-6">
         {FEATURES.map((item) => (
-          <View key={item.id} style={[styles.featureCard, { width: itemWidth }]}>
-            <View
-              style={[
-                styles.iconCircle,
-                {
-                  backgroundColor: isDarkMode
-                    ? 'rgba(37, 99, 235, 0.18)'
-                    : '#EFF6FF',
-                },
-              ]}
-            >
+          <View key={item.id} className="w-[48%] flex-row items-center gap-3">
+            <View className="w-11.5 h-11.5 rounded-full justify-center items-center bg-blue-500/10">
               {renderIcon(item.iconType)}
             </View>
 
-            <View style={styles.textContainer}>
+            <View className="flex-1">
               <Text
-                style={[
-                  styles.titleText,
-                  { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                ]}
+                className={`text-xs font-extrabold tracking-wider mb-0.5 ${
+                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                }`}
               >
-                {item.title}
+                {t(item.titleKey)}
               </Text>
               <Text
-                style={[
-                  styles.subtitleText,
-                  { color: isDarkMode ? '#94A3B8' : '#64748B' },
-                ]}
+                className={`text-xs font-medium leading-4 ${
+                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}
               >
-                {item.subtitle}
+                {t(item.subKey)}
               </Text>
             </View>
           </View>
@@ -136,45 +123,3 @@ export const FeatureGrid: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    marginBottom: 20,
-  },
-  gridRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 24,
-  },
-  featureCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconCircle: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textContainer: {
-    flex: 1,
-  },
-  titleText: {
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    marginBottom: 3,
-  },
-  subtitleText: {
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-  },
-});

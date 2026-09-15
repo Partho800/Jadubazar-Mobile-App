@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -10,11 +9,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderLogo } from './HeaderLogo';
 import { useTheme } from '../../../context/ThemeContext';
+import { useLanguage } from '../../../context/LanguageContext';
 import { fonts } from '../../../theme/theme';
+import { AppText as Text } from '../AppText';
 
 export interface CategoryItem {
   id: string;
-  label: string;
+  labelKey: string;
   iconName: keyof typeof Ionicons.glyphMap;
   iconColor?: string;
 }
@@ -22,19 +23,19 @@ export interface CategoryItem {
 export const CATEGORIES: CategoryItem[] = [
   {
     id: 'ecommerce',
-    label: 'E-Commerce',
+    labelKey: 'ecommerce',
     iconName: 'bag-handle-outline',
     iconColor: '#FFFFFF',
   },
   {
     id: 'grocery',
-    label: 'Grocery',
+    labelKey: 'grocery',
     iconName: 'cart-outline',
     iconColor: '#10B981',
   },
   {
     id: 'food',
-    label: 'Food Delivery',
+    labelKey: 'foodDelivery',
     iconName: 'restaurant-outline',
     iconColor: '#F97316',
   },
@@ -46,7 +47,7 @@ interface HeaderTopBarProps {
 
 export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
   const { theme, isDarkMode, toggleTheme } = useTheme();
-  const [selectedLanguage, setSelectedLanguage] = useState<'EN' | 'BN'>('EN');
+  const { language, setLanguage } = useLanguage();
 
   return (
     <SafeAreaView
@@ -71,16 +72,16 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
           >
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setSelectedLanguage('EN')}
+              onPress={() => setLanguage('EN')}
               style={[
                 styles.langOption,
-                selectedLanguage === 'EN' && styles.langActivePill,
+                language === 'EN' && styles.langActivePill,
               ]}
             >
               <Text
                 style={[
                   styles.langText,
-                  selectedLanguage === 'EN'
+                  language === 'EN'
                     ? styles.langActiveText
                     : { color: isDarkMode ? '#94A3B8' : '#475569' },
                 ]}
@@ -91,17 +92,17 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
 
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setSelectedLanguage('BN')}
+              onPress={() => setLanguage('BN')}
               style={[
                 styles.langOption,
-                selectedLanguage === 'BN' && styles.langActivePill,
+                language === 'BN' && styles.langActivePill,
               ]}
             >
               <Text
                 style={[
                   styles.langText,
                   { fontFamily: fonts.banglaBold },
-                  selectedLanguage === 'BN'
+                  language === 'BN'
                     ? styles.langActiveText
                     : { color: isDarkMode ? '#94A3B8' : '#475569' },
                 ]}
@@ -158,6 +159,7 @@ export const HeaderCategoryBar: React.FC<HeaderCategoryBarProps> = ({
   onCategoryChange,
 }) => {
   const { isDarkMode, theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <View style={[styles.categoryBarContainer, { backgroundColor: isDarkMode ? theme.card : '#FFFFFF' }]}>
@@ -205,7 +207,7 @@ export const HeaderCategoryBar: React.FC<HeaderCategoryBarProps> = ({
                     : { color: isDarkMode ? '#F8FAFC' : '#1E293B' },
                 ]}
               >
-                {cat.label}
+                {t(cat.labelKey)}
               </Text>
             </TouchableOpacity>
           );

@@ -8,17 +8,23 @@
     "@react-navigation/bottom-tabs": "^7.18.18",
     "@react-navigation/native": "^7.3.18",
     "expo": "~57.0.22",
+    "expo-linear-gradient": "~57.0.2",
     "expo-status-bar": "~57.0.1",
+    "nativewind": "^4.2.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "^0.21.2",
+    "tailwindcss": "^3.4.19"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "babel-preset-expo": "^57.0.11",
+    "lightningcss-win32-x64-msvc": "^1.33.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -26,7 +32,8 @@
     "dev": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "node -e \"const fs=require('fs'); const src='node_modules/lightningcss-win32-x64-msvc/lightningcss.win32-x64-msvc.node'; const dest='node_modules/react-native-css-interop/node_modules/lightningcss/lightningcss.win32-x64-msvc.node'; if(fs.existsSync(src) && fs.existsSync('node_modules/react-native-css-interop/node_modules/lightningcss')) fs.copyFileSync(src, dest);\""
   },
   "private": true
 }

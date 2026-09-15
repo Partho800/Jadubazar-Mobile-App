@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { AppText as Text } from '../common/AppText';
 
 export interface DealProduct {
   id: string;
@@ -30,7 +30,7 @@ const PRODUCTS: DealProduct[] = [
     originalPrice: '৳155,000',
     salePrice: '৳125,000',
     rating: 5,
-    image: require('../../assets/images/hero-bg.jpg'),
+    image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'p2',
@@ -40,7 +40,7 @@ const PRODUCTS: DealProduct[] = [
     originalPrice: '৳45,000',
     salePrice: '৳28,500',
     rating: 5,
-    image: require('../../assets/images/hero-bg.jpg'),
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'p3',
@@ -50,7 +50,7 @@ const PRODUCTS: DealProduct[] = [
     originalPrice: '৳38,000',
     salePrice: '৳29,900',
     rating: 5,
-    image: require('../../assets/images/hero-bg.jpg'),
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'p4',
@@ -60,12 +60,13 @@ const PRODUCTS: DealProduct[] = [
     originalPrice: '৳6,500',
     salePrice: '৳4,800',
     rating: 5,
-    image: require('../../assets/images/hero-bg.jpg'),
+    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
 export const FlashDeal: React.FC = () => {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const [timeLeft, setTimeLeft] = useState({
     days: 48,
@@ -100,57 +101,64 @@ export const FlashDeal: React.FC = () => {
 
   return (
     <View
-      style={[
-        styles.outerContainer,
-        {
-          backgroundColor: isDarkMode ? '#0F172A' : '#EFF6FF',
-          borderColor: isDarkMode ? '#1E293B' : '#DBEAFE',
-        },
-      ]}
+      className={`rounded-3xl border p-4 mx-4 mb-6 ${
+        isDarkMode
+          ? 'bg-slate-900 border-slate-800'
+          : 'bg-blue-50/60 border-blue-100'
+      }`}
     >
       {/* Sleek Single-Row Header */}
-      <View style={styles.headerRow}>
-        <View style={styles.titleTimerGroup}>
-          <View style={styles.flashIconCircle}>
+      <View className="flex-row items-center justify-between mb-4 gap-2 flex-wrap">
+        <View className="flex-row items-center gap-2 flex-wrap flex-1">
+          <View className="w-7 h-7 rounded-full bg-amber-100 justify-center items-center border border-amber-200">
             <Ionicons name="flash" size={16} color="#F59E0B" />
           </View>
 
-          <Text style={styles.sectionTitle}>FLASH DEAL</Text>
+          <Text className="text-lg font-black text-blue-700 tracking-tight">
+            {t('flashDealTitle')}
+          </Text>
 
-          <View style={styles.timerCapsuleRow}>
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerValue}>{timeLeft.days}</Text>
-              <Text style={styles.timerUnit}>d</Text>
+          <View className="flex-row items-center gap-0.5 ml-1">
+            <View className="bg-blue-600 rounded px-1.5 py-0.5 flex-row items-baseline gap-0.5 shadow-sm">
+              <Text className="text-white text-xs font-black">
+                {timeLeft.days}
+              </Text>
+              <Text className="text-white text-[9px] font-bold">d</Text>
             </View>
-            <Text style={styles.timerColon}>:</Text>
+            <Text className="text-blue-600 text-xs font-black mx-0.5">:</Text>
 
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerValue}>
+            <View className="bg-blue-600 rounded px-1.5 py-0.5 flex-row items-baseline gap-0.5 shadow-sm">
+              <Text className="text-white text-xs font-black">
                 {formatNumber(timeLeft.hours)}
               </Text>
-              <Text style={styles.timerUnit}>h</Text>
+              <Text className="text-white text-[9px] font-bold">h</Text>
             </View>
-            <Text style={styles.timerColon}>:</Text>
+            <Text className="text-blue-600 text-xs font-black mx-0.5">:</Text>
 
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerValue}>
+            <View className="bg-blue-600 rounded px-1.5 py-0.5 flex-row items-baseline gap-0.5 shadow-sm">
+              <Text className="text-white text-xs font-black">
                 {formatNumber(timeLeft.minutes)}
               </Text>
-              <Text style={styles.timerUnit}>m</Text>
+              <Text className="text-white text-[9px] font-bold">m</Text>
             </View>
-            <Text style={styles.timerColon}>:</Text>
+            <Text className="text-blue-600 text-xs font-black mx-0.5">:</Text>
 
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerValue}>
+            <View className="bg-blue-600 rounded px-1.5 py-0.5 flex-row items-baseline gap-0.5 shadow-sm">
+              <Text className="text-white text-xs font-black">
                 {formatNumber(timeLeft.seconds)}
               </Text>
-              <Text style={styles.timerUnit}>s</Text>
+              <Text className="text-white text-[9px] font-bold">s</Text>
             </View>
           </View>
         </View>
 
-        <TouchableOpacity activeOpacity={0.7} style={styles.viewAllPill}>
-          <Text style={styles.viewAllText}>View All</Text>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          className="flex-row items-center px-2.5 py-1 rounded-xl bg-blue-600/10"
+        >
+          <Text className="text-xs font-extrabold text-blue-600 mr-0.5">
+            {t('viewAll')}
+          </Text>
           <Ionicons name="chevron-forward" size={14} color="#2563EB" />
         </TouchableOpacity>
       </View>
@@ -159,45 +167,51 @@ export const FlashDeal: React.FC = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={{ gap: 14, paddingRight: 4 }}
       >
         {PRODUCTS.map((prod) => (
           <TouchableOpacity
             key={prod.id}
             activeOpacity={0.9}
-            style={[
-              styles.productCard,
-              {
-                backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-                borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-              },
-            ]}
+            style={{ borderRadius: 14 }}
+            className={`w-[190px] h-[270px] border relative overflow-hidden shadow-sm ${
+              isDarkMode
+                ? 'bg-slate-800 border-slate-700'
+                : 'bg-white border-slate-200'
+            }`}
           >
-            <View style={styles.discountBadge}>
-              <Text style={styles.discountBadgeText}>{prod.discountBadge}</Text>
+            <View className="absolute top-0 right-0 bg-red-600 px-2.5 py-1 rounded-bl-xl z-10">
+              <Text className="text-white text-[10px] font-extrabold">
+                {prod.discountBadge}
+              </Text>
             </View>
 
-            <View style={styles.imageContainer}>
+            <View
+              style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14 }}
+              className="w-full h-[135px] overflow-hidden relative"
+            >
               <Image
-                source={prod.image}
-                style={styles.productImage}
+                source={typeof prod.image === 'string' ? { uri: prod.image } : prod.image}
+                style={{ width: '100%', height: '100%' }}
+                className="w-full h-full"
                 resizeMode="cover"
               />
             </View>
 
-            <View style={styles.productInfo}>
-              <Text style={styles.brandText}>{prod.brand}</Text>
+            <View className="flex-1 justify-between p-3 pt-2">
+              <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider">
+                {prod.brand}
+              </Text>
               <Text
                 numberOfLines={2}
-                style={[
-                  styles.productName,
-                  { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                ]}
+                className={`text-xs font-bold leading-4 mt-0.5 ${
+                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                }`}
               >
                 {prod.name}
               </Text>
 
-              <View style={styles.starsRow}>
+              <View className="flex-row my-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Ionicons
                     key={star}
@@ -209,12 +223,13 @@ export const FlashDeal: React.FC = () => {
                 ))}
               </View>
 
-              <Text style={styles.originalPrice}>{prod.originalPrice}</Text>
+              <Text className="text-xs font-semibold text-slate-400 line-through">
+                {prod.originalPrice}
+              </Text>
               <Text
-                style={[
-                  styles.salePrice,
-                  { color: isDarkMode ? '#38BDF8' : '#1D4ED8' },
-                ]}
+                className={`text-base font-black ${
+                  isDarkMode ? 'text-sky-400' : 'text-blue-700'
+                }`}
               >
                 {prod.salePrice}
               </Text>
@@ -225,169 +240,3 @@ export const FlashDeal: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  outerContainer: {
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 24,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  titleTimerGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-    flex: 1,
-  },
-  flashIconCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#FEF3C7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#1D4ED8',
-    letterSpacing: -0.3,
-  },
-  timerCapsuleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    marginLeft: 4,
-  },
-  timerBadge: {
-    backgroundColor: '#2563EB',
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 1,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  timerValue: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  timerUnit: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  timerColon: {
-    color: '#2563EB',
-    fontSize: 12,
-    fontWeight: '900',
-    marginHorizontal: 1,
-  },
-  viewAllPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: 'rgba(37, 99, 235, 0.08)',
-  },
-  viewAllText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#2563EB',
-    marginRight: 2,
-  },
-  scrollContainer: {
-    gap: 14,
-    paddingRight: 4,
-  },
-  productCard: {
-    width: 190,
-    height: 270,
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 12,
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: '#DC2626',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 12,
-    zIndex: 5,
-  },
-  discountBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  imageContainer: {
-    width: '100%',
-    height: 120,
-    borderRadius: 14,
-    overflow: 'hidden',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  productImage: {
-    width: '100%',
-    height: '100%',
-  },
-  productInfo: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  brandText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#94A3B8',
-    letterSpacing: 0.5,
-  },
-  productName: {
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 17,
-    marginTop: 2,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    marginVertical: 4,
-  },
-  originalPrice: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#94A3B8',
-    textDecorationLine: 'line-through',
-  },
-  salePrice: {
-    fontSize: 16,
-    fontWeight: '900',
-  },
-});

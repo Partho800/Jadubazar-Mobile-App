@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LiAdorNoirrit Font Family Face Definitions */
+@font-face {
+  font-family: 'LiAdorNoirrit';
+  src: url('./src/assets/fonts/LiAdorNoirrit-Regular.ttf') format('truetype');
+  font-weight: 100 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LiAdorNoirrit';
+  src: url('./src/assets/fonts/LiAdorNoirrit-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LiAdorNoirrit';
+  src: url('./src/assets/fonts/LiAdorNoirrit-Bold.ttf') format('truetype');
+  font-weight: 700 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LiAdorNoirrit-Regular';
+  src: url('./src/assets/fonts/LiAdorNoirrit-Regular.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LiAdorNoirrit-SemiBold';
+  src: url('./src/assets/fonts/LiAdorNoirrit-SemiBold.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LiAdorNoirrit-Bold';
+  src: url('./src/assets/fonts/LiAdorNoirrit-Bold.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist-Regular';
+  src: url('./src/assets/fonts/Geist-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist-Medium';
+  src: url('./src/assets/fonts/Geist-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist-Bold';
+  src: url('./src/assets/fonts/Geist-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+
+
+

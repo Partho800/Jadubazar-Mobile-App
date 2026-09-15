@@ -1,104 +1,128 @@
 import React from 'react';
 import {
-  StyleSheet,
   View,
-  Text,
   TouchableOpacity,
   ImageBackground,
   useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { AppText as Text } from '../common/AppText';
 
 export interface CategoryCardItem {
   id: string;
-  title: string;
+  titleKey: string;
+  titleEn: string;
   imageUrl: string;
 }
 
 const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: '1',
-    title: 'Fashion',
+    titleKey: 'catFashion',
+    titleEn: 'Fashion',
     imageUrl:
       'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '2',
-    title: 'Electronics',
+    titleKey: 'catElectronics',
+    titleEn: 'Electronics',
     imageUrl:
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '3',
-    title: 'Beauty',
+    titleKey: 'catBeauty',
+    titleEn: 'Beauty',
     imageUrl:
       'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '4',
-    title: 'Fitness',
+    titleKey: 'catHome',
+    titleEn: 'Home Decor',
     imageUrl:
-      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
 export const ShopByCategory: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
+  const { t, isBangla } = useLanguage();
 
   const cardWidth = (width - 48) / 2;
 
   return (
-    <View style={styles.outerContainer}>
+    <View className="mx-4 mb-11">
       {/* Header Row */}
-      <View style={styles.headerRow}>
-        <View style={styles.headerTitleGroup}>
+      <View className="flex-row items-start justify-between mb-5">
+        <View className="flex-1 pr-3">
           <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-            ]}
+            className={`text-2xl font-black tracking-tighter mb-1 ${
+              isDarkMode ? 'text-slate-50' : 'text-slate-900'
+            }`}
           >
-            SHOP BY CATEGORY
+            {t('shopByCategoryTitle')}
           </Text>
           <Text
-            style={[
-              styles.sectionSubtitle,
-              { color: isDarkMode ? '#94A3B8' : '#64748B' },
-            ]}
+            className={`text-xs font-medium leading-5 ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-500'
+            }`}
           >
-            Find the best styles, premium tech, and home decoration items.
+            {t('shopByCategorySub')}
           </Text>
         </View>
 
-        <TouchableOpacity activeOpacity={0.7} style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>View All{'\n'}Categories</Text>
+        <TouchableOpacity activeOpacity={0.7} className="flex-row items-center gap-1 pt-0.5">
+          <Text className="text-xs font-bold text-blue-600 text-right leading-4">
+            {t('viewAll')}
+          </Text>
           <Ionicons name="arrow-forward" size={16} color="#2563EB" />
         </TouchableOpacity>
       </View>
 
       {/* 2x2 Grid Category Cards */}
-      <View style={styles.gridContainer}>
+      <View className="flex-row flex-wrap justify-between gap-y-4">
         {CATEGORY_CARDS.map((cat) => (
           <TouchableOpacity
             key={cat.id}
             activeOpacity={0.9}
-            style={[styles.cardWrapper, { width: cardWidth }]}
+            style={{ width: cardWidth, height: 220, borderRadius: 14 }}
+            className="overflow-hidden shadow-md"
           >
             <ImageBackground
               source={{ uri: cat.imageUrl }}
-              style={styles.cardImage}
-              imageStyle={styles.cardImageStyle}
+              style={{ width: '100%', height: '100%' }}
+              imageStyle={{ borderRadius: 14, resizeMode: 'cover' }}
+              className="w-full h-full justify-end"
             >
-              {/* Bottom Vignette Box */}
-              <View style={styles.bottomVignetteBox}>
-                <Text style={styles.categoryTitle}>{cat.title}</Text>
-                <View style={styles.shopNowRow}>
-                  <Text style={styles.shopNowText}>SHOP NOW</Text>
+              {/* Bottom Vignette Linear Gradient Shadow */}
+              <LinearGradient
+                colors={['transparent', 'rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.85)']}
+                locations={[0, 0.35, 1]}
+                style={{
+                  paddingLeft: 20,
+                  paddingRight: 16,
+                  paddingBottom: 20,
+                  paddingTop: 48,
+                  borderBottomLeftRadius: 12,
+                  borderBottomRightRadius: 12,
+                }}
+              >
+                <Text className="text-white text-xl font-black mb-1">
+                  {isBangla ? t(cat.titleKey) : cat.titleEn}
+                </Text>
+                <View className="flex-row items-center gap-1">
+                  <Text className="text-orange-500 text-xs font-extrabold tracking-wide">
+                    {t('shopCollection')}
+                  </Text>
                   <Ionicons name="arrow-forward" size={14} color="#F97316" />
                 </View>
-              </View>
+              </LinearGradient>
             </ImageBackground>
           </TouchableOpacity>
         ))}
@@ -106,98 +130,3 @@ export const ShopByCategory: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  outerContainer: {
-    marginHorizontal: 16,
-    marginBottom: 28,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  headerTitleGroup: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    lineHeight: 18,
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingTop: 2,
-  },
-  viewAllText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#2563EB',
-    textAlign: 'right',
-    lineHeight: 16,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 16,
-  },
-  cardWrapper: {
-    height: 220,
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-end',
-  },
-  cardImageStyle: {
-    borderRadius: 24,
-  },
-  bottomVignetteBox: {
-    padding: 16,
-    paddingTop: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.22)',
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  categoryTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '900',
-    marginBottom: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.6)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  shopNowRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  shopNowText: {
-    color: '#F97316',
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    textShadowColor: 'rgba(0, 0, 0, 0.7)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-});

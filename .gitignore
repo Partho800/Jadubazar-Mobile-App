@@ -75,3 +75,13 @@ Desktop.ini
 # Generated native folders (for managed workflow)
 /ios
 /android
+
+# AI Assistants & Workspaces
+.gemini/
+.agents/
+.claude/
+.cursor/
+scratch/
+*.log
+*.tmp
+

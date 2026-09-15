@@ -41,78 +41,46 @@ export const ProductDetailView: React.FC = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      {/* 1. Breadcrumb Bar */}
-      <View
-        className={`px-4 py-3 border-b flex-row items-center justify-between ${
-          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
-        }`}
-      >
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={closeProductDetails}
-          className="flex-row items-center gap-1.5"
-        >
-          <Ionicons
-            name="arrow-back"
-            size={18}
-            color={isDarkMode ? '#F8FAFC' : '#0F172A'}
-          />
-          <Text
-            className={`text-xs font-bold ${
-              isDarkMode ? 'text-slate-300' : 'text-slate-600'
-            }`}
-          >
-            Home / Products / Ecommerce /{' '}
-            <Text className="text-blue-600 font-extrabold" numberOfLines={1}>
-              {product.title}
-            </Text>
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={closeProductDetails}
-          className="w-7 h-7 rounded-full bg-slate-200/60 items-center justify-center"
-        >
-          <Ionicons
-            name="close"
-            size={16}
-            color={isDarkMode ? '#94A3B8' : '#475569'}
-          />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
       >
-        {/* 2. Top Product Card */}
+        {/* 1. Top Product Card (First element is the Product Image) */}
         <View
           className={`rounded-3xl border p-4 mb-4 shadow-sm ${
             isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
           }`}
         >
-          {/* Large Image Box */}
+          {/* Large Product Image Box (First at the Top) */}
           <View
-            className={`w-full h-[320px] rounded-2xl overflow-hidden relative items-center justify-center mb-4 ${
-              isDarkMode ? 'bg-slate-950' : 'bg-zinc-900'
+            className={`w-full h-[360px] rounded-2xl overflow-hidden relative items-center justify-center mb-4 ${
+              isDarkMode ? 'bg-slate-950' : 'bg-slate-100'
             }`}
           >
-            {/* Discount Badge on Top Left */}
-            <View className="absolute top-0 left-0 bg-red-600 px-3.5 py-1.5 rounded-br-xl rounded-tl-2xl z-10 shadow-sm">
+            {/* Red Discount Badge on Top Left */}
+            <View className="absolute top-3 left-3 bg-red-600 px-3.5 py-1.5 rounded-full z-10 shadow-sm">
               <Text className="text-white text-xs font-black tracking-wide">
-                {product.discountBadge || '8% OFF'}
+                {product.discountBadge || '20% OFF'}
               </Text>
             </View>
+
+            {/* Back / Close Floating Button on Top Right */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={closeProductDetails}
+              className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md items-center justify-center z-10"
+            >
+              <Ionicons name="close" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
 
             <Image
               source={
                 typeof product.image === 'number'
                   ? product.image
-                  : { uri: product.imageUrl || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80' }
+                  : { uri: product.imageUrl || 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80' }
               }
               style={{ width: '100%', height: '100%' }}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
 

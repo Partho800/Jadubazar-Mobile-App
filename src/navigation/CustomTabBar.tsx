@@ -1,10 +1,12 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, TouchableOpacity, StyleSheet, Platform, Animated } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useCategory } from '../context/CategoryContext';
 import { AppText as Text } from '../components/common/AppText';
+import { cartStore } from '../store/cartStore';
 
 export const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
@@ -13,6 +15,38 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
 }) => {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
+  const { activeCategoryColor } = useCategory();
+  const [cartCount, setCartCount] = useState(cartStore.getTotalCount());
+
+  // Animation values for Pop / Hop bounce when adding items
+  const badgeScale = useRef(new Animated.Value(1)).current;
+  const badgeY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    return cartStore.subscribe(() => {
+      const newCount = cartStore.getTotalCount();
+      setCartCount(newCount);
+
+      // Trigger Hop / Bounce Pop Animation
+      badgeScale.setValue(0.5);
+      badgeY.setValue(-10);
+
+      Animated.parallel([
+        Animated.spring(badgeScale, {
+          toValue: 1,
+          friction: 3,
+          tension: 140,
+          useNativeDriver: true,
+        }),
+        Animated.spring(badgeY, {
+          toValue: 0,
+          friction: 4,
+          tension: 140,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+  }, [badgeScale, badgeY]);
 
   const getTranslatedLabel = (routeName: string, rawLabel: any) => {
     switch (routeName) {
@@ -42,6 +76,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
+          const isCartTab = route.name === 'CartTab';
 
           const label =
             options.tabBarLabel !== undefined
@@ -69,7 +104,6 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
             });
           };
 
-          // Select matching icon based on route name
           const getIconName = (focused: boolean): keyof typeof Ionicons.glyphMap => {
             switch (route.name) {
               case 'HomeTab':
@@ -103,27 +137,67 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
               style={styles.tabItem}
             >
               {isFocused ? (
-                /* Active Tab: Pop-up Elevated Blue Circular Button */
+                /* Active Tab: Pop-up Elevated Category-Colored Circular Button */
                 <View style={styles.activeTabWrapper}>
-                  <View style={styles.activeCircle}>
+                  <View
+                    style={[
+                      styles.activeCircle,
+                      {
+                        backgroundColor: activeCategoryColor,
+                        shadowColor: activeCategoryColor,
+                      },
+                    ]}
+                  >
                     <Ionicons
                       name={getIconName(true)}
                       size={20}
                       color="#FFFFFF"
                     />
+                    {isCartTab && cartCount > 0 && (
+                      <Animated.View
+                        style={[
+                          styles.activeCartBadge,
+                          {
+                            transform: [
+                              { scale: badgeScale },
+                              { translateY: badgeY },
+                            ],
+                          },
+                        ]}
+                      >
+                        <Text style={styles.badgeText}>{cartCount}</Text>
+                      </Animated.View>
+                    )}
                   </View>
-                  <Text style={styles.activeLabel}>
+                  <Text style={[styles.activeLabel, { color: activeCategoryColor }]}>
                     {getTranslatedLabel(route.name, label)}
                   </Text>
                 </View>
               ) : (
                 /* Inactive Tab: Normal Icon & Text */
                 <View style={styles.inactiveTabWrapper}>
-                  <Ionicons
-                    name={getIconName(false)}
-                    size={20}
-                    color={isDarkMode ? '#64748B' : '#64748B'}
-                  />
+                  <View className="relative items-center justify-center">
+                    <Ionicons
+                      name={getIconName(false)}
+                      size={20}
+                      color={isDarkMode ? '#64748B' : '#64748B'}
+                    />
+                    {isCartTab && cartCount > 0 && (
+                      <Animated.View
+                        style={[
+                          styles.inactiveCartBadge,
+                          {
+                            transform: [
+                              { scale: badgeScale },
+                              { translateY: badgeY },
+                            ],
+                          },
+                        ]}
+                      >
+                        <Text style={styles.badgeText}>{cartCount}</Text>
+                      </Animated.View>
+                    )}
+                  </View>
                   <Text
                     style={[
                       styles.inactiveLabel,
@@ -200,6 +274,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 6,
     elevation: 6,
+    position: 'relative',
   },
   activeLabel: {
     fontSize: 11,
@@ -216,5 +291,40 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     marginTop: 3,
+  },
+  activeCartBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#EF4444',
+    borderRadius: 9,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+  inactiveCartBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -10,
+    backgroundColor: '#EF4444',
+    borderRadius: 9,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '900',
+    textAlign: 'center',
+    lineHeight: 12,
   },
 });

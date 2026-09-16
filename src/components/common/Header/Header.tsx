@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HeaderLogo } from './HeaderLogo';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
+import { useCategory } from '../../../context/CategoryContext';
 import { fonts } from '../../../theme/theme';
 import { AppText as Text } from '../AppText';
 
@@ -18,6 +19,7 @@ export interface CategoryItem {
   labelKey: string;
   iconName: keyof typeof Ionicons.glyphMap;
   iconColor?: string;
+  activeBg?: string;
 }
 
 export const CATEGORIES: CategoryItem[] = [
@@ -25,31 +27,36 @@ export const CATEGORIES: CategoryItem[] = [
     id: 'ecommerce',
     labelKey: 'ecommerce',
     iconName: 'bag-handle-outline',
-    iconColor: '#FFFFFF',
+    iconColor: '#2563EB',
+    activeBg: '#2563EB',
   },
   {
     id: 'grocery',
     labelKey: 'grocery',
     iconName: 'cart-outline',
-    iconColor: '#10B981',
+    iconColor: '#059669',
+    activeBg: '#059669',
   },
   {
     id: 'food',
     labelKey: 'foodDelivery',
     iconName: 'restaurant-outline',
-    iconColor: '#F97316',
+    iconColor: '#FF6B00',
+    activeBg: '#FF6B00',
   },
   {
     id: 'pharmacy',
     labelKey: 'pharmacy',
     iconName: 'medical-outline',
-    iconColor: '#EF4444',
+    iconColor: '#009689',
+    activeBg: '#009689',
   },
   {
     id: 'services',
     labelKey: 'services',
     iconName: 'construct-outline',
-    iconColor: '#8B5CF6',
+    iconColor: '#432DD7',
+    activeBg: '#432DD7',
   },
 ];
 
@@ -60,6 +67,7 @@ interface HeaderTopBarProps {
 export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
   const { theme, isDarkMode, toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
+  const { activeCategoryColor } = useCategory();
 
   return (
     <SafeAreaView
@@ -87,7 +95,7 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
               onPress={() => setLanguage('EN')}
               style={[
                 styles.langOption,
-                language === 'EN' && styles.langActivePill,
+                language === 'EN' && { backgroundColor: activeCategoryColor },
               ]}
             >
               <Text
@@ -107,7 +115,7 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
               onPress={() => setLanguage('BN')}
               style={[
                 styles.langOption,
-                language === 'BN' && styles.langActivePill,
+                language === 'BN' && { backgroundColor: activeCategoryColor },
               ]}
             >
               <Text
@@ -191,7 +199,7 @@ export const HeaderCategoryBar: React.FC<HeaderCategoryBarProps> = ({
               style={[
                 styles.categoryPill,
                 isActive
-                  ? styles.activeCategoryPill
+                  ? [styles.activeCategoryPill, { backgroundColor: cat.activeBg || '#2563EB', shadowColor: cat.activeBg || '#2563EB' }]
                   : [
                       styles.inactiveCategoryPill,
                       {
@@ -309,13 +317,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   categoryBarContainer: {
-    paddingVertical: 10,
+    paddingTop: 8,
+    paddingBottom: 0,
   },
   categoryScrollContainer: {
     paddingHorizontal: 16,
     gap: 10,
     alignItems: 'center',
-    paddingBottom: 8,
+    paddingBottom: 2,
   },
   categoryPill: {
     flexDirection: 'row',

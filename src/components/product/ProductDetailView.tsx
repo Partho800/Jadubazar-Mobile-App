@@ -11,6 +11,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct, DEFAULT_IPHONE_PRODUCT } from '../../context/ProductContext';
 import { AppText as Text } from '../common/AppText';
+import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export const ProductDetailView: React.FC = () => {
   const { isDarkMode, theme } = useTheme();
@@ -39,11 +40,53 @@ export const ProductDetailView: React.FC = () => {
     setQuantity((prev) => prev + 1);
   };
 
+  const getCategoryName = () => {
+    if (!product.category) return 'Ecommerce';
+    const cat = product.category.toLowerCase();
+    if (cat.includes('grocery')) return 'Grocery';
+    if (cat.includes('food')) return 'Food delivery';
+    if (cat.includes('pharmacy')) return 'Pharmacy';
+    if (cat.includes('service')) return 'Services';
+    if (cat.includes('ecommerce') || cat.includes('e-commerce')) return 'Ecommerce';
+    return product.category;
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
+      {/* 1. Top Breadcrumbs Bar (Home / Products / Category / ProductTitle) */}
+      <View
+        className={`px-4 py-3 border-b flex-row items-center justify-between ${
+          isDarkMode
+            ? 'bg-slate-900 border-slate-800'
+            : 'bg-slate-50/80 border-slate-200/80'
+        }`}
+      >
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={closeProductDetails}
+          className="flex-row items-center gap-1.5 flex-1 pr-2"
+        >
+          <Text
+            className={`text-xs font-bold ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-500'
+            }`}
+            numberOfLines={1}
+          >
+            Home / Products / {getCategoryName()} /{' '}
+            <Text
+              className={`font-black text-xs ${
+                isDarkMode ? 'text-slate-100' : 'text-slate-900'
+              }`}
+            >
+              {product.title}
+            </Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
       >
         {/* 1. Top Product Card (First element is the Product Image) */}
         <View
@@ -58,20 +101,13 @@ export const ProductDetailView: React.FC = () => {
             }`}
           >
             {/* Red Discount Badge on Top Left */}
-            <View className="absolute top-3 left-3 bg-red-600 px-3.5 py-1.5 rounded-full z-10 shadow-sm">
-              <Text className="text-white text-xs font-black tracking-wide">
-                {product.discountBadge || '20% OFF'}
-              </Text>
+            <View className="absolute top-0 left-3 z-10">
+              <DiscountRibbonBadge
+                discountText={product.discountBadge || '20% OFF'}
+                width={46}
+                height={54}
+              />
             </View>
-
-            {/* Back / Close Floating Button on Top Right */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={closeProductDetails}
-              className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md items-center justify-center z-10"
-            >
-              <Ionicons name="close" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
 
             <Image
               source={
@@ -86,13 +122,21 @@ export const ProductDetailView: React.FC = () => {
 
           {/* Category Badge & Brand */}
           <View className="flex-row items-center mb-2">
-            <View className="bg-teal-500 px-2.5 py-1 rounded-md">
+            <View
+              className={`px-2.5 py-1 rounded-md ${
+                (product.category || '').toUpperCase().includes('GROCERY')
+                  ? 'bg-emerald-600'
+                  : 'bg-teal-600'
+              }`}
+            >
               <Text className="text-white text-[11px] font-black tracking-wider uppercase">
-                {product.category || 'ECOMMERCE'}
+                {(product.category || '').toUpperCase().includes('GROCERY')
+                  ? 'GROCERY'
+                  : product.category || 'ECOMMERCE'}
               </Text>
             </View>
             <Text className="text-slate-500 font-bold text-xs ml-2.5">
-              Brand: <Text className="text-slate-700 font-extrabold">{product.brand || 'Apple'}</Text>
+              Brand: <Text className="text-slate-700 font-extrabold">{product.brand || 'Jadubazar'}</Text>
             </Text>
           </View>
 
@@ -461,28 +505,29 @@ export const ProductDetailView: React.FC = () => {
           )}
         </View>
 
-        {/* 5. 4 Trust / Service Feature Badges (Stacked Cards from Screenshot 3) */}
-        <View className="gap-3 mb-6">
+        {/* 5. 4 Trust / Service Feature Badges (2 items per line 2x2 Grid) */}
+        <View className="flex-row flex-wrap justify-between gap-y-3 mb-2">
           {/* Badge 1: Express Fast Delivery */}
           <View
-            className={`rounded-2xl border p-4 flex-row items-center gap-3.5 shadow-sm ${
+            style={{ width: '48.5%' }}
+            className={`rounded-2xl border p-3.5 justify-between shadow-sm ${
               isDarkMode
                 ? 'bg-slate-900 border-slate-800'
                 : 'bg-white border-slate-200'
             }`}
           >
-            <View className="w-12 h-12 rounded-2xl bg-emerald-100/70 justify-center items-center">
-              <Ionicons name="bus-outline" size={24} color="#059669" />
+            <View className="w-10 h-10 rounded-xl bg-emerald-100/70 justify-center items-center mb-2.5">
+              <Ionicons name="bus-outline" size={20} color="#059669" />
             </View>
-            <View className="flex-1">
+            <View>
               <Text
-                className={`text-sm font-extrabold mb-0.5 ${
+                className={`text-xs font-black mb-1 ${
                   isDarkMode ? 'text-slate-50' : 'text-slate-900'
                 }`}
               >
                 Express Fast Delivery
               </Text>
-              <Text className="text-xs font-semibold text-slate-500">
+              <Text className="text-[11px] font-semibold text-slate-500 leading-4">
                 Swift delivery directly to your doorstep
               </Text>
             </View>
@@ -490,24 +535,25 @@ export const ProductDetailView: React.FC = () => {
 
           {/* Badge 2: 100% Genuine & Fresh */}
           <View
-            className={`rounded-2xl border p-4 flex-row items-center gap-3.5 shadow-sm ${
+            style={{ width: '48.5%' }}
+            className={`rounded-2xl border p-3.5 justify-between shadow-sm ${
               isDarkMode
                 ? 'bg-slate-900 border-slate-800'
                 : 'bg-white border-slate-200'
             }`}
           >
-            <View className="w-12 h-12 rounded-2xl bg-teal-100/70 justify-center items-center">
-              <Ionicons name="shield-checkmark-outline" size={24} color="#0D9488" />
+            <View className="w-10 h-10 rounded-xl bg-teal-100/70 justify-center items-center mb-2.5">
+              <Ionicons name="shield-checkmark-outline" size={20} color="#0D9488" />
             </View>
-            <View className="flex-1">
+            <View>
               <Text
-                className={`text-sm font-extrabold mb-0.5 ${
+                className={`text-xs font-black mb-1 ${
                   isDarkMode ? 'text-slate-50' : 'text-slate-900'
                 }`}
               >
                 100% Genuine & Fresh
               </Text>
-              <Text className="text-xs font-semibold text-slate-500">
+              <Text className="text-[11px] font-semibold text-slate-500 leading-4">
                 Directly sourced from verified merchants
               </Text>
             </View>
@@ -515,20 +561,19 @@ export const ProductDetailView: React.FC = () => {
 
           {/* Badge 3: Secure & Easy Payment */}
           <View
-            className={`rounded-2xl border border-teal-200/80 p-4 flex-row items-center gap-3.5 shadow-sm ${
-              isDarkMode
-                ? 'bg-slate-900'
-                : 'bg-white'
+            style={{ width: '48.5%' }}
+            className={`rounded-2xl border border-teal-200/80 p-3.5 justify-between shadow-sm ${
+              isDarkMode ? 'bg-slate-900' : 'bg-white'
             }`}
           >
-            <View className="w-12 h-12 rounded-2xl bg-blue-100/70 justify-center items-center">
-              <Ionicons name="card-outline" size={24} color="#2563EB" />
+            <View className="w-10 h-10 rounded-xl bg-blue-100/70 justify-center items-center mb-2.5">
+              <Ionicons name="card-outline" size={20} color="#2563EB" />
             </View>
-            <View className="flex-1">
-              <Text className="text-sm font-extrabold text-blue-600 mb-0.5">
+            <View>
+              <Text className="text-xs font-black text-blue-600 mb-1">
                 Secure & Easy Payment
               </Text>
-              <Text className="text-xs font-semibold text-slate-500">
+              <Text className="text-[11px] font-semibold text-slate-500 leading-4">
                 bKash, Nagad, Cards & Cash on Delivery
               </Text>
             </View>
@@ -536,24 +581,25 @@ export const ProductDetailView: React.FC = () => {
 
           {/* Badge 4: 24/7 Dedicated Support */}
           <View
-            className={`rounded-2xl border p-4 flex-row items-center gap-3.5 shadow-sm ${
+            style={{ width: '48.5%' }}
+            className={`rounded-2xl border p-3.5 justify-between shadow-sm ${
               isDarkMode
                 ? 'bg-slate-900 border-slate-800'
                 : 'bg-white border-slate-200'
             }`}
           >
-            <View className="w-12 h-12 rounded-2xl bg-purple-100/70 justify-center items-center">
-              <Ionicons name="headset-outline" size={24} color="#7C3AED" />
+            <View className="w-10 h-10 rounded-xl bg-purple-100/70 justify-center items-center mb-2.5">
+              <Ionicons name="headset-outline" size={20} color="#7C3AED" />
             </View>
-            <View className="flex-1">
+            <View>
               <Text
-                className={`text-sm font-extrabold mb-0.5 ${
+                className={`text-xs font-black mb-1 ${
                   isDarkMode ? 'text-slate-50' : 'text-slate-900'
                 }`}
               >
                 24/7 Dedicated Support
               </Text>
-              <Text className="text-xs font-semibold text-slate-500">
+              <Text className="text-[11px] font-semibold text-slate-500 leading-4">
                 Instant support assistance anytime
               </Text>
             </View>

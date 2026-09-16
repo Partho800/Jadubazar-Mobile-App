@@ -11,7 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export interface BeautyProductItem {
   id: string;
@@ -98,6 +101,7 @@ export const BeautyCosmetics: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
+  const { openProductDetails } = useProduct();
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const [scrollIndex, setScrollIndex] = useState(0);
 
@@ -236,8 +240,23 @@ export const BeautyCosmetics: React.FC = () => {
         {BEAUTY_PRODUCTS.map((item) => {
           const isFav = !!favorites[item.id];
           return (
-            <View
+            <TouchableOpacity
               key={item.id}
+              activeOpacity={0.9}
+              onPress={() =>
+                openProductDetails({
+                  id: item.id,
+                  title: item.title,
+                  brand: item.brand,
+                  price: item.price,
+                  oldPrice: item.oldPrice,
+                  imageUrl: item.imageUrl,
+                  rating: item.rating,
+                  reviewsCount: item.reviewsCount,
+                  discountBadge: item.discount,
+                  weight: item.weight,
+                })
+              }
               style={{ width: cardWidth, borderRadius: 14 }}
               className={`border overflow-hidden shadow-sm ${
                 isDarkMode
@@ -251,14 +270,11 @@ export const BeautyCosmetics: React.FC = () => {
                 className="w-full h-[155px] bg-slate-100 overflow-hidden relative items-center justify-center"
               >
                 {/* Red Bookmark Discount Ribbon */}
-                <View className="absolute top-0 left-3 bg-red-600 px-2 pt-1.5 pb-2 rounded-b items-center z-10">
-                  <Text className="text-white text-[11px] font-black leading-none">
-                    {(item.discount || '').replace(' OFF', '')}
-                  </Text>
-                  <Text className="text-white text-[8px] font-extrabold tracking-wider">
-                    OFF
-                  </Text>
-                </View>
+                {item.discount ? (
+                  <View className="absolute top-0 left-3 z-10">
+                    <DiscountRibbonBadge discountText={item.discount} />
+                  </View>
+                ) : null}
 
                 {/* Favorite Heart Button */}
                 <TouchableOpacity
@@ -343,13 +359,21 @@ export const BeautyCosmetics: React.FC = () => {
 
                   <TouchableOpacity
                     activeOpacity={0.85}
+                    onPress={() =>
+                      cartStore.addItem({
+                        id: item.id,
+                        name: item.title,
+                        price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 100,
+                        image: item.imageUrl,
+                      })
+                    }
                     className="w-[38px] h-[38px] rounded-full bg-slate-900 items-center justify-center shadow-md"
                   >
                     <Ionicons name="cart-outline" size={18} color="#FFFFFF" />
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>

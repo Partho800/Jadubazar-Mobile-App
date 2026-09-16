@@ -1,14 +1,17 @@
 import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { LanguageProvider } from './src/context/LanguageContext';
 import { ProductProvider } from './src/context/ProductContext';
+import { ServiceProvider } from './src/context/ServiceContext';
+import { CategoryProvider } from './src/context/CategoryContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'LiAdorNoirrit': require('./src/assets/fonts/LiAdorNoirrit-Regular.ttf'),
     'LiAdorNoirrit-Regular': require('./src/assets/fonts/LiAdorNoirrit-Regular.ttf'),
     'LiAdorNoirrit-SemiBold': require('./src/assets/fonts/LiAdorNoirrit-SemiBold.ttf'),
@@ -19,8 +22,16 @@ export default function App() {
     'Geist-Bold': require('./src/assets/fonts/Geist-Bold.ttf'),
   });
 
-  if (!fontsLoaded) {
-    return null;
+  if (fontError) {
+    console.warn('Font loading error:', fontError);
+  }
+
+  if (!fontsLoaded && !fontError) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
   }
 
   return (
@@ -28,13 +39,18 @@ export default function App() {
       <ThemeProvider>
         <LanguageProvider>
           <ProductProvider>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
+            <ServiceProvider>
+              <CategoryProvider>
+                <NavigationContainer>
+                  <AppNavigator />
+                </NavigationContainer>
+              </CategoryProvider>
+            </ServiceProvider>
           </ProductProvider>
         </LanguageProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );
 }
+
 

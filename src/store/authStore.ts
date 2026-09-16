@@ -23,6 +23,24 @@ class AuthStore {
 
   private listeners: Array<() => void> = [];
 
+  constructor() {
+    this.init();
+  }
+
+  private async init() {
+    try {
+      const token = await storage.getItem('auth_token');
+      const userStr = await storage.getItem('auth_user');
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
+        this.state = { isAuthenticated: true, user, token };
+        this.notify();
+      }
+    } catch (e) {
+      console.error('AuthStore init error:', e);
+    }
+  }
+
   getState(): AuthState {
     return this.state;
   }

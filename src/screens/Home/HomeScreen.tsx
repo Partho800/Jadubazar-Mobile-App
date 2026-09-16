@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { HeaderTopBar, HeaderCategoryBar } from '../../components/common/Header/Header';
 import { EcommercePage } from '../../components/Ecommerce/EcommercePage';
+import { GroceryPage } from '../../components/Grocery/GroceryPage';
+import { FoodDeliveryPage } from '../../components/FoodDelivery/FoodDeliveryPage';
+import { PharmacyPage } from '../../components/Pharmacy/PharmacyPage';
+import { ServicesPage } from '../../components/Services/ServicesPage';
 import { ComingSoonView } from '../../components/ComingSoon/ComingSoonView';
 import { ProductDetailView } from '../../components/product/ProductDetailView';
+import { ServiceDetailView } from '../../components/Services/ServiceDetailView';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { useService } from '../../context/ServiceContext';
+import { useCategory } from '../../context/CategoryContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const { selectedProduct, closeProductDetails } = useProduct();
-  const [selectedCategory, setSelectedCategory] = useState<string>('ecommerce');
+  const { selectedService, closeServiceDetails } = useService();
+  const { activeCategory, setActiveCategory } = useCategory();
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if ((selectedProduct || selectedService) && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }
+  }, [selectedProduct, selectedService]);
 
   const handleCategoryChange = (catId: string) => {
     closeProductDetails();
-    setSelectedCategory(catId);
+    closeServiceDetails();
+    setActiveCategory(catId);
   };
 
   const getCategoryTitle = () => {
-    switch (selectedCategory) {
+    switch (activeCategory) {
       case 'grocery':
         return t('grocery');
       case 'food':
@@ -37,7 +53,7 @@ export const HomeScreen: React.FC = () => {
   };
 
   const getCategoryIcon = (): keyof typeof Ionicons.glyphMap => {
-    switch (selectedCategory) {
+    switch (activeCategory) {
       case 'grocery':
         return 'cart-outline';
       case 'food':
@@ -62,19 +78,22 @@ export const HomeScreen: React.FC = () => {
 
       {/* 2. Scrollable Page Body */}
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Category Navigation Bar */}
         <HeaderCategoryBar
-          activeCategory={selectedCategory}
+          activeCategory={activeCategory}
           onCategoryChange={handleCategoryChange}
         />
 
-        {/* Render Product Detail View if product selected, else Category Page */}
+        {/* Render Product Detail View or Service Detail View if active, else Category Page */}
         {selectedProduct ? (
           <ProductDetailView />
-        ) : selectedCategory === 'ecommerce' ? (
+        ) : selectedService ? (
+          <ServiceDetailView />
+        ) : activeCategory === 'ecommerce' ? (
           <EcommercePage
             onShopCollectionPress={() => {
               // Action for Shop Collection
@@ -83,6 +102,21 @@ export const HomeScreen: React.FC = () => {
               // Action for Explore Deals
             }}
           />
+        ) : activeCategory === 'grocery' ? (
+          <GroceryPage
+            onShopNowPress={() => {
+              // Action for Shop Now
+            }}
+            onExploreDealsPress={() => {
+              // Action for Explore Deals
+            }}
+          />
+        ) : activeCategory === 'food' ? (
+          <FoodDeliveryPage />
+        ) : activeCategory === 'pharmacy' ? (
+          <PharmacyPage />
+        ) : activeCategory === 'services' ? (
+          <ServicesPage />
         ) : (
           <ComingSoonView
             screenName={getCategoryTitle()}
@@ -93,6 +127,7 @@ export const HomeScreen: React.FC = () => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

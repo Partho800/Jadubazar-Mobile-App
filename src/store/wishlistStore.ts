@@ -1,3 +1,5 @@
+import { storage } from '../storage/storage';
+
 export interface WishlistItem {
   id: string;
   name: string;
@@ -6,9 +8,31 @@ export interface WishlistItem {
   inStock: boolean;
 }
 
+const STORAGE_KEY = 'wishlist_items';
+
 class WishlistStore {
   private items: WishlistItem[] = [];
   private listeners: Array<() => void> = [];
+
+  constructor() {
+    this.init();
+  }
+
+  private async init() {
+    try {
+      const saved = await storage.getItem(STORAGE_KEY);
+      if (saved) {
+        this.items = JSON.parse(saved);
+        this.notify();
+      }
+    } catch (e) {
+      console.error('WishlistStore init error:', e);
+    }
+  }
+
+  private save() {
+    storage.setItem(STORAGE_KEY, JSON.stringify(this.items));
+  }
 
   getItems(): WishlistItem[] {
     return this.items;
@@ -27,6 +51,7 @@ class WishlistStore {
 
   private notify() {
     this.listeners.forEach((listener) => listener());
+    this.save();
   }
 
   toggleWishlist(item: WishlistItem) {

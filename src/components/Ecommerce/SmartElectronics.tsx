@@ -12,7 +12,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export interface GadgetItem {
   id: string;
@@ -281,14 +283,11 @@ export const SmartElectronics: React.FC = () => {
                 className="w-full h-[155px] bg-zinc-900 overflow-hidden relative items-center justify-center"
               >
                 {/* Red Discount Ribbon Badge */}
-                <View className="absolute top-0 left-3 bg-red-600 px-2 pt-1.5 pb-2 rounded-b items-center z-10">
-                  <Text className="text-white text-xs font-black leading-none">
-                    {item.discount}
-                  </Text>
-                  <Text className="text-white text-[8px] font-extrabold tracking-wider">
-                    OFF
-                  </Text>
-                </View>
+                {item.discount ? (
+                  <View className="absolute top-0 left-3 z-10">
+                    <DiscountRibbonBadge discountText={`${item.discount} OFF`} />
+                  </View>
+                ) : null}
 
                 {/* Favorite Heart Button */}
                 <TouchableOpacity
@@ -372,6 +371,14 @@ export const SmartElectronics: React.FC = () => {
 
                   <TouchableOpacity
                     activeOpacity={0.85}
+                    onPress={() =>
+                      cartStore.addItem({
+                        id: item.id,
+                        name: item.title,
+                        price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 100,
+                        image: item.imageUrl,
+                      })
+                    }
                     className="w-[38px] h-[38px] rounded-full bg-slate-900 items-center justify-center shadow-md"
                   >
                     <Ionicons name="cart-outline" size={18} color="#FFFFFF" />

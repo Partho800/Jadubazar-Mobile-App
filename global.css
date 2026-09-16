@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -66,8 +68,20 @@
   font-style: normal;
 }
 
+/* Global Bangla Web Font Class Enforcement */
+html.lang-bn,
+html.lang-bn body,
+html.lang-bn [class*="text-"],
+html.lang-bn p,
+html.lang-bn span,
+html.lang-bn div,
+html.lang-bn button {
+  font-family: 'LiAdorNoirrit-Bold', 'LiAdorNoirrit', 'Hind Siliguri', sans-serif !important;
+}
 
-
-
-
+/* Remove default browser input focus outlines & inner borders */
+input, textarea, select {
+  outline: none !important;
+  box-shadow: none !important;
+}
 

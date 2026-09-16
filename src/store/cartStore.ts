@@ -1,3 +1,5 @@
+import { storage } from '../storage/storage';
+
 export interface CartItem {
   id: string;
   name: string;
@@ -9,9 +11,31 @@ export interface CartItem {
   selectedSize?: string;
 }
 
+const STORAGE_KEY = 'cart_items';
+
 class CartStore {
   private items: CartItem[] = [];
   private listeners: Array<() => void> = [];
+
+  constructor() {
+    this.init();
+  }
+
+  private async init() {
+    try {
+      const saved = await storage.getItem(STORAGE_KEY);
+      if (saved) {
+        this.items = JSON.parse(saved);
+        this.notify();
+      }
+    } catch (e) {
+      console.error('CartStore init error:', e);
+    }
+  }
+
+  private save() {
+    storage.setItem(STORAGE_KEY, JSON.stringify(this.items));
+  }
 
   getItems(): CartItem[] {
     return this.items;
@@ -34,6 +58,7 @@ class CartStore {
 
   private notify() {
     this.listeners.forEach((listener) => listener());
+    this.save();
   }
 
   addItem(item: Omit<CartItem, 'quantity'>) {

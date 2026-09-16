@@ -9,7 +9,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export interface BestSellerProductItem {
   id: string;
@@ -157,14 +159,11 @@ export const BestSellers: React.FC<BestSellersProps> = ({
                 className="w-full h-[280px] sm:h-[340px] bg-slate-100 overflow-hidden relative items-center justify-center"
               >
                 {/* Red Discount Ribbon Tag */}
-                <View className="absolute top-0 left-4 bg-red-600 px-2.5 pt-2 pb-2.5 rounded-b-md items-center z-10 shadow-sm">
-                  <Text className="text-white text-xs font-black leading-none">
-                    {item.discount}
-                  </Text>
-                  <Text className="text-white text-[8px] font-extrabold tracking-wider mt-0.5">
-                    {t('off')}
-                  </Text>
-                </View>
+                {item.discount ? (
+                  <View className="absolute top-0 left-4 z-10">
+                    <DiscountRibbonBadge discountText={`${item.discount} OFF`} />
+                  </View>
+                ) : null}
 
                 {/* Floating Wishlist Heart Button */}
                 <TouchableOpacity
@@ -253,7 +252,15 @@ export const BestSellers: React.FC<BestSellersProps> = ({
                   {/* Quick Add CTA Button */}
                   <TouchableOpacity
                     activeOpacity={0.85}
-                    onPress={() => onQuickAddPress && onQuickAddPress(item)}
+                    onPress={() => {
+                      cartStore.addItem({
+                        id: item.id,
+                        name: item.title,
+                        price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 100,
+                        image: item.imageUrl,
+                      });
+                      onQuickAddPress?.(item);
+                    }}
                     style={{
                       shadowColor: '#0F172A',
                       shadowOffset: { width: 0, height: 4 },

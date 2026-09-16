@@ -10,6 +10,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
 import { AppText as Text } from '../common/AppText';
+import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export interface DealProduct {
   id: string;
@@ -194,11 +195,11 @@ export const FlashDeal: React.FC = () => {
                 : 'bg-white border-slate-200'
             }`}
           >
-            <View className="absolute top-0 right-0 bg-red-600 px-2.5 py-1 rounded-bl-xl z-10">
-              <Text className="text-white text-[10px] font-extrabold">
-                {prod.discountBadge}
-              </Text>
-            </View>
+            {prod.discountBadge ? (
+              <View className="absolute top-0 left-3 z-10">
+                <DiscountRibbonBadge discountText={prod.discountBadge} />
+              </View>
+            ) : null}
 
             <View
               style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14 }}

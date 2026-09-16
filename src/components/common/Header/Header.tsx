@@ -11,6 +11,7 @@ import { HeaderLogo } from './HeaderLogo';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useCategory } from '../../../context/CategoryContext';
+import { useMenuDrawer } from '../../../context/MenuDrawerContext';
 import { fonts } from '../../../theme/theme';
 import { AppText as Text } from '../AppText';
 
@@ -68,6 +69,14 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
   const { theme, isDarkMode, toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
   const { activeCategoryColor } = useCategory();
+  const { openMenuDrawer } = useMenuDrawer();
+
+  const handleMenuClick = () => {
+    if (onMenuPress) {
+      onMenuPress();
+    }
+    openMenuDrawer();
+  };
 
   return (
     <SafeAreaView
@@ -147,7 +156,7 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ onMenuPress }) => {
 
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={onMenuPress}
+            onPress={handleMenuClick}
             style={styles.iconButton}
             accessibilityLabel="Open Menu"
           >
@@ -249,7 +258,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuPress, onCategoryChange }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('ecommerce');
+  const { activeCategory, setActiveCategory } = useCategory();
 
   const handleCategoryPress = (id: string) => {
     setActiveCategory(id);
@@ -259,7 +268,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuPress, onCategoryChange })
   };
 
   return (
-    <View>
+    <View style={{ zIndex: 10 }}>
       <HeaderTopBar onMenuPress={onMenuPress} />
       <HeaderCategoryBar
         activeCategory={activeCategory}

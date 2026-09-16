@@ -4,9 +4,12 @@ import { CustomTabBar } from './CustomTabBar';
 
 import { HomeScreen } from '../screens/Home/HomeScreen';
 import { CategoryScreen } from '../screens/Category/CategoryScreen';
-import { ShopScreen } from '../screens/Shop/ShopScreen';
+import { OffersScreen } from '../screens/Offers/OffersScreen';
 import { CartScreen } from '../screens/Cart/CartScreen';
 import { SearchScreen } from '../screens/Search/SearchScreen';
+import { OrdersScreen } from '../screens/Orders/OrdersScreen';
+import { WishlistScreen } from '../screens/Wishlist/WishlistScreen';
+import { ProfileScreen } from '../screens/Profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +40,7 @@ export const BottomTabNavigator: React.FC = () => {
 
       <Tab.Screen
         name="OffersTab"
-        component={ShopScreen}
+        component={OffersScreen}
         options={{
           tabBarLabel: 'Offers',
         }}
@@ -58,7 +61,32 @@ export const BottomTabNavigator: React.FC = () => {
           tabBarLabel: 'Search',
         }}
       />
+
+      <Tab.Screen
+        name="OrdersTab"
+        component={OrdersScreen}
+        options={{
+          tabBarLabel: 'Orders',
+        }}
+      />
+
+      <Tab.Screen
+        name="WishlistTab"
+        component={WishlistScreen}
+        options={{
+          tabBarLabel: 'Wishlist',
+        }}
+      />
+
+      <Tab.Screen
+        name="ProfileTab"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+        }}
+      />
     </Tab.Navigator>
   );
 };
+
 

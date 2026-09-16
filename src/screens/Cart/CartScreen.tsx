@@ -1,16 +1,669 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Image,
+  StyleSheet,
+  Alert,
+  Platform,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { Header } from '../../components/common/Header/Header';
+import { cartStore, CartItem } from '../../store/cartStore';
+import { AppText as Text } from '../../components/common/AppText';
 
 export const CartScreen: React.FC = () => {
-  const { theme } = useTheme();
+  const { theme, isDarkMode } = useTheme();
+  const { t, isBangla } = useLanguage();
+
+  const [cartItems, setCartItems] = useState<CartItem[]>(cartStore.getItems());
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [promoCode, setPromoCode] = useState<string>('');
+  const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
+
+  // Sync with cartStore
+  useEffect(() => {
+    // If cart is completely empty initially, add default item from screenshot for demo
+    if (cartStore.getItems().length === 0) {
+      cartStore.addItem({
+        id: 'pusti-maida-2kg',
+        name: 'Pusti Maida 2kg',
+        price: 140,
+        image: 'https://images.unsplash.com/photo-1586201375761-83865001e8ac?auto=format&fit=crop&w=300&q=80',
+      });
+    }
+
+    setCartItems(cartStore.getItems());
+    setSelectedIds(cartStore.getItems().map((i) => i.id));
+
+    return cartStore.subscribe(() => {
+      const items = cartStore.getItems();
+      setCartItems(items);
+      setSelectedIds((prev) => prev.filter((id) => items.some((item) => item.id === id)));
+    });
+  }, []);
+
+  const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const subtotal = cartItems
+    .filter((item) => selectedIds.includes(item.id))
+    .reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const deliveryCharge = subtotal >= 1000 || subtotal === 0 ? 0 : 45;
+  const remainingForFreeDelivery = Math.max(0, 1000 - subtotal);
+  const freeDeliveryPercent = Math.min(100, Math.round((subtotal / 1000) * 100));
+
+  const grandTotal = Math.max(0, subtotal + deliveryCharge - appliedDiscount);
+
+  const handleToggleSelectAll = () => {
+    if (selectedIds.length === cartItems.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(cartItems.map((i) => i.id));
+    }
+  };
+
+  const handleToggleItemSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((i) => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleClearAll = () => {
+    Alert.alert(
+      isBangla ? 'শপিং ব্যাগ খালি করুন' : 'Clear Shopping Bag',
+      isBangla ? 'আপনি কি ব্যাগ থেকে সব পণ্য মুছে ফেলতে চান?' : 'Are you sure you want to remove all items from your bag?',
+      [
+        { text: isBangla ? 'বাতিল' : 'Cancel', style: 'cancel' },
+        {
+          text: isBangla ? 'সব মুছুন' : 'Clear All',
+          style: 'destructive',
+          onPress: () => {
+            cartStore.clearCart();
+            setAppliedDiscount(0);
+            setPromoCode('');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleApplyPromo = (codeToApply?: string) => {
+    const code = (codeToApply || promoCode).trim().toUpperCase();
+    if (!code) {
+      Alert.alert(isBangla ? 'প্রোমো কোড' : 'Promo Code', isBangla ? 'অনুগ্রহ করে একটি প্রোমো কোড লিখুন।' : 'Please enter a promo code.');
+      return;
+    }
+    if (code === 'JADUFIRST' || code === 'JADU200') {
+      const discount = Math.round(subtotal * 0.2);
+      setAppliedDiscount(discount);
+      setPromoCode(code);
+      Alert.alert(
+        isBangla ? 'প্রোমো প্রয়োগ সফল!' : 'Promo Applied!',
+        isBangla ? `২০% ছাড় (৳${discount}) আপনার বিলে যুক্ত করা হয়েছে।` : `20% discount (৳${discount}) applied to your order.`
+      );
+    } else {
+      Alert.alert(
+        isBangla ? 'অকার্যকর কোড' : 'Invalid Code',
+        isBangla ? 'কোডটি সঠিক নয়। ২০% ছাড়ের জন্য "JADUFIRST" ব্যবহার করুন।' : 'Code not valid. Try using "JADUFIRST" for 20% off.'
+      );
+    }
+  };
+
+  const handleCheckout = () => {
+    if (selectedIds.length === 0) {
+      Alert.alert(
+        isBangla ? 'পণ্য সিলেক্ট করুন' : 'No Items Selected',
+        isBangla ? 'চেকআউট করতে অন্তত ১টি পণ্য সিলেক্ট করুন।' : 'Please select at least 1 item to proceed to checkout.'
+      );
+      return;
+    }
+    Alert.alert(
+      isBangla ? 'অর্ডার সফল হয়েছে!' : 'Order Placed!',
+      isBangla ? `আপনার মোট বিল ৳${grandTotal}। যাদুবাজারে কেনাকাটা করার জন্য ধন্যবাদ!` : `Your order total is ৳${grandTotal}. Thank you for shopping with Jadubazar!`
+    );
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Ionicons name="cart-outline" size={64} color={theme.textSecondary} style={styles.icon} />
-      <Text style={[styles.title, { color: theme.textPrimary }]}>Your Shopping Cart is Empty</Text>
-      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Add items to your cart to begin shopping</Text>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC' }]}>
+      {/* 1. Global Header Bar */}
+      <Header />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* 2. Top Title & Header Row */}
+        <View style={styles.bagHeaderRow}>
+          <View style={styles.bagTitleGroup}>
+            <View
+              style={[
+                styles.bagIconBox,
+                { backgroundColor: isDarkMode ? '#312E81' : '#FEF3C7' },
+              ]}
+            >
+              <Ionicons name="bag-handle" size={20} color="#F59E0B" />
+            </View>
+            <Text
+              style={[
+                styles.bagTitle,
+                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+              ]}
+            >
+              {t('shoppingBag')}
+            </Text>
+            <View
+              style={[
+                styles.countBadgePill,
+                { backgroundColor: isDarkMode ? '#1E293B' : '#FEF3C7' },
+              ]}
+            >
+              <Text style={styles.countBadgePillText}>{totalItemCount} {t('items')}</Text>
+            </View>
+          </View>
+
+          {cartItems.length > 0 && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleClearAll}
+              style={[
+                styles.clearAllBtn,
+                { backgroundColor: isDarkMode ? '#451A1A' : '#FEF2F2' },
+              ]}
+            >
+              <Ionicons name="trash-outline" size={14} color="#EF4444" />
+              <Text style={styles.clearAllBtnText}>{t('clearAll')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* 3. Free Delivery Progress Tracker */}
+        <View style={styles.deliveryProgressCard}>
+          <View style={styles.deliveryProgressHeader}>
+            <View style={styles.deliveryLeftRow}>
+              <Ionicons name="car-outline" size={18} color="#10B981" />
+              <Text style={styles.deliveryProgressText}>
+                {remainingForFreeDelivery > 0 ? (
+                  isBangla ? (
+                    <>
+                      ফ্রি ডেলিভারির জন্য আরও <Text style={styles.deliveryHighlight}>৳{remainingForFreeDelivery}</Text> যোগ করুন!
+                    </>
+                  ) : (
+                    <>
+                      Add <Text style={styles.deliveryHighlight}>৳{remainingForFreeDelivery}</Text> more for{' '}
+                      <Text style={styles.deliveryBoldGreen}>FREE Delivery!</Text>
+                    </>
+                  )
+                ) : (
+                  <Text style={styles.deliveryBoldGreen}>
+                    {t('freeDeliveryUnlocked')}
+                  </Text>
+                )}
+              </Text>
+            </View>
+            <Text style={styles.deliveryPercentText}>{freeDeliveryPercent}%</Text>
+          </View>
+
+          <View style={styles.progressBarTrack}>
+            <View style={[styles.progressBarFill, { width: `${freeDeliveryPercent}%` }]} />
+          </View>
+        </View>
+
+        {cartItems.length === 0 ? (
+          /* EMPTY CART VIEW */
+          <View style={styles.emptyCartState}>
+            <Ionicons
+              name="cart-outline"
+              size={64}
+              color={isDarkMode ? '#475569' : '#CBD5E1'}
+            />
+            <Text
+              style={[
+                styles.emptyTitle,
+                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+              ]}
+            >
+              {t('emptyCartTitle')}
+            </Text>
+            <Text
+              style={[
+                styles.emptySubtitle,
+                { color: isDarkMode ? '#94A3B8' : '#64748B' },
+              ]}
+            >
+              {t('emptyCartSub')}
+            </Text>
+          </View>
+        ) : (
+          <>
+            {/* 4. Select All Items Card */}
+            <View
+              style={[
+                styles.cardBox,
+                {
+                  backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
+                  borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+                },
+              ]}
+            >
+              <View style={styles.selectAllRow}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={handleToggleSelectAll}
+                  style={styles.checkboxLabelRow}
+                >
+                  <View
+                    style={[
+                      styles.checkboxSquare,
+                      selectedIds.length === cartItems.length
+                        ? styles.checkboxSquareChecked
+                        : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
+                    ]}
+                  >
+                    {selectedIds.length === cartItems.length && (
+                      <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+                    )}
+                  </View>
+                  <Text
+                    style={[
+                      styles.selectAllText,
+                      { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                    ]}
+                  >
+                    {t('selectAllItems')}
+                  </Text>
+                </TouchableOpacity>
+
+                <View
+                  style={[
+                    styles.selectedCountBadge,
+                    { backgroundColor: isDarkMode ? '#0F172A' : '#FEF3C7' },
+                  ]}
+                >
+                  <Text style={styles.selectedCountBadgeText}>
+                    {selectedIds.length} / {cartItems.length} {t('selectedCount')}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* 5. Category Grouped Items Card (Grocery Essentials / Products) */}
+            <View
+              style={[
+                styles.groupContainerCard,
+                {
+                  backgroundColor: isDarkMode ? '#1E293B' : '#F0FDF4',
+                  borderColor: isDarkMode ? '#334155' : '#DCFCE7',
+                },
+              ]}
+            >
+              {/* Group Header */}
+              <View style={styles.groupHeaderRow}>
+                <View style={styles.groupTitleLeft}>
+                  <Ionicons name="cart" size={20} color="#059669" />
+                  <Text
+                    style={[
+                      styles.groupTitleText,
+                      { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                    ]}
+                  >
+                    {isBangla ? 'গ্রোসারী প্রয়োজনীয় পণ্য' : 'Grocery Essentials'}
+                  </Text>
+                  <View style={styles.groupCountPill}>
+                    <Text style={styles.groupCountPillText}>{cartItems.length}</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={handleToggleSelectAll}
+                  style={styles.deselectBtn}
+                >
+                  <View
+                    style={[
+                      styles.checkboxSquare,
+                      styles.checkboxSquareChecked,
+                      { width: 18, height: 18 },
+                    ]}
+                  >
+                    <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+                  </View>
+                  <Text style={styles.deselectBtnText}>
+                    {selectedIds.length === cartItems.length ? t('deselectAll') : t('selectAllItems')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Items List Inside Group */}
+              <View style={styles.itemsListContainer}>
+                {cartItems.map((item) => {
+                  const isSelected = selectedIds.includes(item.id);
+
+                  return (
+                    <View
+                      key={item.id}
+                      style={[
+                        styles.itemCard,
+                        {
+                          backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+                          borderColor: isDarkMode ? '#334155' : '#F1F5F9',
+                        },
+                      ]}
+                    >
+                      {/* Left Item Checkbox */}
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleToggleItemSelect(item.id)}
+                        style={styles.itemCheckboxArea}
+                      >
+                        <View
+                          style={[
+                            styles.checkboxSquare,
+                            isSelected
+                              ? styles.checkboxSquareChecked
+                              : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
+                          ]}
+                        >
+                          {isSelected && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+                        </View>
+                      </TouchableOpacity>
+
+                      {/* Item Thumbnail Image with Category Tag Overlay */}
+                      <View style={styles.itemImageWrapper}>
+                        <Image
+                          source={{ uri: item.image }}
+                          style={styles.itemImage}
+                          resizeMode="cover"
+                        />
+                        <View style={styles.categoryImageTag}>
+                          <Text style={styles.categoryImageTagText}>{t('grocery')}</Text>
+                        </View>
+                      </View>
+
+                      {/* Right Item Content Info */}
+                      <View style={styles.itemDetailsArea}>
+                        <View style={styles.itemTitleRow}>
+                          <View style={{ flex: 1, marginRight: 8 }}>
+                            <Text
+                              numberOfLines={1}
+                              style={[
+                                styles.itemNameText,
+                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                              ]}
+                            >
+                              {item.name}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.itemSubtext,
+                                { color: isDarkMode ? '#94A3B8' : '#64748B' },
+                              ]}
+                            >
+                              Pusti • 2 kg
+                            </Text>
+                          </View>
+
+                          <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={() => cartStore.removeItem(item.id)}
+                            style={styles.deleteIconBtn}
+                          >
+                            <Ionicons
+                              name="trash-outline"
+                              size={18}
+                              color={isDarkMode ? '#64748B' : '#94A3B8'}
+                            />
+                          </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.itemPriceQtyRow}>
+                          <View style={styles.priceGroup}>
+                            <Text
+                              style={[
+                                styles.itemPriceText,
+                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                              ]}
+                            >
+                              ৳{item.price * item.quantity}
+                            </Text>
+                            <Text style={styles.itemUnitPriceText}>
+                              ৳{item.price}/{isBangla ? 'ইউনিট' : 'unit'}
+                            </Text>
+                          </View>
+
+                          {/* Stepper Quantity Control */}
+                          <View
+                            style={[
+                              styles.stepperContainer,
+                              { backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9' },
+                            ]}
+                          >
+                            <TouchableOpacity
+                              activeOpacity={0.7}
+                              onPress={() =>
+                                cartStore.updateQuantity(item.id, item.quantity - 1)
+                              }
+                              style={styles.stepperBtn}
+                            >
+                              <Ionicons
+                                name="remove"
+                                size={14}
+                                color={isDarkMode ? '#F8FAFC' : '#0F172A'}
+                              />
+                            </TouchableOpacity>
+
+                            <Text
+                              style={[
+                                styles.stepperValueText,
+                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                              ]}
+                            >
+                              {item.quantity}
+                            </Text>
+
+                            <TouchableOpacity
+                              activeOpacity={0.7}
+                              onPress={() =>
+                                cartStore.updateQuantity(item.id, item.quantity + 1)
+                              }
+                              style={styles.stepperBtn}
+                            >
+                              <Ionicons
+                                name="add"
+                                size={14}
+                                color={isDarkMode ? '#F8FAFC' : '#0F172A'}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* 6. APPLY PROMO CODE Card */}
+            <View
+              style={[
+                styles.cardBox,
+                {
+                  backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
+                  borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+                },
+              ]}
+            >
+              <View style={styles.promoHeaderRow}>
+                <Ionicons name="pricetag-outline" size={18} color="#F59E0B" />
+                <Text style={styles.promoHeaderText}>{t('applyPromoCode')}</Text>
+              </View>
+
+              <View style={styles.promoInputRow}>
+                <TextInput
+                  value={promoCode}
+                  onChangeText={setPromoCode}
+                  placeholder={t('enterPromoPlaceholder')}
+                  placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
+                  style={[
+                    styles.promoInput,
+                    {
+                      backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC',
+                      borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+                      color: isDarkMode ? '#F8FAFC' : '#0F172A',
+                    },
+                  ]}
+                />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleApplyPromo()}
+                  style={styles.applyBtn}
+                >
+                  <Text style={styles.applyBtnText}>{t('applyBtn')}</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Recommendation Tag */}
+              <View style={styles.promoRecommendationRow}>
+                <View style={styles.recommendationLeft}>
+                  <Text style={styles.bulbIcon}>💡</Text>
+                  <Text
+                    style={[
+                      styles.recommendationText,
+                      { color: isDarkMode ? '#94A3B8' : '#64748B' },
+                    ]}
+                  >
+                    {t('firstOrderDiscountHint')}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleApplyPromo('JADUFIRST')}
+                  style={[
+                    styles.promoCodePillBtn,
+                    {
+                      backgroundColor: isDarkMode ? '#312E81' : '#FEF3C7',
+                      borderColor: isDarkMode ? '#4338CA' : '#FCD34D',
+                    },
+                  ]}
+                >
+                  <Text style={styles.promoCodePillText}>JADUFIRST</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* 7. ORDER SUMMARY Card */}
+            <View
+              style={[
+                styles.cardBox,
+                {
+                  backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
+                  borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+                },
+              ]}
+            >
+              <Text style={styles.summaryHeaderTitle}>{t('orderSummaryTitle')}</Text>
+
+              <View style={styles.summaryRow}>
+                <Text
+                  style={[
+                    styles.summaryLabelText,
+                    { color: isDarkMode ? '#94A3B8' : '#475569' },
+                  ]}
+                >
+                  {t('itemsSubtotal')}
+                </Text>
+                <Text
+                  style={[
+                    styles.summaryValText,
+                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                  ]}
+                >
+                  ৳{subtotal}
+                </Text>
+              </View>
+
+              <View style={styles.summaryRow}>
+                <Text
+                  style={[
+                    styles.summaryLabelText,
+                    { color: isDarkMode ? '#94A3B8' : '#475569' },
+                  ]}
+                >
+                  {t('deliveryCharge')}
+                </Text>
+                <Text
+                  style={[
+                    styles.summaryValText,
+                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                  ]}
+                >
+                  {deliveryCharge === 0 ? t('freeText') : `৳${deliveryCharge}`}
+                </Text>
+              </View>
+
+              {appliedDiscount > 0 && (
+                <View style={styles.summaryRow}>
+                  <Text style={[styles.summaryLabelText, { color: '#10B981' }]}>
+                    {t('promoDiscount')} (20%)
+                  </Text>
+                  <Text style={[styles.summaryValText, { color: '#10B981' }]}>
+                    -৳{appliedDiscount}
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.summaryDivider} />
+
+              <View style={styles.summaryRow}>
+                <Text
+                  style={[
+                    styles.grandTotalLabel,
+                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
+                  ]}
+                >
+                  {t('grandTotalTitle')}
+                </Text>
+                <Text style={styles.grandTotalValue}>৳{grandTotal}</Text>
+              </View>
+            </View>
+          </>
+        )}
+      </ScrollView>
+
+      {/* 8. Sticky Bottom Checkout Bar */}
+      {cartItems.length > 0 && (
+        <View
+          style={[
+            styles.stickyCheckoutBar,
+            {
+              backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
+            },
+          ]}
+        >
+          <View style={styles.stickyLeftGroup}>
+            <Text style={styles.stickyGrandLabel}>
+              {t('grandTotalHeader')} ({selectedIds.length} {t('items')})
+            </Text>
+            <Text style={styles.stickyGrandVal}>৳{grandTotal}</Text>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleCheckout}
+            style={styles.checkoutButton}
+          >
+            <Text style={styles.checkoutBtnText}>{t('checkoutBtn')}</Text>
+            <Ionicons name="arrow-forward" size={18} color="#0F172A" />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -18,20 +671,467 @@ export const CartScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  icon: {
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 180 : 170,
+  },
+  bagHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 16,
   },
-  title: {
+  bagTitleGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  bagIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bagTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: '900',
+    letterSpacing: -0.3,
+  },
+  countBadgePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  countBadgePillText: {
+    color: '#D97706',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  clearAllBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+  clearAllBtnText: {
+    color: '#EF4444',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  deliveryProgressCard: {
+    backgroundColor: '#ECFDF5',
+    borderColor: '#A7F3D0',
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 16,
+  },
+  deliveryProgressHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
-  subtitle: {
+  deliveryLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  deliveryProgressText: {
+    fontSize: 13,
+    color: '#065F46',
+    fontWeight: '600',
+  },
+  deliveryHighlight: {
+    color: '#D97706',
+    fontWeight: '900',
+  },
+  deliveryBoldGreen: {
+    color: '#059669',
+    fontWeight: '900',
+  },
+  deliveryPercentText: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#059669',
+  },
+  progressBarTrack: {
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#D1FAE5',
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#10B981',
+    borderRadius: 4,
+  },
+  emptyCartState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    gap: 12,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  emptySubtitle: {
     fontSize: 14,
     textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  cardBox: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  selectAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  checkboxLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  checkboxSquare: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxSquareChecked: {
+    backgroundColor: '#F59E0B',
+    borderColor: '#F59E0B',
+  },
+  selectAllText: {
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  selectedCountBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  selectedCountBadgeText: {
+    color: '#D97706',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  groupContainerCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 14,
+    marginBottom: 16,
+  },
+  groupHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  groupTitleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  groupTitleText: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  groupCountPill: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 7,
+    paddingVertical: 1,
+    borderRadius: 10,
+  },
+  groupCountPillText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#059669',
+  },
+  deselectBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  deselectBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  itemsListContainer: {
+    gap: 12,
+  },
+  itemCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 12,
+  },
+  itemCheckboxArea: {
+    marginRight: 10,
+  },
+  itemImageWrapper: {
+    width: 72,
+    height: 72,
+    borderRadius: 14,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#F8FAFC',
+    marginRight: 12,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+  },
+  categoryImageTag: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#059669',
+    paddingVertical: 2,
+    alignItems: 'center',
+  },
+  categoryImageTagText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  itemDetailsArea: {
+    flex: 1,
+  },
+  itemTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  itemNameText: {
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  itemSubtext: {
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  deleteIconBtn: {
+    padding: 2,
+  },
+  itemPriceQtyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  priceGroup: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  itemPriceText: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  itemUnitPriceText: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '600',
+  },
+  stepperContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 14,
+    height: 32,
+    paddingHorizontal: 6,
+    gap: 8,
+  },
+  stepperBtn: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepperValueText: {
+    fontSize: 13,
+    fontWeight: '900',
+    minWidth: 16,
+    textAlign: 'center',
+  },
+  promoHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
+  promoHeaderText: {
+    color: '#D97706',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  promoInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  promoInput: {
+    flex: 1,
+    height: 44,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  applyBtn: {
+    backgroundColor: '#F59E0B',
+    height: 44,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  applyBtnText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  promoRecommendationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  recommendationLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  bulbIcon: {
+    fontSize: 12,
+  },
+  recommendationText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  promoCodePillBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  promoCodePillText: {
+    color: '#D97706',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  summaryHeaderTitle: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    marginBottom: 14,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  summaryLabelText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  summaryValText: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  summaryDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 10,
+  },
+  grandTotalLabel: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  grandTotalValue: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#F59E0B',
+  },
+  stickyCheckoutBar: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 88 : 80,
+    left: 12,
+    right: 12,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 12,
+    zIndex: 99,
+  },
+  stickyLeftGroup: {
+    flex: 1,
+  },
+  stickyGrandLabel: {
+    color: '#94A3B8',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  stickyGrandVal: {
+    color: '#F59E0B',
+    fontSize: 22,
+    fontWeight: '900',
+  },
+  checkoutButton: {
+    backgroundColor: '#F59E0B',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+    borderRadius: 16,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  checkoutBtnText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
 });

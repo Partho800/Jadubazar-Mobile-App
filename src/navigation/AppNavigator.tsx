@@ -3,6 +3,8 @@ import { StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../context/ThemeContext';
 import { MainNavigator } from './MainNavigator';
+import { CategoryBottomSheetModal } from '../components/Category/CategoryBottomSheetModal';
+import { MenuDrawerModal } from '../components/common/Header/MenuDrawerModal';
 
 export const AppNavigator: React.FC = () => {
   const { theme } = useTheme();
@@ -16,6 +18,8 @@ export const AppNavigator: React.FC = () => {
       />
       <StatusBar style={theme.statusBarStyle} />
       <MainNavigator />
+      <CategoryBottomSheetModal />
+      <MenuDrawerModal />
     </>
   );
 };

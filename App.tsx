@@ -8,6 +8,7 @@ import { LanguageProvider } from './src/context/LanguageContext';
 import { ProductProvider } from './src/context/ProductContext';
 import { ServiceProvider } from './src/context/ServiceContext';
 import { CategoryProvider } from './src/context/CategoryContext';
+import { MenuDrawerProvider } from './src/context/MenuDrawerContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
@@ -41,9 +42,11 @@ export default function App() {
           <ProductProvider>
             <ServiceProvider>
               <CategoryProvider>
-                <NavigationContainer>
-                  <AppNavigator />
-                </NavigationContainer>
+                <MenuDrawerProvider>
+                  <NavigationContainer>
+                    <AppNavigator />
+                  </NavigationContainer>
+                </MenuDrawerProvider>
               </CategoryProvider>
             </ServiceProvider>
           </ProductProvider>

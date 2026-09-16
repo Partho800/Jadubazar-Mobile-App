@@ -15,7 +15,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
 }) => {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
-  const { activeCategoryColor } = useCategory();
+  const { activeCategoryColor, isCategorySheetOpen, openCategorySheet } = useCategory();
   const [cartCount, setCartCount] = useState(cartStore.getTotalCount());
 
   // Animation values for Pop / Hop bounce when adding items
@@ -73,10 +73,18 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
           isDarkMode ? styles.darkTabBar : styles.lightTabBar,
         ]}
       >
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
-          const isCartTab = route.name === 'CartTab';
+        {state.routes
+          .filter((route) =>
+            ['HomeTab', 'CategoriesTab', 'OffersTab', 'CartTab', 'SearchTab'].includes(route.name)
+          )
+          .map((route) => {
+            const { options } = descriptors[route.key];
+            const currentActiveRoute = state.routes[state.index];
+            const isCurrentRouteFocused = currentActiveRoute?.key === route.key;
+            const isFocused = isCategorySheetOpen
+              ? route.name === 'CategoriesTab'
+              : isCurrentRouteFocused;
+            const isCartTab = route.name === 'CartTab';
 
           const label =
             options.tabBarLabel !== undefined
@@ -86,6 +94,11 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
               : route.name;
 
           const onPress = () => {
+            if (route.name === 'CategoriesTab') {
+              openCategorySheet();
+              return;
+            }
+
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,

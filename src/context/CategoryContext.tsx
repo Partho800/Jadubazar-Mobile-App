@@ -33,12 +33,17 @@ interface CategoryContextType {
   activeCategory: string;
   setActiveCategory: (category: string) => void;
   activeCategoryColor: string;
+  isCategorySheetOpen: boolean;
+  setIsCategorySheetOpen: (open: boolean) => void;
+  openCategorySheet: () => void;
+  closeCategorySheet: () => void;
 }
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
 
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeCategory, setActiveCategoryState] = useState<string>(getInitialCategory);
+  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState<boolean>(false);
 
   useEffect(() => {
     // Async fallback check for mobile / AsyncStorage
@@ -61,6 +66,9 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
     storage.setItem(STORAGE_KEY, category);
   };
 
+  const openCategorySheet = () => setIsCategorySheetOpen(true);
+  const closeCategorySheet = () => setIsCategorySheetOpen(false);
+
   const activeCategoryColor = CATEGORY_COLORS[activeCategory] || '#2563EB';
 
   return (
@@ -69,6 +77,10 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
         activeCategory,
         setActiveCategory,
         activeCategoryColor,
+        isCategorySheetOpen,
+        setIsCategorySheetOpen,
+        openCategorySheet,
+        closeCategorySheet,
       }}
     >
       {children}
@@ -83,6 +95,10 @@ export const useCategory = (): CategoryContextType => {
       activeCategory: 'ecommerce',
       setActiveCategory: () => {},
       activeCategoryColor: '#2563EB',
+      isCategorySheetOpen: false,
+      setIsCategorySheetOpen: () => {},
+      openCategorySheet: () => {},
+      closeCategorySheet: () => {},
     };
   }
   return context;

@@ -24,8 +24,10 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "babel-preset-expo": "^57.0.11",
-    "lightningcss-win32-x64-msvc": "^1.33.0",
     "typescript": "~6.0.3"
+  },
+  "optionalDependencies": {
+    "lightningcss-win32-x64-msvc": "^1.33.0"
   },
   "scripts": {
     "start": "expo start",
@@ -33,7 +35,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "postinstall": "node -e \"const fs=require('fs'); const src='node_modules/lightningcss-win32-x64-msvc/lightningcss.win32-x64-msvc.node'; const dest='node_modules/react-native-css-interop/node_modules/lightningcss/lightningcss.win32-x64-msvc.node'; if(fs.existsSync(src) && fs.existsSync('node_modules/react-native-css-interop/node_modules/lightningcss')) fs.copyFileSync(src, dest);\""
+    "postinstall": "node -e \"const fs=require('fs'); const src='node_modules/lightningcss-win32-x64-msvc/lightningcss.win32-x64-msvc.node'; const dest='node_modules/react-native-css-interop/node_modules/lightningcss/lightningcss.win32-x64-msvc.node'; if(fs.existsSync(src) && fs.existsSync('node_modules/react-native-css-interop/node_modules/lightningcss')) { try { fs.copyFileSync(src, dest); } catch(e){} }\""
   },
   "private": true
 }

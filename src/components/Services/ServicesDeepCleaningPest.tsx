@@ -26,78 +26,9 @@ export interface CleaningPestServiceItem {
   imageUrl: string;
 }
 
-const CLEANING_PEST_SERVICES: CleaningPestServiceItem[] = [
-  {
-    id: 'clean_sofa',
-    categoryTag: 'HOME CLEANING',
-    titleKey: 'sofaWashTitle',
-    defaultTitle: 'Sofa, Mattress & Carpet Shampoo Wash',
-    subKey: 'sofaWashSub',
-    defaultSub:
-      'Deep fabric & leather extraction wash for sofas, dining chairs, luxury carpets, and...',
-    rating: 4.9,
-    duration: '2 Hours Duration',
-    price: 1200,
-    imageUrl:
-      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'clean_kitchen',
-    categoryTag: 'HOME CLEANING',
-    titleKey: 'kitchenDegreaseTitle',
-    defaultTitle: 'Kitchen Deep Degreasing & Exhaust Cleaning',
-    subKey: 'kitchenDegreaseSub',
-    defaultSub:
-      'Intense chemical scrub to dissolve stubborn kitchen oil grease from...',
-    rating: 4.8,
-    duration: '2 Hours Duration',
-    price: 950,
-    imageUrl:
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'clean_bath',
-    categoryTag: 'HOME CLEANING',
-    titleKey: 'bathroomScrubTitle',
-    defaultTitle: 'Bathroom Deep Scrub & Mold Removal',
-    subKey: 'bathroomScrubSub',
-    defaultSub:
-      'Acid-free tile scrubbing, glass partition descaling & germ disinfection.',
-    rating: 4.9,
-    duration: '1-2 Hours Duration',
-    price: 600,
-    imageUrl:
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'clean_pest',
-    categoryTag: 'HOME CLEANING',
-    titleKey: 'pestControlTitle',
-    defaultTitle: 'Cockroach & Termite Pest Control',
-    subKey: 'pestControlSub',
-    defaultSub:
-      'Odorless herbal gel pest control treatment with 6 months warranty.',
-    rating: 4.8,
-    duration: '1 Hour Duration',
-    price: 850,
-    imageUrl:
-      'https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'clean_full',
-    categoryTag: 'HOME CLEANING',
-    titleKey: 'fullHomeCleanTitle',
-    defaultTitle: 'Full Home Sanitization & Deep Clean',
-    subKey: 'fullHomeCleanSub',
-    defaultSub:
-      'Complete floor buffing, window cleaning & room sanitization.',
-    rating: 4.9,
-    duration: '3-4 Hours Duration',
-    price: 2500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const CLEANING_PEST_SERVICES: CleaningPestServiceItem[] = ((servicesData as any).deepCleaningPest || []) as CleaningPestServiceItem[];
 
 interface ServicesDeepCleaningPestProps {
   onServicePress?: (serviceId: string) => void;

@@ -15,6 +15,8 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
+import { ecommerceData } from '../../data/productsData';
+
 export interface BestSellerProductItem {
   id: string;
   brand: string;
@@ -28,50 +30,7 @@ export interface BestSellerProductItem {
   description: string;
 }
 
-const BEST_SELLER_PRODUCTS: BestSellerProductItem[] = [
-  {
-    id: 'bs1',
-    brand: 'JADU SPORT',
-    title: 'Air Max 270 Sport Sneaker',
-    imageUrl:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80',
-    oldPrice: '৳12,500',
-    price: '৳9,500',
-    rating: 4.8,
-    reviewsCount: 189,
-    discount: '24%',
-    description:
-      'Designed for daily comfort and high-impact performance. Features a large Air heel unit for ultra-soft cushioning, a lightweight breathable upper, and durable rubber traction.',
-  },
-  {
-    id: 'bs2',
-    brand: 'JADU AUDIO',
-    title: 'Active Elite Wireless Headphones',
-    imageUrl:
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
-    oldPrice: '৳8,500',
-    price: '৳6,500',
-    rating: 4.8,
-    reviewsCount: 156,
-    discount: '23%',
-    description:
-      'Matte black premium over-ear wireless headphones with advanced Active Noise Cancellation (ANC), 40-hour battery life, and crystal clear acoustic drivers.',
-  },
-  {
-    id: 'bs3',
-    brand: 'JADU STUDIO',
-    title: 'Urban Classic Oversized Hoodie',
-    imageUrl:
-      'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80',
-    oldPrice: '৳4,200',
-    price: '৳3,500',
-    rating: 4.7,
-    reviewsCount: 256,
-    discount: '16%',
-    description:
-      'Premium heavyweight French Terry knit cotton hoodie. Clean drape, dropped shoulders, rib-knit cuffs and waist, designed for supreme all-day luxury comfort.',
-  },
-];
+const BEST_SELLER_PRODUCTS: BestSellerProductItem[] = ecommerceData.bestSellers as BestSellerProductItem[];
 
 interface BestSellersProps {
   onViewAllPress?: () => void;

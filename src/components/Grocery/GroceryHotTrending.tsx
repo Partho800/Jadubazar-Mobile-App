@@ -36,88 +36,9 @@ export interface HotTrendingProduct {
   variants?: WeightVariant[];
 }
 
-const HOT_TRENDING_PRODUCTS: HotTrendingProduct[] = [
-  {
-    id: 'ht1',
-    brand: 'HAPPY COW',
-    title: 'Happy Cow Instant Milk Powder 1kg',
-    imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳100 OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 850,
-    price: 750,
-    variants: [
-      { weight: '1kg', price: 750, oldPrice: 850 },
-      { weight: '500g', price: 390, oldPrice: 440 },
-    ],
-  },
-  {
-    id: 'ht2',
-    brand: "FOSTER CLARK'S",
-    title: "Foster Clark's Orange Instant Drink Powder 1kg",
-    imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳120 OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 1300,
-    price: 1180,
-    variants: [
-      { weight: '1kg', price: 1180, oldPrice: 1300 },
-      { weight: '500g', price: 620, oldPrice: 680 },
-    ],
-  },
-  {
-    id: 'ht3',
-    brand: 'AABESH',
-    title: 'Aabesh Masala Tea (Buy4 Get 1 Free)',
-    imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳65 OFF',
-    weight: '400G',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 630,
-    price: 565,
-    variants: [
-      { weight: '400g', price: 565, oldPrice: 630 },
-      { weight: '200g', price: 295, oldPrice: 330 },
-    ],
-  },
-  {
-    id: 'ht4',
-    brand: 'NESCAFE',
-    title: 'Nescafe Classic Instant Coffee Jar 200g',
-    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳110 OFF',
-    weight: '200G',
-    rating: 4.9,
-    reviewsCount: 185,
-    oldPrice: 1000,
-    price: 890,
-    variants: [
-      { weight: '200g', price: 890, oldPrice: 1000 },
-      { weight: '100g', price: 460, oldPrice: 510 },
-    ],
-  },
-  {
-    id: 'ht5',
-    brand: 'TANG',
-    title: 'Tang Orange Instant Drink Powder 500g',
-    imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳50 OFF',
-    weight: '500G',
-    rating: 4.8,
-    reviewsCount: 140,
-    oldPrice: 470,
-    price: 420,
-    variants: [
-      { weight: '500g', price: 420, oldPrice: 470 },
-      { weight: '250g', price: 220, oldPrice: 245 },
-    ],
-  },
-];
+import { groceryData } from '../../data/productsData';
+
+const HOT_TRENDING_PRODUCTS: HotTrendingProduct[] = groceryData.hotTrending as HotTrendingProduct[];
 
 interface GroceryHotTrendingProps {
   onAddToCart?: (product: HotTrendingProduct) => void;

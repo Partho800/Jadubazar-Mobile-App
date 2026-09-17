@@ -19,33 +19,9 @@ export interface FoodCategoryItem {
   imageUrl: string;
 }
 
-const FOOD_CATEGORIES: FoodCategoryItem[] = [
-  {
-    id: 'fc1',
-    name: 'Kacchi Biryani',
-    imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'fc2',
-    name: 'Idli & Sambar',
-    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'fc3',
-    name: 'Gourmet Pizza',
-    imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'fc4',
-    name: 'Juicy Burgers',
-    imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'fc5',
-    name: 'Chinese Noodles',
-    imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80',
-  },
-];
+import { foodData } from '../../data/productsData';
+
+const FOOD_CATEGORIES: FoodCategoryItem[] = ((foodData as any).popularCategories || []) as FoodCategoryItem[];
 
 interface FoodPopularCategoriesProps {
   onCategoryPress?: (id: string) => void;

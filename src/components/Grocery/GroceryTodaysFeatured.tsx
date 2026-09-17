@@ -36,88 +36,9 @@ export interface TodaysFeaturedProduct {
   variants?: WeightVariant[];
 }
 
-const FEATURED_PRODUCTS: TodaysFeaturedProduct[] = [
-  {
-    id: 'tf1',
-    brand: 'SEYLON',
-    title: 'Seylon Family Blend Tea 400gm',
-    imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳85 OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 700,
-    price: 615,
-    variants: [
-      { weight: '1kg', price: 615, oldPrice: 700 },
-      { weight: '400g', price: 290, oldPrice: 330 },
-    ],
-  },
-  {
-    id: 'tf2',
-    brand: 'DANO',
-    title: 'Dano Daily Pusti Milk Powder 500gm',
-    imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳110 OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 910,
-    price: 800,
-    variants: [
-      { weight: '1kg', price: 800, oldPrice: 910 },
-      { weight: '500g', price: 420, oldPrice: 480 },
-    ],
-  },
-  {
-    id: 'tf3',
-    brand: 'DABUR',
-    title: 'Dabur Honey 500g Glass Jar',
-    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳90 OFF',
-    weight: '500G',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 980,
-    price: 890,
-    variants: [
-      { weight: '500g', price: 890, oldPrice: 980 },
-      { weight: '250g', price: 470, oldPrice: 520 },
-    ],
-  },
-  {
-    id: 'tf4',
-    brand: 'PRAN',
-    title: 'Pran Premium Mustard Oil 1Ltr Bottle',
-    imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳40 OFF',
-    weight: '1LTR',
-    rating: 4.7,
-    reviewsCount: 95,
-    oldPrice: 400,
-    price: 360,
-    variants: [
-      { weight: '1ltr', price: 360, oldPrice: 400 },
-      { weight: '500ml', price: 190, oldPrice: 210 },
-    ],
-  },
-  {
-    id: 'tf5',
-    brand: 'HORLICKS',
-    title: 'Horlicks Health Drink Classic Malt 500g',
-    imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80',
-    discountText: '৳60 OFF',
-    weight: '500G',
-    rating: 4.9,
-    reviewsCount: 160,
-    oldPrice: 600,
-    price: 540,
-    variants: [
-      { weight: '500g', price: 540, oldPrice: 600 },
-      { weight: '200g', price: 240, oldPrice: 270 },
-    ],
-  },
-];
+import { groceryData } from '../../data/productsData';
+
+const FEATURED_PRODUCTS: TodaysFeaturedProduct[] = groceryData.todaysFeatured as TodaysFeaturedProduct[];
 
 interface GroceryTodaysFeaturedProps {
   onAddToCart?: (product: TodaysFeaturedProduct) => void;

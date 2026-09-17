@@ -22,6 +22,8 @@ export interface WeightVariant {
   oldPrice?: number;
 }
 
+import { groceryData } from '../../data/productsData';
+
 export interface UnileverProduct {
   id: string;
   brand: string;
@@ -36,88 +38,7 @@ export interface UnileverProduct {
   variants?: WeightVariant[];
 }
 
-const UNILEVER_PRODUCTS: UnileverProduct[] = [
-  {
-    id: 'uni1',
-    brand: 'LIFEBUOY',
-    title: 'Lifebuoy Total 10 Hand Wash 1Ltr.',
-    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳90 OFF',
-    weight: '1L',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 900,
-    price: 720,
-    variants: [
-      { weight: '1L', price: 720, oldPrice: 900 },
-      { weight: '500ml', price: 370, oldPrice: 450 },
-    ],
-  },
-  {
-    id: 'uni2',
-    brand: 'VIM',
-    title: 'Vim Dishwash Liquid 950(±)50ml',
-    imageUrl: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳31 OFF',
-    weight: '950ML',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 545,
-    price: 480,
-    variants: [
-      { weight: '950ml', price: 480, oldPrice: 545 },
-      { weight: '500ml', price: 250, oldPrice: 280 },
-    ],
-  },
-  {
-    id: 'uni3',
-    brand: 'SURF EXCEL',
-    title: 'Surf Excel Washing Powder 1kg',
-    imageUrl: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳17 OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    oldPrice: 240,
-    price: 205,
-    variants: [
-      { weight: '1kg', price: 205, oldPrice: 240 },
-      { weight: '500g', price: 105, oldPrice: 125 },
-    ],
-  },
-  {
-    id: 'uni4',
-    brand: 'KNORR',
-    title: 'Knorr Soup Chicken Corn 40g',
-    imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳10 OFF',
-    weight: '40GM',
-    rating: 4.7,
-    reviewsCount: 98,
-    oldPrice: 75,
-    price: 65,
-    variants: [
-      { weight: '40gm', price: 65, oldPrice: 75 },
-      { weight: '20gm', price: 34, oldPrice: 40 },
-    ],
-  },
-  {
-    id: 'uni5',
-    brand: 'DOVE',
-    title: 'Dove Intense Repair Shampoo 340ml',
-    imageUrl: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳70 OFF',
-    weight: '340ML',
-    rating: 4.9,
-    reviewsCount: 210,
-    oldPrice: 520,
-    price: 450,
-    variants: [
-      { weight: '340ml', price: 450, oldPrice: 520 },
-      { weight: '170ml', price: 230, oldPrice: 270 },
-    ],
-  },
-];
+const UNILEVER_PRODUCTS: UnileverProduct[] = groceryData.unileverWeek as UnileverProduct[];
 
 interface GroceryUnileverWeekProps {
   onAddToCart?: (product: UnileverProduct) => void;

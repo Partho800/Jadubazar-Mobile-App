@@ -9,73 +9,59 @@ interface FoodDailyDealsProps {
   onFlat30Press?: () => void;
 }
 
+import { foodData } from '../../data/productsData';
+
+export interface DailyDealCardItem {
+  id: string;
+  titleKey: string;
+  subKey: string;
+  btnKey: string;
+  bgGradient?: string;
+  bgColor: string;
+  imageUrl: string;
+}
+
 export const FoodDailyDeals: React.FC<FoodDailyDealsProps> = ({
   onBogoPress,
   onFlat30Press,
 }) => {
   const { t } = useLanguage();
+  const deals: DailyDealCardItem[] = ((foodData as any).dailyDealsCards || []) as DailyDealCardItem[];
 
   return (
     <View className="my-5 px-4 w-full flex-row items-center justify-between gap-3">
-      {/* 1. CARD 1: BUY 1 GET 1 FREE */}
-      <TouchableOpacity
-        activeOpacity={0.92}
-        onPress={onBogoPress}
-        style={{ borderRadius: 20 }}
-        className="flex-1 bg-gradient-to-br from-[#FF6B00] to-[#EA580C] bg-[#EA580C] p-4 rounded-2xl relative overflow-hidden shadow-md"
-      >
-        <Text className="text-white font-black text-sm sm:text-base uppercase tracking-tight mb-0.5">
-          {t('buy1Get1Free')}
-        </Text>
-        <Text className="text-orange-100 text-[11px] sm:text-xs font-semibold mb-3">
-          {t('onSelectedPizzasBurgers')}
-        </Text>
+      {deals.map((item, index) => {
+        const onPress = index === 0 ? onBogoPress : onFlat30Press;
+        return (
+          <TouchableOpacity
+            key={item.id}
+            activeOpacity={0.92}
+            onPress={onPress}
+            style={{ borderRadius: 20, backgroundColor: item.bgColor }}
+            className="flex-1 p-4 rounded-2xl relative overflow-hidden shadow-md"
+          >
+            <Text className="text-white font-black text-sm sm:text-base uppercase tracking-tight mb-0.5">
+              {t(item.titleKey)}
+            </Text>
+            <Text className="text-orange-100 text-[11px] sm:text-xs font-semibold mb-3">
+              {t(item.subKey)}
+            </Text>
 
-        <View className="bg-white px-3 py-1.5 rounded-full flex-row items-center gap-1 self-start shadow-xs">
-          <Text className="text-[#EA580C] text-[10px] sm:text-xs font-black uppercase">
-            {t('orderNowBtn')}
-          </Text>
-          <Ionicons name="arrow-forward" size={12} color="#EA580C" />
-        </View>
+            <View className="bg-white px-3 py-1.5 rounded-full flex-row items-center gap-1 self-start shadow-xs">
+              <Text style={{ color: item.bgColor }} className="text-[10px] sm:text-xs font-black uppercase">
+                {t(item.btnKey)}
+              </Text>
+              <Ionicons name="arrow-forward" size={12} color={item.bgColor} />
+            </View>
 
-        <Image
-          source={{
-            uri: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80',
-          }}
-          className="w-16 h-16 rounded-full absolute -bottom-2 -right-2 opacity-80"
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-
-      {/* 2. CARD 2: FLAT 30% OFF */}
-      <TouchableOpacity
-        activeOpacity={0.92}
-        onPress={onFlat30Press}
-        style={{ borderRadius: 20 }}
-        className="flex-1 bg-[#C2410C] p-4 rounded-2xl relative overflow-hidden shadow-md"
-      >
-        <Text className="text-white font-black text-sm sm:text-base uppercase tracking-tight mb-0.5">
-          {t('flat30Off')}
-        </Text>
-        <Text className="text-orange-100 text-[11px] sm:text-xs font-semibold mb-3">
-          {t('onBiryaniKacchi')}
-        </Text>
-
-        <View className="bg-white px-3 py-1.5 rounded-full flex-row items-center gap-1 self-start shadow-xs">
-          <Text className="text-[#C2410C] text-[10px] sm:text-xs font-black uppercase">
-            {t('claimDealBtn')}
-          </Text>
-          <Ionicons name="arrow-forward" size={12} color="#C2410C" />
-        </View>
-
-        <Image
-          source={{
-            uri: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=300&q=80',
-          }}
-          className="w-16 h-16 rounded-full absolute -bottom-2 -right-2 opacity-80"
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
+            <Image
+              source={{ uri: item.imageUrl }}
+              className="w-16 h-16 rounded-full absolute -bottom-2 -right-2 opacity-80"
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };

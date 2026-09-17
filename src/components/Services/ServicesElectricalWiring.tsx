@@ -26,78 +26,9 @@ export interface ElectricalServiceItem {
   imageUrl: string;
 }
 
-const ELECTRICAL_SERVICES: ElectricalServiceItem[] = [
-  {
-    id: 'elec_home',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'homeElectricalTitle',
-    defaultTitle: 'Expert Home Electrical Service',
-    subKey: 'homeElectricalSub',
-    defaultSub:
-      'From installing ceiling fans and smart lights to repairing short circuits or...',
-    rating: 4.8,
-    duration: '1 Hour Duration',
-    price: 300,
-    imageUrl:
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'elec_fan',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'fanFittingTitle',
-    defaultTitle: 'Ceiling Fan, Chandelier & Light Fitting',
-    subKey: 'fanFittingSub',
-    defaultSub:
-      'Safe installation and replacement of ceiling fans, chandeliers, spotlights...',
-    rating: 4.9,
-    duration: '1 Hour Duration',
-    price: 250,
-    imageUrl:
-      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'elec_breaker',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'circuitBreakerTitle',
-    defaultTitle: 'Circuit Breaker & DB Box Upgrade',
-    subKey: 'circuitBreakerSub',
-    defaultSub:
-      'Fix main power tripping issues, MCB replacement & electrical safety audit.',
-    rating: 4.9,
-    duration: '1-2 Hours Duration',
-    price: 450,
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'elec_ups',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'upsWiringTitle',
-    defaultTitle: 'UPS, Inverter & Generator Wiring',
-    subKey: 'upsWiringSub',
-    defaultSub:
-      'Backup power wiring for IPS/UPS and home generator auto switch.',
-    rating: 4.7,
-    duration: '2 Hours Duration',
-    price: 600,
-    imageUrl:
-      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'elec_smart',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'smartSwitchTitle',
-    defaultTitle: 'Smart Switch & Home Automation',
-    subKey: 'smartSwitchSub',
-    defaultSub:
-      'Convert existing switches to smart WiFi touch panels & mobile app controls.',
-    rating: 4.8,
-    duration: '1-2 Hours Duration',
-    price: 750,
-    imageUrl:
-      'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const ELECTRICAL_SERVICES: ElectricalServiceItem[] = ((servicesData as any).electricalWiring || []) as ElectricalServiceItem[];
 
 interface ServicesElectricalWiringProps {
   onServicePress?: (serviceId: string) => void;

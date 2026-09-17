@@ -18,6 +18,8 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
+import { ecommerceData } from '../../data/productsData';
+
 export interface AccessoryProductItem {
   id: string;
   brand: string;
@@ -31,86 +33,7 @@ export interface AccessoryProductItem {
   discount: string;
 }
 
-const ACCESSORY_PRODUCTS: AccessoryProductItem[] = [
-  {
-    id: 'w1',
-    brand: 'JADU TECH',
-    weight: '0.10 KG',
-    title: 'Smart Watch Series 9 GPS',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳21,500',
-    price: '৳18,500',
-    rating: 4.8,
-    reviewsCount: 103,
-    discount: '14%',
-  },
-  {
-    id: 'w2',
-    brand: 'JADU STUDIO',
-    weight: '0.05 KG',
-    title: 'Classic Aviator Sunglasses',
-    imageUrl:
-      'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳2,500',
-    price: '৳2,200',
-    rating: 4.7,
-    reviewsCount: 57,
-    discount: '12%',
-  },
-  {
-    id: 'w3',
-    brand: 'JADU LUXE',
-    weight: '0.15 KG',
-    title: 'Minimalist Leather Wallet',
-    imageUrl:
-      'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳3,200',
-    price: '৳2,720',
-    rating: 4.9,
-    reviewsCount: 142,
-    discount: '15%',
-  },
-  {
-    id: 'w4',
-    brand: 'JADU CHRONO',
-    weight: '0.20 KG',
-    title: 'Vintage Chronograph Leather Watch',
-    imageUrl:
-      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳25,000',
-    price: '৳20,000',
-    rating: 4.9,
-    reviewsCount: 89,
-    discount: '20%',
-  },
-  {
-    id: 'w5',
-    brand: 'JADU OPTICS',
-    weight: '0.06 KG',
-    title: 'Retro Round Metal Sunglasses',
-    imageUrl:
-      'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳2,800',
-    price: '৳2,296',
-    rating: 4.8,
-    reviewsCount: 110,
-    discount: '18%',
-  },
-  {
-    id: 'w6',
-    brand: 'JADU CRAFT',
-    weight: '0.30 KG',
-    title: 'Handcrafted Leather Belt',
-    imageUrl:
-      'https://images.unsplash.com/photo-1624222247344-550fb8ec5522?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳2,200',
-    price: '৳1,980',
-    rating: 4.7,
-    reviewsCount: 76,
-    discount: '10%',
-  },
-];
+const ACCESSORY_PRODUCTS: AccessoryProductItem[] = ecommerceData.watchesAccessories as AccessoryProductItem[];
 
 export const WatchesAccessories: React.FC = () => {
   const navigation = useNavigation<any>();

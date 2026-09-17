@@ -18,6 +18,8 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
+import { ecommerceData } from '../../data/productsData';
+
 export interface HomeDecorProductItem {
   id: string;
   brand: string;
@@ -31,60 +33,7 @@ export interface HomeDecorProductItem {
   discount: string;
 }
 
-const HOME_DECOR_PRODUCTS: HomeDecorProductItem[] = [
-  {
-    id: 'hd1',
-    brand: 'ZEN LIVING',
-    weight: '0.6 KG',
-    title: 'Ceramic Ultrasonic Aroma Diffuser',
-    imageUrl:
-      'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳3,200',
-    price: '৳2,600',
-    rating: 4.8,
-    reviewsCount: 148,
-    discount: '19%',
-  },
-  {
-    id: 'hd2',
-    brand: 'SCANDI HOME',
-    weight: '0.85 KG',
-    title: 'Nordic Minimalist Wooden Desk Lamp',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳3,800',
-    price: '৳2,950',
-    rating: 4.7,
-    reviewsCount: 73,
-    discount: '22%',
-  },
-  {
-    id: 'hd3',
-    brand: 'COZYNEST',
-    weight: '1.2 KG',
-    title: 'Boho Chunky Knit Throw Blanket',
-    imageUrl:
-      'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳4,500',
-    price: '৳3,600',
-    rating: 4.9,
-    reviewsCount: 210,
-    discount: '20%',
-  },
-  {
-    id: 'hd4',
-    brand: 'LUMEN CRAFT',
-    weight: '0.4 KG',
-    title: 'Scented Botanical Soy Wax Candle Set',
-    imageUrl:
-      'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳2,200',
-    price: '৳1,760',
-    rating: 4.8,
-    reviewsCount: 115,
-    discount: '20%',
-  },
-];
+const HOME_DECOR_PRODUCTS: HomeDecorProductItem[] = ecommerceData.homeDecor as HomeDecorProductItem[];
 
 export const HomeDecor: React.FC = () => {
   const navigation = useNavigation<any>();

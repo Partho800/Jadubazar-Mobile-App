@@ -26,78 +26,9 @@ export interface CarpentryServiceItem {
   imageUrl: string;
 }
 
-const CARPENTRY_SERVICES: CarpentryServiceItem[] = [
-  {
-    id: 'carp_door',
-    categoryTag: 'HOME IMPROVEMENT',
-    titleKey: 'doorRepairTitle',
-    defaultTitle: 'Door Lock, Hinge & Wooden Furniture Repair',
-    subKey: 'doorRepairSub',
-    defaultSub:
-      'Experienced carpenter for jammed wooden doors, cylinder lock...',
-    rating: 4.8,
-    duration: '1-2 Hours Duration',
-    price: 400,
-    imageUrl:
-      'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'carp_paint',
-    categoryTag: 'HOME IMPROVEMENT',
-    titleKey: 'wallPaintingTitle',
-    defaultTitle: 'Interior & Exterior Wall Painting Service',
-    subKey: 'wallPaintingSub',
-    defaultSub:
-      'Premium home painting with Berger or Asian Paints. Includes putty plaster...',
-    rating: 4.9,
-    duration: '1-2 Days Duration',
-    price: 3500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'carp_cabinet',
-    categoryTag: 'HOME IMPROVEMENT',
-    titleKey: 'kitchenCabinetTitle',
-    defaultTitle: 'Modular Kitchen Cabinet Fitting',
-    subKey: 'kitchenCabinetSub',
-    defaultSub:
-      'Custom wooden cabinet alignment, drawer channels & hydraulic hinge fix.',
-    rating: 4.8,
-    duration: '2-3 Hours Duration',
-    price: 1500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'carp_tv',
-    categoryTag: 'HOME IMPROVEMENT',
-    titleKey: 'tvMountTitle',
-    defaultTitle: 'TV Mount, Wall Shelf & Curtain Fitting',
-    subKey: 'tvMountSub',
-    defaultSub:
-      'Heavy-duty wall drilling for LED TVs, wall art, shelves & curtain rods.',
-    rating: 4.9,
-    duration: '1 Hour Duration',
-    price: 300,
-    imageUrl:
-      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'carp_wallpaper',
-    categoryTag: 'HOME IMPROVEMENT',
-    titleKey: 'wallpaperDampTitle',
-    defaultTitle: 'Wallpaper Installation & Damp Proofing',
-    subKey: 'wallpaperDampSub',
-    defaultSub:
-      'Decorative 3D wallpaper fixing and anti-damp wall chemical treatment.',
-    rating: 4.7,
-    duration: '2 Hours Duration',
-    price: 1200,
-    imageUrl:
-      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const CARPENTRY_SERVICES: CarpentryServiceItem[] = ((servicesData as any).carpentryPainting || []) as CarpentryServiceItem[];
 
 interface ServicesCarpentryPaintingProps {
   onServicePress?: (serviceId: string) => void;

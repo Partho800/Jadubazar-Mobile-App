@@ -18,64 +18,9 @@ export interface BookingServiceItem {
   imageUrl: string;
 }
 
-const POPULAR_BOOKING_SERVICES: BookingServiceItem[] = [
-  {
-    id: 'serv_deep_clean',
-    categoryTag: 'HOME',
-    titleKey: 'popularHomeCleanTitle',
-    defaultTitle: 'Professional Home Deep Cleaning Service',
-    subKey: 'popularHomeCleanSub',
-    defaultSub:
-      'Get your entire house scrubbed and polished by our verified cleaning experts.',
-    rating: 4.8,
-    duration: '3-4 Hours Duration',
-    price: 1800,
-    imageUrl:
-      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'serv_ac_jet',
-    categoryTag: 'REPAIR',
-    titleKey: 'popularAcJetTitle',
-    defaultTitle: 'AC Jet Cleaning & Gas Refill',
-    subKey: 'popularAcJetSub',
-    defaultSub:
-      'Ensure maximum cooling efficiency of your Air Conditioner with jet wash.',
-    rating: 4.9,
-    duration: '1-2 Hours Duration',
-    price: 1200,
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'serv_plumbing',
-    categoryTag: 'PLUMBING',
-    titleKey: 'popularPlumbingTitle',
-    defaultTitle: 'Emergency Plumbing Repair & Installation',
-    subKey: 'popularPlumbingSub',
-    defaultSub:
-      'Book our certified plumbing technicians to instantly resolve pipe leaks and fittings.',
-    rating: 4.7,
-    duration: '1 Hour Duration',
-    price: 350,
-    imageUrl:
-      'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'serv_electrical',
-    categoryTag: 'ELECTRICAL',
-    titleKey: 'popularElectricalTitle',
-    defaultTitle: 'Expert Home Electrical Service',
-    subKey: 'popularElectricalSub',
-    defaultSub:
-      'From installing ceiling fans and smart lights to repairing short circuit faults.',
-    rating: 4.8,
-    duration: '1 Hour Duration',
-    price: 300,
-    imageUrl:
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const POPULAR_BOOKING_SERVICES: BookingServiceItem[] = ((servicesData as any).popularServices || []) as BookingServiceItem[];
 
 interface ServicesPopularBookingProps {
   onServiceBookPress?: (serviceId: string) => void;

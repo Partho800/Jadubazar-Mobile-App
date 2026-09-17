@@ -26,78 +26,9 @@ export interface ApplianceServiceItem {
   imageUrl: string;
 }
 
-const APPLIANCE_SERVICES: ApplianceServiceItem[] = [
-  {
-    id: 'appl_ac_shift',
-    categoryTag: 'APPLIANCE REPAIR',
-    titleKey: 'acInstallationTitle',
-    defaultTitle: 'Split AC Installation & Shifting',
-    subKey: 'acInstallationSub',
-    defaultSub:
-      'Professional installation and relocation of split ACs of all tonnages.',
-    rating: 4.9,
-    duration: '2 Hours Duration',
-    price: 1500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'appl_fridge',
-    categoryTag: 'APPLIANCE REPAIR',
-    titleKey: 'fridgeRepairTitle',
-    defaultTitle: 'Refrigerator Gas & Compressor Repair',
-    subKey: 'fridgeRepairSub',
-    defaultSub:
-      'Expert refrigerator diagnostics for low cooling, excessive ice buildup.',
-    rating: 4.8,
-    duration: '1-2 Hours Duration',
-    price: 850,
-    imageUrl:
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'appl_washing',
-    categoryTag: 'APPLIANCE REPAIR',
-    titleKey: 'washingMachineTitle',
-    defaultTitle: 'Washing Machine Servicing & Motor Repair',
-    subKey: 'washingMachineSub',
-    defaultSub:
-      'Fix washing machine water leakage, drum noise & spin cycle issues.',
-    rating: 4.8,
-    duration: '1-2 Hours Duration',
-    price: 700,
-    imageUrl:
-      'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'appl_microwave',
-    categoryTag: 'APPLIANCE REPAIR',
-    titleKey: 'microwaveRepairTitle',
-    defaultTitle: 'Microwave Oven Repair & Heating Fix',
-    subKey: 'microwaveRepairSub',
-    defaultSub:
-      'Complete repair for microwave touch panel, magnetron & heating coils.',
-    rating: 4.7,
-    duration: '1 Hour Duration',
-    price: 500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'appl_geyser',
-    categoryTag: 'APPLIANCE REPAIR',
-    titleKey: 'geyserRepairTitle',
-    defaultTitle: 'Water Heater & Geyser Servicing',
-    subKey: 'geyserRepairSub',
-    defaultSub:
-      'Safe electric geyser installation, element replacement & coil descaling.',
-    rating: 4.9,
-    duration: '1 Hour Duration',
-    price: 600,
-    imageUrl:
-      'https://images.unsplash.com/photo-1585771724684-38269d6639fd?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const APPLIANCE_SERVICES: ApplianceServiceItem[] = ((servicesData as any).applianceCare || []) as ApplianceServiceItem[];
 
 interface ServicesApplianceCareProps {
   onServicePress?: (serviceId: string) => void;

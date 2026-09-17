@@ -26,78 +26,9 @@ export interface PersonalCareServiceItem {
   imageUrl: string;
 }
 
-const PERSONAL_CARE_SERVICES: PersonalCareServiceItem[] = [
-  {
-    id: 'salon_mens',
-    categoryTag: 'PERSONAL CARE',
-    titleKey: 'mensHaircutTitle',
-    defaultTitle: "Men's Haircut, Beard Grooming & Face Tan Clear",
-    subKey: 'mensHaircutSub',
-    defaultSub:
-      'Professional salon experience at the comfort of your home. Hygienic...',
-    rating: 4.8,
-    duration: '45-60 Mins Duration',
-    price: 350,
-    imageUrl:
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'salon_womens',
-    categoryTag: 'PERSONAL CARE',
-    titleKey: 'womensFacialTitle',
-    defaultTitle: "Women's Facial Glow & Spa Treatment",
-    subKey: 'womensFacialSub',
-    defaultSub:
-      'Relaxing herbal facial with deep steam, blackhead extraction, gold...',
-    rating: 4.9,
-    duration: '1-1.5 Hours Duration',
-    price: 950,
-    imageUrl:
-      'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'salon_manipedi',
-    categoryTag: 'PERSONAL CARE',
-    titleKey: 'maniPediTitle',
-    defaultTitle: 'Mani-Pedi Spa & Gel Nail Polish',
-    subKey: 'maniPediSub',
-    defaultSub:
-      'Exfoliating foot scrub, nail shaping, cuticles cleanup & premium polish.',
-    rating: 4.8,
-    duration: '1 Hour Duration',
-    price: 700,
-    imageUrl:
-      'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'salon_massage',
-    categoryTag: 'PERSONAL CARE',
-    titleKey: 'bodyMassageTitle',
-    defaultTitle: 'Full Body Oil Massage & Relaxation',
-    subKey: 'bodyMassageSub',
-    defaultSub:
-      'Therapeutic Ayurvedic body massage by certified male/female therapists.',
-    rating: 4.9,
-    duration: '1 Hour Duration',
-    price: 1200,
-    imageUrl:
-      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'salon_haircolor',
-    categoryTag: 'PERSONAL CARE',
-    titleKey: 'hairColorTitle',
-    defaultTitle: 'Hair Color, Spa & Rebonding Treatment',
-    subKey: 'hairColorSub',
-    defaultSub:
-      "L'Oreal ammonia-free hair coloring, deep keratin spa & hair repair.",
-    rating: 4.8,
-    duration: '2 Hours Duration',
-    price: 1800,
-    imageUrl:
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const PERSONAL_CARE_SERVICES: PersonalCareServiceItem[] = ((servicesData as any).personalCareSalon || []) as PersonalCareServiceItem[];
 
 interface ServicesPersonalCareSalonProps {
   onServicePress?: (serviceId: string) => void;

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCategory } from '../../context/CategoryContext';
+import { cartStore } from '../../store/cartStore';
 import { FoodHero } from './FoodHero';
 import { FoodDeliveryBanner } from './FoodDeliveryBanner';
 import { FoodFavouriteCuisines } from './FoodFavouriteCuisines';
@@ -24,7 +25,7 @@ interface FoodDeliveryPageProps {
 export const FoodDeliveryPage: React.FC<FoodDeliveryPageProps> = ({
   onOrderOnlinePress,
   onViewMenuPress,
-  onAddToCart,
+  onAddToCart: externalAddToCart,
 }) => {
   const navigation = useNavigation<any>();
   const { setActiveCategory, setActiveSubCategory } = useCategory();
@@ -35,6 +36,14 @@ export const FoodDeliveryPage: React.FC<FoodDeliveryPageProps> = ({
     try {
       navigation.navigate('CategoriesTab');
     } catch (e) {}
+  };
+
+  const handleAddToCart = (item: any) => {
+    if (!item) return;
+
+    if (externalAddToCart) {
+      externalAddToCart(item);
+    }
   };
 
   return (
@@ -65,30 +74,31 @@ export const FoodDeliveryPage: React.FC<FoodDeliveryPageProps> = ({
 
       {/* 7. Popular Dishes & Chef Specials */}
       <FoodPopularSpecials
-        onAddToCart={onAddToCart}
+        onAddToCart={handleAddToCart}
         onViewAllPress={() => handleFoodCategoryClick()}
       />
 
       {/* 8. Special 24h Advance Pre-Order Platters */}
       <FoodPreOrderPlatters
+        onPreOrderPress={handleAddToCart}
         onViewAllPress={() => handleFoodCategoryClick('Pre-Order Platters')}
       />
 
       {/* 9. Authentic Kacchi, Biryani & Mughlai Platters */}
       <FoodAuthenticKacchi
-        onAddToCart={onAddToCart}
+        onAddToCart={handleAddToCart}
         onViewAllPress={() => handleFoodCategoryClick('Biriyani')}
       />
 
       {/* 10. Gourmet Smash Burgers, Pizza & Italian */}
       <FoodGourmetBurgers
-        onAddToCart={onAddToCart}
+        onAddToCart={handleAddToCart}
         onViewAllPress={() => handleFoodCategoryClick('Burger')}
       />
 
       {/* 11. Desserts, Shakes & Sweet Treats */}
       <FoodDessertsShakes
-        onAddToCart={onAddToCart}
+        onAddToCart={handleAddToCart}
         onViewAllPress={() => handleFoodCategoryClick('Desserts & Shakes')}
       />
 

@@ -11,7 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+
+import { foodData } from '../../data/productsData';
 
 export interface DessertDishItem {
   id: string;
@@ -27,46 +30,7 @@ export interface DessertDishItem {
   prepTime?: string;
 }
 
-const DESSERT_DISHES: DessertDishItem[] = [
-  {
-    id: 'ds-1',
-    name: 'Oreo Milkshake Thick',
-    category: 'Desserts',
-    price: 180,
-    rating: 4.8,
-    reviewsCount: 85,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'ds-2',
-    name: 'Classic Coca Cola Can 330ml',
-    category: 'Drinks',
-    price: 50,
-    rating: 4.9,
-    reviewsCount: 85,
-    isOutOfStock: false,
-    timeTag: '10:00 AM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'ds-3',
-    name: 'Special Sundae Ice Cream Feast',
-    category: 'Sweets',
-    price: 170,
-    rating: 4.8,
-    reviewsCount: 85,
-    isOutOfStock: false,
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80',
-  },
-];
+const DESSERT_DISHES: DessertDishItem[] = foodData.dessertDishes as DessertDishItem[];
 
 interface FoodDessertsShakesProps {
   onAddToCart?: (item: DessertDishItem) => void;
@@ -305,6 +269,13 @@ export const FoodDessertsShakes: React.FC<FoodDessertsShakesProps> = ({
                       activeOpacity={0.8}
                       onPress={(e) => {
                         e?.stopPropagation?.();
+                        cartStore.addItem({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          originalPrice: item.originalPrice,
+                          image: item.imageUrl,
+                        });
                         onAddToCart?.(item);
                       }}
                       className="border border-[#FF6B00] bg-orange-50 px-4 py-1.5 rounded-full"

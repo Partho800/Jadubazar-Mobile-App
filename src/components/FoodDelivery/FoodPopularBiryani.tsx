@@ -16,6 +16,8 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
+import { foodData } from '../../data/productsData';
+
 export interface FoodItem {
   id: string;
   brand: string;
@@ -30,60 +32,7 @@ export interface FoodItem {
   categoryTag?: string;
 }
 
-const BIRYANI_PRODUCTS: FoodItem[] = [
-  {
-    id: 'bir1',
-    brand: 'STAR KACCHI',
-    title: 'Shahi Mutton Kacchi Biryani (Full)',
-    imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80',
-    discountText: '20% OFF',
-    rating: 4.9,
-    reviewsCount: 320,
-    deliveryTime: '25-35 mins',
-    oldPrice: 450,
-    price: 380,
-    categoryTag: 'Kacchi',
-  },
-  {
-    id: 'bir2',
-    brand: "SULTAN'S DINE",
-    title: 'Special Beef Tehari 1:1',
-    imageUrl: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=600&q=80',
-    discountText: '15% OFF',
-    rating: 4.8,
-    reviewsCount: 240,
-    deliveryTime: '20-30 mins',
-    oldPrice: 305,
-    price: 260,
-    categoryTag: 'Tehari',
-  },
-  {
-    id: 'bir3',
-    brand: 'JADUBAZAR KITCHEN',
-    title: 'Chicken Roast with Morog Polao',
-    imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
-    discountText: '10% OFF',
-    rating: 4.7,
-    reviewsCount: 180,
-    deliveryTime: '30-40 mins',
-    oldPrice: 320,
-    price: 290,
-    categoryTag: 'Polao & Chicken',
-  },
-  {
-    id: 'bir4',
-    brand: 'KACCHI BHAI',
-    title: 'Hyderabadi Mutton Biryani',
-    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80',
-    discountText: '18% OFF',
-    rating: 4.9,
-    reviewsCount: 410,
-    deliveryTime: '25-35 mins',
-    oldPrice: 510,
-    price: 420,
-    categoryTag: 'Kacchi',
-  },
-];
+const BIRYANI_PRODUCTS: FoodItem[] = foodData.biryaniProducts as FoodItem[];
 
 interface FoodPopularBiryaniProps {
   onAddToCart?: (item: FoodItem) => void;

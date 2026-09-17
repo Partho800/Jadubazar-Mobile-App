@@ -36,86 +36,9 @@ export interface SnackProduct {
   variants?: WeightVariant[];
 }
 
-const SNACKS_PRODUCTS: SnackProduct[] = [
-  {
-    id: 'sn1',
-    brand: 'GOLDEN HARVEST',
-    title: 'Golden Harvest Premium Deshi Paratha 1300gm',
-    imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&q=80',
-    weight: '1.3KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    price: 340,
-    variants: [
-      { weight: '1.3kg', price: 340 },
-      { weight: '1kg', price: 260 },
-      { weight: '500gm', price: 130 },
-      { weight: '250gm', price: 65 },
-      { weight: '100gm', price: 25 },
-    ],
-  },
-  {
-    id: 'sn2',
-    brand: 'FRESH',
-    title: 'Fresh Instant Noodles Masala Flavor 496gm',
-    imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 120,
-    price: 355,
-    variants: [
-      { weight: '1kg', price: 355 },
-      { weight: '500gm', price: 180 },
-      { weight: '250gm', price: 95 },
-    ],
-  },
-  {
-    id: 'sn3',
-    brand: 'MR. NOODLES',
-    title: 'Pran Magic Masala Noodles 8 Pack 496gm',
-    imageUrl: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=500&q=80',
-    discountText: '৳35 OFF',
-    weight: '496GM',
-    rating: 4.8,
-    reviewsCount: 115,
-    oldPrice: 350,
-    price: 300,
-    variants: [
-      { weight: '496gm', price: 300, oldPrice: 350 },
-      { weight: '248gm', price: 155, oldPrice: 180 },
-    ],
-  },
-  {
-    id: 'sn4',
-    brand: 'BOMBAY SWEETS',
-    title: 'Bombay Sweets Special Chanachur 300g',
-    imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281316?auto=format&fit=crop&w=500&q=80',
-    weight: '300GM',
-    rating: 4.9,
-    reviewsCount: 180,
-    oldPrice: 90,
-    price: 85,
-    variants: [
-      { weight: '300gm', price: 85, oldPrice: 90 },
-      { weight: '150gm', price: 45, oldPrice: 50 },
-    ],
-  },
-  {
-    id: 'sn5',
-    brand: 'PRAN',
-    title: 'Pran Potato Crackers 100g Pack of 4',
-    imageUrl: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=500&q=80',
-    weight: '400GM',
-    rating: 4.7,
-    reviewsCount: 95,
-    oldPrice: 120,
-    price: 110,
-    variants: [
-      { weight: '400gm', price: 110, oldPrice: 120 },
-      { weight: '200gm', price: 58, oldPrice: 65 },
-    ],
-  },
-];
+import { groceryData } from '../../data/productsData';
+
+const SNACKS_PRODUCTS: SnackProduct[] = groceryData.snacksNoodles as SnackProduct[];
 
 interface GrocerySnacksNoodlesProps {
   onAddToCart?: (product: SnackProduct) => void;

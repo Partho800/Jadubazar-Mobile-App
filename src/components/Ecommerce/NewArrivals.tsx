@@ -17,6 +17,7 @@ import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
+import { ecommerceData } from '../../data/productsData';
 
 export interface NewArrivalItem {
   id: string;
@@ -24,119 +25,14 @@ export interface NewArrivalItem {
   weight: string;
   title: string;
   imageUrl: string;
-  oldPrice: string;
+  oldPrice?: string;
   price: string;
   rating: number;
   reviewsCount: number;
   discount: string;
 }
 
-const NEW_ARRIVALS_PRODUCTS: NewArrivalItem[] = [
-  {
-    id: 'na1',
-    brand: 'JADU STUDIO',
-    weight: '0.6 KG',
-    title: 'Essential Fleece Hoodie',
-    imageUrl:
-      'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳4,000',
-    price: '৳3,200',
-    rating: 4.2,
-    reviewsCount: 128,
-    discount: '20% OFF',
-  },
-  {
-    id: 'na2',
-    brand: 'JADU SPORT',
-    weight: '0.8 KG',
-    title: 'Air Max 270 Sport',
-    imageUrl:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳12,500',
-    price: '৳9,500',
-    rating: 4.6,
-    reviewsCount: 189,
-    discount: '24% OFF',
-  },
-  {
-    id: 'na3',
-    brand: 'JADU URBAN',
-    weight: '1.2 KG',
-    title: 'Minimalist Leather Jacket',
-    imageUrl:
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳18,000',
-    price: '৳14,700',
-    rating: 4.8,
-    reviewsCount: 240,
-    discount: '18% OFF',
-  },
-  {
-    id: 'na4',
-    brand: 'JADU GEAR',
-    weight: '0.7 KG',
-    title: 'Urban Waterproof Backpack',
-    imageUrl:
-      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳7,500',
-    price: '৳6,375',
-    rating: 4.7,
-    reviewsCount: 156,
-    discount: '15% OFF',
-  },
-  {
-    id: 'na5',
-    brand: 'JADU LUXE',
-    weight: '0.15 KG',
-    title: 'Chronograph Vintage Watch',
-    imageUrl:
-      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳22,000',
-    price: '৳15,400',
-    rating: 4.9,
-    reviewsCount: 98,
-    discount: '30%',
-  },
-  {
-    id: 'n4',
-    brand: 'HERMAN MILLER',
-    weight: '12.0 KG',
-    title: 'Aeron Ergonomic Office Chair',
-    imageUrl:
-      'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳145,000',
-    price: '৳130,500',
-    rating: 5.0,
-    reviewsCount: 34,
-    discount: '10%',
-  },
-  {
-    id: 'n5',
-    brand: 'BOSE',
-    weight: '0.24 KG',
-    title: 'QuietComfort Ultra Earbuds',
-    imageUrl:
-      'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳32,000',
-    price: '৳27,200',
-    rating: 4.8,
-    reviewsCount: 119,
-    discount: '15%',
-  },
-  {
-    id: 'n6',
-    brand: 'LOGITECH',
-    weight: '0.14 KG',
-    title: 'MX Master 3S Wireless Mouse',
-    imageUrl:
-      'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳13,500',
-    price: '৳11,475',
-    rating: 4.9,
-    reviewsCount: 230,
-    discount: '15%',
-  },
-];
+const NEW_ARRIVALS_PRODUCTS: NewArrivalItem[] = ecommerceData.newArrivals as NewArrivalItem[];
 
 export const NewArrivals: React.FC = () => {
   const navigation = useNavigation<any>();

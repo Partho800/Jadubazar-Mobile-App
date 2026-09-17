@@ -11,7 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+
+import { foodData } from '../../data/productsData';
 
 export interface KacchiDishItem {
   id: string;
@@ -28,51 +31,7 @@ export interface KacchiDishItem {
   prepTime?: string;
 }
 
-const KACCHI_ITEMS: KacchiDishItem[] = [
-  {
-    id: 'kc-1',
-    name: 'Mutton Kacchi Biryani Special',
-    category: 'Rice Dishes',
-    price: 340,
-    originalPrice: 380,
-    rating: 4.9,
-    reviewsCount: 85,
-    discountBadge: '৳40 OFF',
-    isHot: true,
-    timeTag: '12:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'kc-2',
-    name: 'Chicken Roast with Polao',
-    category: 'Bangladeshi Fest',
-    price: 240,
-    rating: 4.6,
-    reviewsCount: 85,
-    isHot: true,
-    timeTag: '12:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'kc-3',
-    name: 'Shahi Basmati Kacchi (Serves 2)',
-    category: 'Mughlai Fest',
-    price: 450,
-    originalPrice: 520,
-    rating: 4.9,
-    reviewsCount: 420,
-    discountBadge: '৳70 OFF',
-    isHot: true,
-    timeTag: '12:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=600&q=80',
-  },
-];
+const KACCHI_ITEMS: KacchiDishItem[] = foodData.kacchiItems as KacchiDishItem[];
 
 interface FoodAuthenticKacchiProps {
   onAddToCart?: (item: KacchiDishItem) => void;
@@ -310,6 +269,13 @@ export const FoodAuthenticKacchi: React.FC<FoodAuthenticKacchiProps> = ({
                     activeOpacity={0.8}
                     onPress={(e) => {
                       e?.stopPropagation?.();
+                      cartStore.addItem({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        originalPrice: item.originalPrice,
+                        image: item.imageUrl,
+                      });
                       onAddToCart?.(item);
                     }}
                     className="border border-[#FF6B00] bg-orange-50 px-4 py-1.5 rounded-full"

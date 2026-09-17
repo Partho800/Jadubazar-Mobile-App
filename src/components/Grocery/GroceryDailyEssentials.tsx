@@ -16,6 +16,8 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
+import { groceryData } from '../../data/productsData';
+
 export interface WeightVariant {
   weight: string;
   price: number;
@@ -31,93 +33,12 @@ export interface DailyEssentialsProduct {
   weight: string;
   rating: number;
   reviewsCount: number;
-  oldPrice?: number;
-  price: number;
+  oldPrice?: any;
+  price: any;
   variants?: WeightVariant[];
 }
 
-const DAILY_ESSENTIALS_PRODUCTS: DailyEssentialsProduct[] = [
-  {
-    id: 'de1',
-    brand: 'EGGO FARM',
-    title: 'Farm Fresh Brown Eggs 24 Pcs',
-    imageUrl: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80',
-    discountText: '6% OFF',
-    weight: '24 PCS',
-    rating: 4.7,
-    reviewsCount: 210,
-    oldPrice: 310,
-    price: 290,
-    variants: [
-      { weight: '24 pcs', price: 290, oldPrice: 310 },
-      { weight: '12 pcs', price: 150, oldPrice: 160 },
-    ],
-  },
-  {
-    id: 'de2',
-    brand: 'CHASHI',
-    title: 'Miniket Rice Premium 10kg',
-    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80',
-    discountText: '7% OFF',
-    weight: '10KG',
-    rating: 4.5,
-    reviewsCount: 312,
-    oldPrice: 840,
-    price: 780,
-    variants: [
-      { weight: '10kg', price: 780, oldPrice: 840 },
-      { weight: '5kg', price: 400, oldPrice: 430 },
-    ],
-  },
-  {
-    id: 'de3',
-    brand: 'RUPCHANDA',
-    title: 'Rupchanda Fortified Soyabean Oil 5L',
-    imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80',
-    discountText: '5% OFF',
-    weight: '5LTR',
-    rating: 4.8,
-    reviewsCount: 420,
-    oldPrice: 875,
-    price: 825,
-    variants: [
-      { weight: '5ltr', price: 825, oldPrice: 875 },
-      { weight: '2ltr', price: 340, oldPrice: 360 },
-    ],
-  },
-  {
-    id: 'de4',
-    brand: 'TEER',
-    title: 'Teer Fortified Whole Wheat Atta 2kg',
-    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
-    discountText: '8% OFF',
-    weight: '2KG',
-    rating: 4.8,
-    reviewsCount: 180,
-    oldPrice: 140,
-    price: 128,
-    variants: [
-      { weight: '2kg', price: 128, oldPrice: 140 },
-      { weight: '1kg', price: 66, oldPrice: 72 },
-    ],
-  },
-  {
-    id: 'de5',
-    brand: 'AARONG DAIRY',
-    title: 'Aarong Dairy Liquid Milk 1Ltr',
-    imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80',
-    discountText: '5% OFF',
-    weight: '1LTR',
-    rating: 4.9,
-    reviewsCount: 265,
-    oldPrice: 95,
-    price: 90,
-    variants: [
-      { weight: '1ltr', price: 90, oldPrice: 95 },
-      { weight: '500ml', price: 48, oldPrice: 52 },
-    ],
-  },
-];
+const DAILY_ESSENTIALS_PRODUCTS: DailyEssentialsProduct[] = groceryData.dailyEssentials as DailyEssentialsProduct[];
 
 interface GroceryDailyEssentialsProps {
   onAddToCart?: (product: DailyEssentialsProduct) => void;

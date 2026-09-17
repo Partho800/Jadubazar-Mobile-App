@@ -11,7 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+
+import { foodData } from '../../data/productsData';
 
 export interface FastFoodDishItem {
   id: string;
@@ -29,66 +32,7 @@ export interface FastFoodDishItem {
   prepTime?: string;
 }
 
-const FAST_FOOD_DISHES: FastFoodDishItem[] = [
-  {
-    id: 'ff-1',
-    name: 'Ultimate Cheese Blast Burger',
-    category: 'Burgers',
-    price: 320,
-    originalPrice: 380,
-    rating: 4.9,
-    reviewsCount: 85,
-    discountBadge: '৳60 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'ff-2',
-    name: 'Crispy Spicy Chicken Burger',
-    category: 'Burgers',
-    price: 260,
-    rating: 4.7,
-    reviewsCount: 85,
-    isHot: true,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'ff-3',
-    name: 'Garlic Parmesan Loaded Fries',
-    category: 'Italian & Sides',
-    price: 150,
-    rating: 4.5,
-    reviewsCount: 85,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'ff-4',
-    name: 'Four Cheese Pepperoni Pizza 12"',
-    category: 'Pizza',
-    price: 650,
-    originalPrice: 750,
-    rating: 4.9,
-    reviewsCount: 220,
-    discountBadge: '৳100 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80',
-  },
-];
+const FAST_FOOD_DISHES: FastFoodDishItem[] = foodData.fastFoodDishes as FastFoodDishItem[];
 
 interface FoodGourmetBurgersProps {
   onAddToCart?: (item: FastFoodDishItem) => void;
@@ -347,6 +291,13 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
                       activeOpacity={0.8}
                       onPress={(e) => {
                         e?.stopPropagation?.();
+                        cartStore.addItem({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          originalPrice: item.originalPrice,
+                          image: item.imageUrl,
+                        });
                         onAddToCart?.(item);
                       }}
                       className="border border-[#FF6B00] bg-orange-50 px-4 py-1.5 rounded-full"

@@ -12,7 +12,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+
+import { foodData } from '../../data/productsData';
 
 export interface FoodDishItem {
   id: string;
@@ -32,155 +35,7 @@ export interface FoodDishItem {
   prepTime?: string;
 }
 
-const SPECIAL_DISHES: FoodDishItem[] = [
-  // Evening Specials & Fast Food
-  {
-    id: 'sp-1',
-    name: 'Ultimate Cheese Blast Burger',
-    category: 'Burgers',
-    filterCategory: 'evening',
-    price: 320,
-    originalPrice: 380,
-    rating: 4.9,
-    reviewsCount: 85,
-    discountBadge: '৳60 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-2',
-    name: 'Crispy Spicy Chicken Burger',
-    category: 'Burgers',
-    filterCategory: 'evening',
-    price: 260,
-    rating: 4.7,
-    reviewsCount: 95,
-    isHot: true,
-    isOutOfStock: false,
-    timeTag: '5:00 PM - 11:00 PM',
-    prepTime: '20-30 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-3',
-    name: 'Four Cheese Pepperoni Pizza 12"',
-    category: 'Pizza',
-    filterCategory: 'evening',
-    price: 650,
-    originalPrice: 750,
-    rating: 4.9,
-    reviewsCount: 220,
-    discountBadge: '৳100 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    prepTime: '25-35 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80',
-  },
-
-  // Platters
-  {
-    id: 'sp-4',
-    name: 'Grand Royal Biryani & Kebab Platter',
-    category: 'Platters',
-    filterCategory: 'platters',
-    price: 950,
-    originalPrice: 1100,
-    rating: 4.9,
-    reviewsCount: 310,
-    discountBadge: '৳150 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    timeTag: '12:00 PM - 11:00 PM',
-    prepTime: '30-40 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-5',
-    name: 'Mughlai Family Feast Platter (Serves 4)',
-    category: 'Platters',
-    filterCategory: 'platters',
-    price: 1250,
-    originalPrice: 1450,
-    rating: 5.0,
-    reviewsCount: 195,
-    discountBadge: '৳200 OFF',
-    isOutOfStock: false,
-    prepTime: '35-45 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-6',
-    name: 'Mega Sizzling BBQ Combo Platter',
-    category: 'Platters',
-    filterCategory: 'platters',
-    price: 1100,
-    originalPrice: 1250,
-    rating: 4.8,
-    reviewsCount: 140,
-    discountBadge: '৳150 OFF',
-    isHot: true,
-    isOutOfStock: false,
-    prepTime: '30-40 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80',
-  },
-
-  // Breakfast Items
-  {
-    id: 'sp-7',
-    name: 'Shahi Halwa Puri & Chana Box',
-    category: 'Breakfast',
-    filterCategory: 'breakfast',
-    price: 140,
-    originalPrice: 170,
-    rating: 4.8,
-    reviewsCount: 120,
-    discountBadge: '৳30 OFF',
-    isOutOfStock: false,
-    timeTag: '7:00 AM - 11:30 AM',
-    prepTime: '15-25 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-8',
-    name: 'Special Paratha & Masala Egg Omelette',
-    category: 'Breakfast',
-    filterCategory: 'breakfast',
-    price: 120,
-    rating: 4.7,
-    reviewsCount: 88,
-    isOutOfStock: false,
-    timeTag: '7:00 AM - 11:30 AM',
-    prepTime: '15-20 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'sp-9',
-    name: 'Crispy Butter Dosa with Sambhar',
-    category: 'Breakfast',
-    filterCategory: 'breakfast',
-    price: 160,
-    originalPrice: 190,
-    rating: 4.9,
-    reviewsCount: 160,
-    discountBadge: '৳30 OFF',
-    isOutOfStock: false,
-    timeTag: '7:00 AM - 11:30 AM',
-    prepTime: '20-25 min',
-    imageUrl:
-      'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80',
-  },
-];
+const SPECIAL_DISHES: FoodDishItem[] = foodData.specialDishes as FoodDishItem[];
 
 const FILTER_PILLS = [
   { id: 'f1', label: 'All Dishes', iconName: 'restaurant-outline' },
@@ -494,7 +349,17 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
                   ) : (
                     <TouchableOpacity
                       activeOpacity={0.8}
-                      onPress={() => onAddToCart?.(item)}
+                      onPress={(e) => {
+                        e?.stopPropagation?.();
+                        cartStore.addItem({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          originalPrice: item.originalPrice,
+                          image: item.imageUrl,
+                        });
+                        onAddToCart?.(item);
+                      }}
                       className="border border-[#FF6B00] bg-orange-50 px-4 py-1.5 rounded-full"
                     >
                       <Text style={{ color: '#FF6B00' }} className="text-xs sm:text-sm font-black">

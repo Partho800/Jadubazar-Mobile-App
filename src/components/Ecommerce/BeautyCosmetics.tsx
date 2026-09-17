@@ -17,6 +17,7 @@ import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
+import { ecommerceData } from '../../data/productsData';
 
 export interface BeautyProductItem {
   id: string;
@@ -31,73 +32,7 @@ export interface BeautyProductItem {
   discount: string;
 }
 
-const BEAUTY_PRODUCTS: BeautyProductItem[] = [
-  {
-    id: '1',
-    brand: 'JADU BEAUTY',
-    weight: '0.04 KG',
-    title: 'Beauty Jelly Lipstick',
-    imageUrl:
-      'https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳450',
-    price: '৳380',
-    rating: 4.8,
-    reviewsCount: 95,
-    discount: '15%',
-  },
-  {
-    id: '2',
-    brand: 'SEOUL GLOW',
-    weight: '0.10 KG',
-    title: '24K Gold Snail Radiance',
-    imageUrl:
-      'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳2,300',
-    price: '৳1,850',
-    rating: 4.9,
-    reviewsCount: 167,
-    discount: '20%',
-  },
-  {
-    id: '3',
-    brand: 'GLOW RECIPE',
-    weight: '0.05 KG',
-    title: 'Niacinamide Dew Serum',
-    imageUrl:
-      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳1,800',
-    price: '৳1,470',
-    rating: 4.9,
-    reviewsCount: 210,
-    discount: '18%',
-  },
-  {
-    id: '4',
-    brand: 'LANEIGE',
-    weight: '0.02 KG',
-    title: 'Lip Sleeping Mask Berry',
-    imageUrl:
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳1,200',
-    price: '৳1,080',
-    rating: 4.9,
-    reviewsCount: 340,
-    discount: '10%',
-  },
-  {
-    id: '5',
-    brand: 'CERA VE',
-    weight: '0.25 KG',
-    title: 'Hydrating Facial Cleanser',
-    imageUrl:
-      'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳1,650',
-    price: '৳1,450',
-    rating: 4.8,
-    reviewsCount: 520,
-    discount: '12%',
-  },
-];
+const BEAUTY_PRODUCTS: BeautyProductItem[] = ecommerceData.beautyCosmetics as BeautyProductItem[];
 
 export const BeautyCosmetics: React.FC = () => {
   const navigation = useNavigation<any>();

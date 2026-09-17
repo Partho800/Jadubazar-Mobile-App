@@ -17,6 +17,7 @@ import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
+import { ecommerceData } from '../../data/productsData';
 
 export interface GadgetItem {
   id: string;
@@ -31,86 +32,7 @@ export interface GadgetItem {
   discount: string;
 }
 
-const GADGET_PRODUCTS: GadgetItem[] = [
-  {
-    id: '1',
-    brand: 'APPLE',
-    weight: '0.24 KG',
-    title: 'iPhone 14 Pro Max',
-    imageUrl:
-      'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳135,000',
-    price: '৳125,000',
-    rating: 4.8,
-    reviewsCount: 412,
-    discount: '8%',
-  },
-  {
-    id: '2',
-    brand: 'SAMSUNG',
-    weight: '0.23 KG',
-    title: 'Samsung S24 Ultra',
-    imageUrl:
-      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳145,000',
-    price: '৳132,000',
-    rating: 4.7,
-    reviewsCount: 320,
-    discount: '9%',
-  },
-  {
-    id: '3',
-    brand: 'APPLE',
-    weight: '1.60 KG',
-    title: 'MacBook Pro M3',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳210,000',
-    price: '৳185,000',
-    rating: 4.9,
-    reviewsCount: 580,
-    discount: '12%',
-  },
-  {
-    id: '4',
-    brand: 'SONY',
-    weight: '0.25 KG',
-    title: 'Sony WH-1000XM5',
-    imageUrl:
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳42,000',
-    price: '৳35,700',
-    rating: 4.8,
-    reviewsCount: 215,
-    discount: '15%',
-  },
-  {
-    id: '5',
-    brand: 'APPLE',
-    weight: '0.06 KG',
-    title: 'Apple Watch Ultra 2',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳95,000',
-    price: '৳85,500',
-    rating: 4.9,
-    reviewsCount: 189,
-    discount: '10%',
-  },
-  {
-    id: '6',
-    brand: 'APPLE',
-    weight: '0.68 KG',
-    title: 'iPad Pro 12.9"',
-    imageUrl:
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳140,000',
-    price: '৳130,000',
-    rating: 4.7,
-    reviewsCount: 310,
-    discount: '7%',
-  },
-];
+const GADGET_PRODUCTS: GadgetItem[] = ecommerceData.smartElectronics as GadgetItem[];
 
 export const SmartElectronics: React.FC = () => {
   const navigation = useNavigation<any>();

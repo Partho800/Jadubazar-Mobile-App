@@ -22,6 +22,8 @@ export interface WeightVariant {
   oldPrice?: number;
 }
 
+import { groceryData } from '../../data/productsData';
+
 export interface FreshPicksProduct {
   id: string;
   brand: string;
@@ -36,88 +38,7 @@ export interface FreshPicksProduct {
   variants?: WeightVariant[];
 }
 
-const FRESH_PICKS_PRODUCTS: FreshPicksProduct[] = [
-  {
-    id: 'fp1',
-    brand: 'FRESH ORCHARD',
-    title: 'Fresh Red Apples (Gala)',
-    imageUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80',
-    discountText: '12% OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 128,
-    oldPrice: 320,
-    price: 280,
-    variants: [
-      { weight: '1kg', price: 280, oldPrice: 320 },
-      { weight: '500g', price: 145, oldPrice: 165 },
-    ],
-  },
-  {
-    id: 'fp2',
-    brand: 'ORGANIC FARM',
-    title: 'Organic Roma Tomatoes',
-    imageUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6ef23a28?auto=format&fit=crop&w=600&q=80',
-    discountText: '25% OFF',
-    weight: '1KG',
-    rating: 4.6,
-    reviewsCount: 84,
-    oldPrice: 240,
-    price: 180,
-    variants: [
-      { weight: '1kg', price: 180, oldPrice: 240 },
-      { weight: '500g', price: 95, oldPrice: 125 },
-    ],
-  },
-  {
-    id: 'fp3',
-    brand: 'BENGAL MEAT',
-    title: 'Premium Beef Curry Cut 1kg',
-    imageUrl: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=600&q=80',
-    discountText: '10% OFF',
-    weight: '1KG',
-    rating: 4.9,
-    reviewsCount: 210,
-    oldPrice: 2375,
-    price: 2135,
-    variants: [
-      { weight: '1kg', price: 2135, oldPrice: 2375 },
-      { weight: '500g', price: 1090, oldPrice: 1200 },
-    ],
-  },
-  {
-    id: 'fp4',
-    brand: 'GREEN GARDEN',
-    title: 'Fresh Green Capsicum 500g',
-    imageUrl: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=600&q=80',
-    discountText: '15% OFF',
-    weight: '500G',
-    rating: 4.7,
-    reviewsCount: 96,
-    oldPrice: 160,
-    price: 136,
-    variants: [
-      { weight: '500g', price: 136, oldPrice: 160 },
-      { weight: '250g', price: 70, oldPrice: 85 },
-    ],
-  },
-  {
-    id: 'fp5',
-    brand: 'ORCHARD FRESH',
-    title: 'Fresh Sweet Oranges 1kg',
-    imageUrl: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80',
-    discountText: '18% OFF',
-    weight: '1KG',
-    rating: 4.8,
-    reviewsCount: 115,
-    oldPrice: 280,
-    price: 230,
-    variants: [
-      { weight: '1kg', price: 230, oldPrice: 280 },
-      { weight: '500g', price: 120, oldPrice: 145 },
-    ],
-  },
-];
+const FRESH_PICKS_PRODUCTS: FreshPicksProduct[] = groceryData.freshPicks as FreshPicksProduct[];
 
 interface GroceryFreshPicksProps {
   onAddToCart?: (product: FreshPicksProduct) => void;

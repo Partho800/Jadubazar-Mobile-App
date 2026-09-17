@@ -26,78 +26,9 @@ export interface PlumbingServiceItem {
   imageUrl: string;
 }
 
-const PLUMBING_SERVICES: PlumbingServiceItem[] = [
-  {
-    id: 'plumb_repair',
-    categoryTag: 'PLUMBING',
-    titleKey: 'plumbingRepairTitle',
-    defaultTitle: 'Emergency Plumbing Repair & Installation',
-    subKey: 'plumbingRepairSub',
-    defaultSub:
-      'Book our certified plumbing technicians to instantly resolve pipe leakages, basin fittings.',
-    rating: 4.7,
-    duration: '1 Hour Duration',
-    price: 350,
-    imageUrl:
-      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'plumb_tank',
-    categoryTag: 'PLUMBING',
-    titleKey: 'waterTankCleanTitle',
-    defaultTitle: 'Overhead Water Tank Deep Cleaning',
-    subKey: 'waterTankCleanSub',
-    defaultSub:
-      'Hygienic deep cleaning of residential overhead & underground water tanks.',
-    rating: 4.9,
-    duration: '2-3 Hours Duration',
-    price: 1400,
-    imageUrl:
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'plumb_fitting',
-    categoryTag: 'PLUMBING',
-    titleKey: 'sanitaryFittingTitle',
-    defaultTitle: 'Sanitary & Bathroom Fitting Installation',
-    subKey: 'sanitaryFittingSub',
-    defaultSub:
-      'Professional fitting of taps, showers, commodes, mixers & bath accessories.',
-    rating: 4.8,
-    duration: '1-2 Hours Duration',
-    price: 500,
-    imageUrl:
-      'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'plumb_drain',
-    categoryTag: 'PLUMBING',
-    titleKey: 'drainUnclogTitle',
-    defaultTitle: 'Drainage Unclogging & Blockage Clearance',
-    subKey: 'drainUnclogSub',
-    defaultSub:
-      'Heavy-duty pressure unclogging for blocked kitchen sinks & bathroom drains.',
-    rating: 4.9,
-    duration: '1 Hour Duration',
-    price: 650,
-    imageUrl:
-      'https://images.unsplash.com/photo-1585771724684-38269d6639fd?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'plumb_pump',
-    categoryTag: 'PLUMBING',
-    titleKey: 'waterPumpTitle',
-    defaultTitle: 'Water Pump & Motor Repair',
-    subKey: 'waterPumpSub',
-    defaultSub:
-      'Complete motor rewinding, seal replacement & pump installation service.',
-    rating: 4.8,
-    duration: '2 Hours Duration',
-    price: 800,
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const PLUMBING_SERVICES: PlumbingServiceItem[] = ((servicesData as any).plumbingSanitary || []) as PlumbingServiceItem[];
 
 interface ServicesPlumbingSanitaryProps {
   onServicePress?: (serviceId: string) => void;

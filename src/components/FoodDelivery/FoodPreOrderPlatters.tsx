@@ -11,7 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
+
+import { foodData } from '../../data/productsData';
 
 export interface PreOrderPlatterItem {
   id: string;
@@ -27,50 +30,7 @@ export interface PreOrderPlatterItem {
   timeTag?: string;
 }
 
-const PREORDER_PLATTERS: PreOrderPlatterItem[] = [
-  {
-    id: 'po-1',
-    name: 'Grand Royal Basmati Kacchi Platter',
-    category: 'Platters',
-    price: 2950,
-    originalPrice: 3400,
-    rating: 5.0,
-    reviewsCount: 340,
-    discountBadge: '৳450 OFF',
-    timeTag: '24h Pre-Order Only',
-    prepTime: '24h Advance',
-    imageUrl:
-      'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'po-2',
-    name: 'Mega Sizzling BBQ & Kebab Platter (Serves 5-6)',
-    category: 'Platters',
-    price: 2450,
-    originalPrice: 2800,
-    rating: 4.9,
-    reviewsCount: 280,
-    discountBadge: '৳350 OFF',
-    timeTag: '24h Pre-Order Only',
-    prepTime: '24h Advance',
-    imageUrl:
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'po-3',
-    name: 'Signature Mughlai Feast Platter',
-    category: 'Platters',
-    price: 3800,
-    originalPrice: 4400,
-    rating: 5.0,
-    reviewsCount: 195,
-    discountBadge: '৳600 OFF',
-    timeTag: '24h Pre-Order Only',
-    prepTime: '24h Advance',
-    imageUrl:
-      'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
-  },
-];
+const PREORDER_PLATTERS: PreOrderPlatterItem[] = foodData.preorderPlatters as PreOrderPlatterItem[];
 
 interface FoodPreOrderPlattersProps {
   onPreOrderPress?: (item: PreOrderPlatterItem) => void;
@@ -310,6 +270,13 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
                       activeOpacity={0.85}
                       onPress={(e) => {
                         e?.stopPropagation?.();
+                        cartStore.addItem({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          originalPrice: item.originalPrice,
+                          image: item.imageUrl,
+                        });
                         onPreOrderPress?.(item);
                       }}
                       className="bg-[#8B5CF6] active:bg-purple-700 px-3 py-1.5 rounded-full flex-row items-center gap-1 shadow-sm"

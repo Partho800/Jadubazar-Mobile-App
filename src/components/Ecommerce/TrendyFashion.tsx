@@ -17,6 +17,7 @@ import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
+import { ecommerceData } from '../../data/productsData';
 
 export interface FashionItem {
   id: string;
@@ -31,86 +32,7 @@ export interface FashionItem {
   discount: string;
 }
 
-const FASHION_PRODUCTS: FashionItem[] = [
-  {
-    id: '1',
-    brand: 'NIKE',
-    weight: '0.45 KG',
-    title: 'Nike Air Max 270',
-    imageUrl:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳14,500',
-    price: '৳12,325',
-    rating: 4.8,
-    reviewsCount: 312,
-    discount: '15%',
-  },
-  {
-    id: '2',
-    brand: 'LEVIS',
-    weight: '0.65 KG',
-    title: "Levis 501 Original Jeans",
-    imageUrl:
-      'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳6,500',
-    price: '৳5,200',
-    rating: 4.7,
-    reviewsCount: 198,
-    discount: '20%',
-  },
-  {
-    id: '3',
-    brand: 'ZARA',
-    weight: '0.35 KG',
-    title: 'Oversized Linen Shirt',
-    imageUrl:
-      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳4,200',
-    price: '৳3,360',
-    rating: 4.6,
-    reviewsCount: 145,
-    discount: '20%',
-  },
-  {
-    id: '4',
-    brand: 'ADIDAS',
-    weight: '0.40 KG',
-    title: 'Ultraboost Light Running',
-    imageUrl:
-      'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳16,000',
-    price: '৳13,600',
-    rating: 4.9,
-    reviewsCount: 420,
-    discount: '15%',
-  },
-  {
-    id: '5',
-    brand: 'PUMA',
-    weight: '0.50 KG',
-    title: 'Essential Hoodie Black',
-    imageUrl:
-      'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳5,800',
-    price: '৳4,640',
-    rating: 4.7,
-    reviewsCount: 167,
-    discount: '20%',
-  },
-  {
-    id: '6',
-    brand: 'RAYBAN',
-    weight: '0.15 KG',
-    title: 'Classic Aviator Sunglasses',
-    imageUrl:
-      'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=600&q=80',
-    oldPrice: '৳12,000',
-    price: '৳10,800',
-    rating: 4.9,
-    reviewsCount: 289,
-    discount: '10%',
-  },
-];
+const FASHION_PRODUCTS: FashionItem[] = ecommerceData.trendyFashion as FashionItem[];
 
 export const TrendyFashion: React.FC = () => {
   const navigation = useNavigation<any>();

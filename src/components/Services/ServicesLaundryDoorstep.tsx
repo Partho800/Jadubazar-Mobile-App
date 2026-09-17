@@ -26,78 +26,9 @@ export interface LaundryServiceItem {
   imageUrl: string;
 }
 
-const LAUNDRY_SERVICES: LaundryServiceItem[] = [
-  {
-    id: 'laund_wash',
-    categoryTag: 'OTHER SERVICES',
-    titleKey: 'laundryWashTitle',
-    defaultTitle: 'Premium Laundry (Wash, Fold & Iron)',
-    subKey: 'laundryWashSub',
-    defaultSub:
-      'Save your weekends! We collect your dirty clothes, wash them with premium...',
-    rating: 4.6,
-    duration: 'Pickup (15 min) Duration',
-    price: 499,
-    imageUrl:
-      'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'laund_car',
-    categoryTag: 'OTHER SERVICES',
-    titleKey: 'carWashTitle',
-    defaultTitle: 'Doorstep Car Foam Wash & Interior Vacuum Polish',
-    subKey: 'carWashSub',
-    defaultSub:
-      'High-pressure snow foam wash, dashboard UV conditioning, floor...',
-    rating: 4.8,
-    duration: '1 Hour Duration',
-    price: 700,
-    imageUrl:
-      'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'laund_dryclean',
-    categoryTag: 'OTHER SERVICES',
-    titleKey: 'dryCleanTitle',
-    defaultTitle: 'Dry Cleaning for Sarees, Suits & Blazers',
-    subKey: 'dryCleanSub',
-    defaultSub:
-      'Gentle chemical dry clean for delicate designer sarees, suits & heavy coats.',
-    rating: 4.9,
-    duration: '24 Hours Duration',
-    price: 350,
-    imageUrl:
-      'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'laund_shoe',
-    categoryTag: 'OTHER SERVICES',
-    titleKey: 'shoeLaundryTitle',
-    defaultTitle: 'Shoe Laundry & Leather Care Polish',
-    subKey: 'shoeLaundrySub',
-    defaultSub:
-      'Deep sneaker cleaning, sole stain removal & leather boot waxing.',
-    rating: 4.7,
-    duration: '24 Hours Duration',
-    price: 250,
-    imageUrl:
-      'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'laund_bike',
-    categoryTag: 'OTHER SERVICES',
-    titleKey: 'bikeWashTitle',
-    defaultTitle: 'Bike Pressure Wash & Chain Lube Service',
-    subKey: 'bikeWashSub',
-    defaultSub:
-      'Doorstep motorcycle foam wash, chain cleaning & ceramic wax shine.',
-    rating: 4.8,
-    duration: '45 Mins Duration',
-    price: 300,
-    imageUrl:
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80',
-  },
-];
+import { servicesData } from '../../data/productsData';
+
+const LAUNDRY_SERVICES: LaundryServiceItem[] = ((servicesData as any).laundryDoorstep || []) as LaundryServiceItem[];
 
 interface ServicesLaundryDoorstepProps {
   onServicePress?: (serviceId: string) => void;

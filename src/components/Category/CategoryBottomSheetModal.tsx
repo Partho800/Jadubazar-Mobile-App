@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Modal,
   View,
@@ -404,15 +404,21 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
     }
   }, [isCategorySheetOpen, activeCategory]);
 
-  const currentCategoryData = MAIN_CATEGORIES_DATA[selectedCatKey] || MAIN_CATEGORIES_DATA.food;
+  const currentCategoryData = useMemo(
+    () => MAIN_CATEGORIES_DATA[selectedCatKey] || MAIN_CATEGORIES_DATA.food,
+    [selectedCatKey]
+  );
 
-  const handleCategoryTabPress = (catId: string) => {
-    setSelectedCatKey(catId);
-    setActiveCategory(catId);
-    setSearchQuery('');
-  };
+  const handleCategoryTabPress = React.useCallback(
+    (catId: string) => {
+      setSelectedCatKey(catId);
+      setActiveCategory(catId);
+      setSearchQuery('');
+    },
+    [setActiveCategory]
+  );
 
-  const handleBrowseAllCategoryProducts = () => {
+  const handleBrowseAllCategoryProducts = React.useCallback(() => {
     setActiveCategory(selectedCatKey);
     setActiveSubCategory(null);
     closeCategorySheet();
@@ -421,33 +427,40 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
     } catch (e) {
       console.log('Navigation error:', e);
     }
-  };
+  }, [selectedCatKey, setActiveCategory, setActiveSubCategory, closeCategorySheet, navigation]);
 
-  const filteredSubcategories = currentCategoryData.subcategories.filter((sub) => {
-    const nameToMatch = isBangla && sub.nameBN ? `${sub.name} ${sub.nameBN}` : sub.name;
-    return nameToMatch.toLowerCase().includes(searchQuery.trim().toLowerCase());
-  });
+  const filteredSubcategories = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return currentCategoryData.subcategories;
+    return currentCategoryData.subcategories.filter((sub) => {
+      const nameToMatch = isBangla && sub.nameBN ? `${sub.name} ${sub.nameBN}` : sub.name;
+      return nameToMatch.toLowerCase().includes(q);
+    });
+  }, [currentCategoryData, searchQuery, isBangla]);
 
-  const handleSubCatItemPress = (item: SubCategoryItem) => {
-    setActiveCategory(selectedCatKey);
-    setActiveSubCategory(item.name);
-    if (onSelectSubCategory) {
-      onSelectSubCategory(item, selectedCatKey);
-    }
-    closeCategorySheet();
-    try {
-      navigation.navigate('CategoriesTab');
-    } catch (e) {
-      console.log('Navigation error:', e);
-    }
-  };
+  const handleSubCatItemPress = React.useCallback(
+    (item: SubCategoryItem) => {
+      setActiveCategory(selectedCatKey);
+      setActiveSubCategory(item.name);
+      if (onSelectSubCategory) {
+        onSelectSubCategory(item, selectedCatKey);
+      }
+      closeCategorySheet();
+      try {
+        navigation.navigate('CategoriesTab');
+      } catch (e) {
+        console.log('Navigation error:', e);
+      }
+    },
+    [selectedCatKey, setActiveCategory, setActiveSubCategory, onSelectSubCategory, closeCategorySheet, navigation]
+  );
 
   if (!isCategorySheetOpen) return null;
 
   return (
     <Modal
       visible={isCategorySheetOpen}
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       onRequestClose={closeCategorySheet}
       statusBarTranslucent

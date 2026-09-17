@@ -434,38 +434,20 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
                   />
                 </TouchableOpacity>
 
-                {/* Bottom Left Prep Time Pill */}
-                {item.prepTime && (
-                  <View className="bg-black/75 px-2.5 py-0.5 rounded-full absolute bottom-2 left-2 flex-row items-center gap-1 z-10">
-                    <Ionicons name="time-outline" size={11} color="#FFFFFF" />
-                    <Text className="text-white text-[10px] font-bold">
-                      {item.prepTime}
-                    </Text>
-                  </View>
-                )}
               </View>
 
               {/* Card Content Section */}
               <View className="p-3.5 flex-1 flex-col justify-between">
                 {/* Tags Row */}
-                <View className="flex-row items-center gap-1.5 mb-1 flex-wrap">
-                  {item.isOutOfStock ? (
+                {item.isOutOfStock ? (
+                  <View className="flex-row items-center gap-1.5 mb-1 flex-wrap">
                     <View className="border border-red-200 bg-red-50 px-2.5 py-0.5 rounded-md">
                       <Text className="text-red-600 text-[10px] font-black">
                         Stock Out
                       </Text>
                     </View>
-                  ) : null}
-
-                  {item.timeTag && (
-                    <View className="border border-amber-300 bg-amber-50 px-2.5 py-0.5 rounded-md flex-row items-center gap-1">
-                      <Ionicons name="time-outline" size={10} color="#D97706" />
-                      <Text className="text-amber-800 text-[10px] font-extrabold">
-                        {item.timeTag}
-                      </Text>
-                    </View>
-                  )}
-                </View>
+                  </View>
+                ) : null}
 
                 {/* Title & Info */}
                 <View className="my-1">

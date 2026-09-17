@@ -208,13 +208,6 @@ export const FoodNightOwlDeals: React.FC<FoodNightOwlDealsProps> = ({
                 className="w-full h-full"
                 resizeMode="cover"
               />
-
-              <View className="bg-slate-900/85 px-2 py-0.5 rounded-lg flex-row items-center gap-1 absolute bottom-2 right-2 z-10">
-                <Ionicons name="time-outline" size={11} color="#C084FC" />
-                <Text className="text-white text-[9px] font-bold">
-                  {item.deliveryTime}
-                </Text>
-              </View>
             </View>
 
             {/* Info Box */}

@@ -613,41 +613,53 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     applyBanglaFontCss();
   }, [applyBanglaFontCss]);
 
-  const t = (key: string): string => {
-    if (translations[key]) {
-      return translations[key][language];
-    }
-    return key;
-  };
+  const t = React.useCallback(
+    (key: string): string => {
+      if (translations[key]) {
+        return translations[key][language];
+      }
+      return key;
+    },
+    [language]
+  );
 
-  const getFontFamily = (weight: 'regular' | 'medium' | 'semibold' | 'bold' = 'regular'): string => {
-    if (isBangla) {
-      if (weight === 'bold') return 'LiAdorNoirrit-Bold';
-      if (weight === 'semibold') return 'LiAdorNoirrit-SemiBold';
-      return 'LiAdorNoirrit-SemiBold';
-    }
-    if (weight === 'bold') return 'Geist-Bold';
-    if (weight === 'semibold') return 'Geist-SemiBold';
-    if (weight === 'medium') return 'Geist-Medium';
-    return 'Geist-Regular';
-  };
+  const getFontFamily = React.useCallback(
+    (weight: 'regular' | 'medium' | 'semibold' | 'bold' = 'regular'): string => {
+      if (isBangla) {
+        if (weight === 'bold') return 'LiAdorNoirrit-Bold';
+        if (weight === 'semibold') return 'LiAdorNoirrit-SemiBold';
+        return 'LiAdorNoirrit-SemiBold';
+      }
+      if (weight === 'bold') return 'Geist-Bold';
+      if (weight === 'semibold') return 'Geist-SemiBold';
+      if (weight === 'medium') return 'Geist-Medium';
+      return 'Geist-Regular';
+    },
+    [isBangla]
+  );
 
-  const getFontStyle = (weight: 'regular' | 'medium' | 'semibold' | 'bold' = 'regular') => ({
-    fontFamily: getFontFamily(weight),
-  });
+  const getFontStyle = React.useCallback(
+    (weight: 'regular' | 'medium' | 'semibold' | 'bold' = 'regular') => ({
+      fontFamily: getFontFamily(weight),
+    }),
+    [getFontFamily]
+  );
+
+  const contextValue = React.useMemo(
+    () => ({
+      language,
+      setLanguage,
+      toggleLanguage,
+      isBangla,
+      t,
+      getFontFamily,
+      getFontStyle,
+    }),
+    [language, setLanguage, toggleLanguage, isBangla, t, getFontFamily, getFontStyle]
+  );
 
   return (
-    <LanguageContext.Provider
-      value={{
-        language,
-        setLanguage,
-        toggleLanguage,
-        isBangla,
-        t,
-        getFontFamily,
-        getFontStyle,
-      }}
-    >
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );
@@ -660,4 +672,5 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+
 

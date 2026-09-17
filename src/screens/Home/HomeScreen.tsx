@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { HeaderTopBar, HeaderCategoryBar } from '../../components/common/Header/Header';
 import { EcommercePage } from '../../components/Ecommerce/EcommercePage';
@@ -41,12 +43,64 @@ export const HomeScreen: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
+  // Scroll direction detection for hiding/showing category bar
+  const categoryBarAnim = useRef(new Animated.Value(1)).current;
+  const lastScrollY = useRef(0);
+  const isBarVisible = useRef(true);
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const currentY = event.nativeEvent.contentOffset.y;
+      const diff = currentY - lastScrollY.current;
+
+      // Always show at top of page
+      if (currentY <= 15) {
+        if (!isBarVisible.current) {
+          isBarVisible.current = true;
+          Animated.timing(categoryBarAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: false,
+          }).start();
+        }
+      } else if (diff > 10 && currentY > 50) {
+        // Scrolling DOWN -> Hide bar
+        if (isBarVisible.current) {
+          isBarVisible.current = false;
+          Animated.timing(categoryBarAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false,
+          }).start();
+        }
+      } else if (diff < -10) {
+        // Scrolling UP -> Show bar
+        if (!isBarVisible.current) {
+          isBarVisible.current = true;
+          Animated.timing(categoryBarAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: false,
+          }).start();
+        }
+      }
+
+      lastScrollY.current = currentY;
+    },
+    [categoryBarAnim]
+  );
+
   const handleCategoryChange = useCallback(
     (catId: string) => {
       if (catId === activeCategory && !selectedProduct && !selectedService) return;
 
       if (selectedProduct) closeProductDetails();
       if (selectedService) closeServiceDetails();
+
+      // Instantly ensure bar is visible on category switch
+      isBarVisible.current = true;
+      categoryBarAnim.setValue(1);
+      lastScrollY.current = 0;
 
       // 1. Instantly activate category tab pill (0ms response)
       setActiveCategory(catId);
@@ -67,7 +121,7 @@ export const HomeScreen: React.FC = () => {
         }).start();
       }, 140);
     },
-    [activeCategory, selectedProduct, selectedService, fadeAnim, closeProductDetails, closeServiceDetails, setActiveCategory]
+    [activeCategory, selectedProduct, selectedService, fadeAnim, closeProductDetails, closeServiceDetails, setActiveCategory, categoryBarAnim]
   );
 
   useEffect(() => {
@@ -80,20 +134,48 @@ export const HomeScreen: React.FC = () => {
   const isActive = (cat: CategoryKey) => activeCategory === cat && !showDetailView;
   const catColor = CATEGORY_COLORS[activeCategory] || '#2563EB';
 
+  const categoryBarHeight = categoryBarAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 52],
+  });
+
+  const categoryBarOpacity = categoryBarAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0.2, 1],
+  });
+
+  const categoryBarTranslateY = categoryBarAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-52, 0],
+  });
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <HeaderTopBar onMenuPress={() => {}} />
+
+      <Animated.View
+        style={{
+          maxHeight: categoryBarHeight,
+          opacity: categoryBarOpacity,
+          transform: [{ translateY: categoryBarTranslateY }],
+          overflow: 'hidden',
+          zIndex: 9,
+        }}
+      >
+        <HeaderCategoryBar
+          activeCategory={activeCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+      </Animated.View>
 
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
-        <HeaderCategoryBar
-          activeCategory={activeCategory}
-          onCategoryChange={handleCategoryChange}
-        />
 
         {/* Product / Service Detail View */}
         {selectedProduct && <ProductDetailView />}
@@ -107,30 +189,15 @@ export const HomeScreen: React.FC = () => {
               <FastCategorySkeleton color={catColor} isDarkMode={isDarkMode} theme={theme} />
             ) : (
               <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-                {/* Ecommerce */}
-                <View style={{ display: isActive('ecommerce') ? 'flex' : 'none' }}>
+                {activeCategory === 'ecommerce' && (
                   <EcommercePageMemo onShopCollectionPress={() => {}} onExploreDealsPress={() => {}} />
-                </View>
-
-                {/* Grocery */}
-                <View style={{ display: isActive('grocery') ? 'flex' : 'none' }}>
+                )}
+                {activeCategory === 'grocery' && (
                   <GroceryPageMemo onShopNowPress={() => {}} onExploreDealsPress={() => {}} />
-                </View>
-
-                {/* Food */}
-                <View style={{ display: isActive('food') ? 'flex' : 'none' }}>
-                  <FoodPageMemo />
-                </View>
-
-                {/* Pharmacy */}
-                <View style={{ display: isActive('pharmacy') ? 'flex' : 'none' }}>
-                  <PharmacyPageMemo />
-                </View>
-
-                {/* Services */}
-                <View style={{ display: isActive('services') ? 'flex' : 'none' }}>
-                  <ServicesPageMemo />
-                </View>
+                )}
+                {activeCategory === 'food' && <FoodPageMemo />}
+                {activeCategory === 'pharmacy' && <PharmacyPageMemo />}
+                {activeCategory === 'services' && <ServicesPageMemo />}
               </Animated.View>
             )}
           </View>

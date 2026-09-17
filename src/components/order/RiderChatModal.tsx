@@ -205,10 +205,13 @@ export const RiderChatModal: React.FC<RiderChatModalProps> = ({
                   isDarkMode ? 'text-slate-400' : 'text-slate-500'
                 }`}
               >
-                Honda Shine (Dhaka Metro-Ha 45-8921) •{' '}
-                <Text className="text-emerald-600 dark:text-emerald-400 font-extrabold">
-                  On the way
-                </Text>
+                {riderName.includes('Support') || riderName.includes('সাপোর্ট')
+                  ? isBangla
+                    ? `অর্ডার হেল্প ডেস্ক • #${orderId}`
+                    : `Order Help Desk • #${orderId}`
+                  : `Honda Shine (Dhaka Metro-Ha 45-8921) • ${
+                      isBangla ? 'অন দ্য ওয়ে' : 'On the way'
+                    }`}
               </Text>
             </View>
           </View>

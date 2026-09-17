@@ -17,10 +17,8 @@ export const FoodDeliveryBanner: React.FC<FoodDeliveryBannerProps> = ({
   onSearchSubmit,
 }) => {
   const { isDarkMode } = useTheme();
-  const { t } = useLanguage();
-  const [currentAddress, setCurrentAddress] = useState<string>(
-    'Parashmoni laboratory school., 16, Road 27, Sector 7, Uttara, Dhaka, 1230, Bangladesh'
-  );
+  const { t, isBangla } = useLanguage();
+  const [currentAddress, setCurrentAddress] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -28,7 +26,7 @@ export const FoodDeliveryBanner: React.FC<FoodDeliveryBannerProps> = ({
     setIsDetecting(true);
     setTimeout(() => {
       setCurrentAddress(
-        'Sector 7, Road 27, Uttara, Dhaka, 1230, Bangladesh (GPS Verified)'
+        'Parashmoni laboratory school., 16, Road 27, Sector 7, Uttara, Dhaka, 1230, Bangladesh'
       );
       setIsDetecting(false);
     }, 1200);
@@ -94,7 +92,14 @@ export const FoodDeliveryBanner: React.FC<FoodDeliveryBannerProps> = ({
                 lineHeight: 16,
               }}
             >
-              {isDetecting ? 'Detecting your current location...' : currentAddress}
+              {isDetecting
+                ? isBangla
+                  ? 'আপনার স্থান সনাক্ত করা হচ্ছে...'
+                  : 'Detecting your current location...'
+                : currentAddress ||
+                  (isBangla
+                    ? 'ঠিকানা সেট করতে নিচে "AUTO DETECT LOCATION" বাটনে ক্লিক করুন'
+                    : 'Click "AUTO DETECT LOCATION" button below to set address')}
             </Text>
           </View>
         </TouchableOpacity>

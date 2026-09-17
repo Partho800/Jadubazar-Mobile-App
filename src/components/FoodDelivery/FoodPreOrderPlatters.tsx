@@ -273,15 +273,6 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
 
                 {/* Card Content Section */}
                 <View className="p-3.5 flex-1 flex-col justify-between">
-                  {/* Pre-Order Time Tag */}
-                  <View className="flex-row items-center gap-1.5 mb-1">
-                    <View className="border border-amber-300 bg-amber-50 px-2 py-0.5 rounded-md flex-row items-center gap-1">
-                      <Ionicons name="time-outline" size={10} color="#D97706" />
-                      <Text className="text-amber-800 text-[10px] font-bold">
-                        {item.timeTag}
-                      </Text>
-                    </View>
-                  </View>
 
                   {/* Title & Info */}
                   <View className="my-1">

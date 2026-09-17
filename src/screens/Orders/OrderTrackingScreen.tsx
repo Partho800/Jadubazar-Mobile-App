@@ -224,123 +224,178 @@ export const OrderTrackingScreen: React.FC = () => {
             </View>
           </View>
 
-          {/* 3. LIVE DARK GRID MAP VIEW CARD */}
-          <View className="w-full h-60 rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 relative mb-4 p-4 justify-between shadow-lg">
-            {/* Grid Pattern Background Lines overlay */}
-            <View className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
+          {/* 3 & 4. LIVE GPS ROUTE & RIDER DETAILS (ONLY VISIBLE WHEN OUT FOR DELIVERY) */}
+          {currentStep >= 4 ? (
+            <>
+              {/* 3. LIVE DARK GRID MAP VIEW CARD */}
+              <View className="w-full h-60 rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 relative mb-4 p-4 justify-between shadow-lg">
+                {/* Grid Pattern Background Lines overlay */}
+                <View className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
 
-            {/* Top Map Label */}
-            <View className="flex-row items-center justify-between z-10">
-              <View className="flex-row items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800">
-                <Ionicons name="location" size={14} color="#10B981" />
-                <Text className="text-xs font-black text-slate-200">
-                  {isBangla ? 'লাইভ জিপিএস রুট' : 'Live GPS Route'}
+                {/* Top Map Label */}
+                <View className="flex-row items-center justify-between z-10">
+                  <View className="flex-row items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800">
+                    <Ionicons name="location" size={14} color="#10B981" />
+                    <Text className="text-xs font-black text-slate-200">
+                      {isBangla ? 'লাইভ জিপিএস রুট' : 'Live GPS Route'}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-950/80 border border-emerald-700/60">
+                    <View className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <Text className="text-[10px] font-black text-emerald-400 tracking-wider">LIVE</Text>
+                  </View>
+                </View>
+
+                {/* Route Line with Vendor Pin, Moving Rider & User Pin */}
+                <View className="my-auto px-6 relative items-center justify-center">
+                  {/* Route Yellow Connection Line */}
+                  <View className="w-full h-1 bg-amber-500/80 rounded-full" />
+
+                  {/* Vendor Pin (Left) */}
+                  <View className="absolute left-6 w-8 h-8 rounded-full bg-emerald-950 border border-emerald-500 items-center justify-center shadow-md">
+                    <Ionicons name="location" size={16} color="#10B981" />
+                  </View>
+
+                  {/* Rider Scooter Badge (Middle Line) */}
+                  <View className="absolute left-[45%] bg-slate-900 border border-slate-700 px-3 py-1 rounded-full flex-row items-center gap-1.5 shadow-xl">
+                    <Ionicons name="bicycle" size={14} color="#38BDF8" />
+                    <Text className="text-xs font-black text-white">Rider</Text>
+                  </View>
+
+                  {/* Destination Pin (Right) */}
+                  <View className="absolute right-6 w-8 h-8 rounded-full bg-emerald-950 border border-emerald-500 items-center justify-center shadow-md">
+                    <Ionicons name="location" size={16} color="#10B981" />
+                  </View>
+                </View>
+
+                {/* Bottom Routing Bar inside Map */}
+                <View className="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex-row items-center justify-between z-10">
+                  <Text className="text-xs font-bold text-slate-300">Routing partner...</Text>
+                  <Text className="text-[10px] font-black text-emerald-400 tracking-wider">LIVE</Text>
+                </View>
+              </View>
+
+              {/* 4. ASSIGNED DELIVERY RIDER CARD */}
+              <View
+                className={`p-5 rounded-3xl border mb-6 shadow-sm ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-800 shadow-slate-950/50'
+                    : 'bg-white border-slate-100 shadow-slate-200/50'
+                }`}
+              >
+                <Text className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">
+                  ASSIGNED DELIVERY RIDER
                 </Text>
+
+                <View className="flex-row items-center mb-4">
+                  <Image
+                    source={{ uri: riderAvatar }}
+                    className="w-14 h-14 rounded-full border-2 border-slate-200 dark:border-slate-700 mr-3.5 bg-slate-200"
+                  />
+                  <View className="flex-1">
+                    <Text
+                      className={`text-base sm:text-lg font-black ${
+                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                      }`}
+                    >
+                      {riderName}
+                    </Text>
+                    <Text className="text-[11px] font-extrabold text-slate-400 dark:text-slate-400 tracking-wider mt-0.5">
+                      JADUBAZAR DELIVERY PARTNER
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Call & Chat Action Buttons */}
+                <View className="flex-row items-center gap-3">
+                  {/* Call Rider Button */}
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={handleCallRider}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 py-3.5 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
+                  >
+                    <Ionicons name="call" size={16} color="#FFFFFF" />
+                    <Text className="text-white text-xs sm:text-sm font-black">
+                      {isBangla ? 'কল রাইডার' : 'Call Rider'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Chat Button */}
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={handleChatRider}
+                    className="flex-1 bg-amber-500 hover:bg-amber-600 py-3.5 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
+                  >
+                    <Ionicons name="chatbubble" size={16} color="#FFFFFF" />
+                    <Text className="text-white text-xs sm:text-sm font-black">
+                      {isBangla ? 'চ্যাট করুন' : 'Chat'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-950/80 border border-emerald-700/60">
-                <View className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <Text className="text-[10px] font-black text-emerald-400 tracking-wider">LIVE</Text>
+            </>
+          ) : (
+            /* JADUBAZAR CUSTOMER SUPPORT & VENDOR PROCESSING CARD (BEFORE OUT FOR DELIVERY) */
+            <View
+              className={`p-5 rounded-3xl border mb-6 shadow-sm ${
+                isDarkMode
+                  ? 'bg-slate-900 border-slate-800 shadow-slate-950/50'
+                  : 'bg-white border-slate-100 shadow-slate-200/50'
+              }`}
+            >
+              <View className="flex-row items-center gap-3 mb-3">
+                <View className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950 items-center justify-center">
+                  <Ionicons name="headset" size={20} color="#2563EB" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-[10px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    JADUBAZAR SUPPORT & PROCESSING
+                  </Text>
+                  <Text className={`text-base font-black ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+                    {isBangla ? 'অর্ডার প্রসেসিং ও প্যাকেজিং চলছে' : 'Order Processing & Packing'}
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            {/* Route Line with Vendor Pin, Moving Rider & User Pin */}
-            <View className="my-auto px-6 relative items-center justify-center">
-              {/* Route Yellow Connection Line */}
-              <View className="w-full h-1 bg-amber-500/80 rounded-full" />
+              <Text className={`text-xs font-medium leading-relaxed mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                {isBangla
+                  ? 'আপনার অর্ডারটি ভেন্ডর কর্তৃক প্রসেসিং হচ্ছে। রাইডার পার্টনার অ্যাসাইন হলে এবং "Out for Delivery" স্ট্যাটাস হলে রাইডার কন্টাক্ট ও লাইভ জিপিএস ম্যাপ চালু হবে।'
+                  : 'Your order is currently being processed by the vendor. Once a delivery partner is assigned and status is "Out for Delivery", live GPS map and rider contact details will appear here.'}
+              </Text>
 
-              {/* Vendor Pin (Left) */}
-              <View className="absolute left-6 w-8 h-8 rounded-full bg-emerald-950 border border-emerald-500 items-center justify-center shadow-md">
-                <Ionicons name="location" size={16} color="#10B981" />
-              </View>
-
-              {/* Rider Scooter Badge (Middle Line) */}
-              <View className="absolute left-[45%] bg-slate-900 border border-slate-700 px-3 py-1 rounded-full flex-row items-center gap-1.5 shadow-xl">
-                <Ionicons name="bicycle" size={14} color="#38BDF8" />
-                <Text className="text-xs font-black text-white">Rider</Text>
-              </View>
-
-              {/* Destination Pin (Right) */}
-              <View className="absolute right-6 w-8 h-8 rounded-full bg-emerald-950 border border-emerald-500 items-center justify-center shadow-md">
-                <Ionicons name="location" size={16} color="#10B981" />
-              </View>
-            </View>
-
-            {/* Bottom Routing Bar inside Map */}
-            <View className="w-full p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex-row items-center justify-between z-10">
-              <Text className="text-xs font-bold text-slate-300">Routing partner...</Text>
-              <Text className="text-[10px] font-black text-emerald-400 tracking-wider">LIVE</Text>
-            </View>
-          </View>
-
-          {/* 4. ASSIGNED DELIVERY RIDER CARD */}
-          <View
-            className={`p-5 rounded-3xl border mb-6 shadow-sm ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-800 shadow-slate-950/50'
-                : 'bg-white border-slate-100 shadow-slate-200/50'
-            }`}
-          >
-            <Text className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">
-              ASSIGNED DELIVERY RIDER
-            </Text>
-
-            <View className="flex-row items-center mb-4">
-              <Image
-                source={{ uri: riderAvatar }}
-                className="w-14 h-14 rounded-full border-2 border-slate-200 dark:border-slate-700 mr-3.5 bg-slate-200"
-              />
-              <View className="flex-1">
-                <Text
-                  className={`text-base sm:text-lg font-black ${
-                    isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                  }`}
-                >
-                  {riderName}
-                </Text>
-                <Text className="text-[11px] font-extrabold text-slate-400 dark:text-slate-400 tracking-wider mt-0.5">
-                  JADUBAZAR DELIVERY PARTNER
-                </Text>
-              </View>
-            </View>
-
-            {/* Call & Chat Action Buttons */}
-            <View className="flex-row items-center gap-3">
-              {/* Call Rider Button */}
               <TouchableOpacity
                 activeOpacity={0.85}
-                onPress={handleCallRider}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 py-3.5 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
+                onPress={() => setIsChatOpen(true)}
+                className="w-full bg-blue-600 active:bg-blue-700 py-3.5 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm"
               >
-                <Ionicons name="call" size={16} color="#FFFFFF" />
+                <Ionicons name="chatbubbles" size={16} color="#FFFFFF" />
                 <Text className="text-white text-xs sm:text-sm font-black">
-                  {isBangla ? 'কল রাইডার' : 'Call Rider'}
-                </Text>
-              </TouchableOpacity>
-
-              {/* Chat Button */}
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={handleChatRider}
-                className="flex-1 bg-amber-500 hover:bg-amber-600 py-3.5 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
-              >
-                <Ionicons name="chatbubble" size={16} color="#FFFFFF" />
-                <Text className="text-white text-xs sm:text-sm font-black">
-                  {isBangla ? 'চ্যাট করুন' : 'Chat'}
+                  {isBangla ? 'যাদুবাজার সাপোর্ট সেন্টারে চ্যাট করুন' : 'Contact Jadubazar Support'}
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
+          )}
         </View>
       </ScrollView>
 
-      {/* RIDER LIVE CHAT MODAL */}
+      {/* RIDER & SUPPORT LIVE CHAT MODAL */}
       <RiderChatModal
         visible={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         orderId={orderId}
-        riderName={riderName}
+        riderName={
+          currentStep >= 4
+            ? riderName
+            : isBangla
+            ? 'যাদুবাজার সাপোর্ট টিম'
+            : 'Jadubazar Support Team'
+        }
         riderPhone={riderPhone}
-        riderImage={riderAvatar}
+        riderImage={
+          currentStep >= 4
+            ? riderAvatar
+            : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
+        }
       />
     </View>
   );

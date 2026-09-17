@@ -7,13 +7,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct, DEFAULT_IPHONE_PRODUCT } from '../../context/ProductContext';
+import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 export const ProductDetailView: React.FC = () => {
+  const navigation = useNavigation<any>();
   const { isDarkMode, theme } = useTheme();
   const { isBangla, t } = useLanguage();
   const { selectedProduct, closeProductDetails } = useProduct();
@@ -24,6 +27,7 @@ export const ProductDetailView: React.FC = () => {
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description');
 
   const activeSize = sizes[selectedSizeIndex] || {
@@ -51,6 +55,67 @@ export const ProductDetailView: React.FC = () => {
     return product.category;
   };
 
+  const parsePrice = (priceVal: any): number => {
+    if (typeof priceVal === 'number') return priceVal;
+    if (!priceVal) return 100;
+    const cleaned = String(priceVal).replace(/[^0-9.]/g, '');
+    return parseFloat(cleaned) || 100;
+  };
+
+  const handleAddToCart = () => {
+    const itemPrice = parsePrice(activeSize.price || product.price);
+    const itemOldPrice = activeSize.oldPrice ? parsePrice(activeSize.oldPrice) : undefined;
+    const itemImg = typeof product.image === 'string'
+      ? product.image
+      : product.imageUrl || 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80';
+
+    const itemData = {
+      id: `${product.id || 'prod'}-${selectedSizeIndex}`,
+      name: `${product.title} ${activeSize.label ? `(${activeSize.label})` : ''}`.trim(),
+      price: itemPrice,
+      originalPrice: itemOldPrice,
+      image: itemImg,
+    };
+
+    cartStore.addItem(itemData);
+    if (quantity > 1) {
+      const existing = cartStore.getItems().find((i) => i.id === itemData.id);
+      if (existing) {
+        cartStore.updateQuantity(itemData.id, existing.quantity + (quantity - 1));
+      }
+    }
+
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    const itemPrice = parsePrice(activeSize.price || product.price);
+    const itemOldPrice = activeSize.oldPrice ? parsePrice(activeSize.oldPrice) : undefined;
+    const itemImg = typeof product.image === 'string'
+      ? product.image
+      : product.imageUrl || 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80';
+
+    const itemData = {
+      id: `${product.id || 'prod'}-${selectedSizeIndex}`,
+      name: `${product.title} ${activeSize.label ? `(${activeSize.label})` : ''}`.trim(),
+      price: itemPrice,
+      originalPrice: itemOldPrice,
+      image: itemImg,
+    };
+
+    cartStore.addItem(itemData);
+    if (quantity > 1) {
+      const existing = cartStore.getItems().find((i) => i.id === itemData.id);
+      if (existing) {
+        cartStore.updateQuantity(itemData.id, existing.quantity + (quantity - 1));
+      }
+    }
+
+    closeProductDetails();
+    navigation.navigate('CheckoutTab');
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       {/* 1. Top Breadcrumbs Bar (Home / Products / Category / ProductTitle) */}
@@ -66,13 +131,14 @@ export const ProductDetailView: React.FC = () => {
           onPress={closeProductDetails}
           className="flex-row items-center gap-1.5 flex-1 pr-2"
         >
+          <Ionicons name="arrow-back" size={18} color={isDarkMode ? '#F8FAFC' : '#0F172A'} />
           <Text
             className={`text-xs font-bold ${
               isDarkMode ? 'text-slate-400' : 'text-slate-500'
             }`}
             numberOfLines={1}
           >
-            Home / Products / {getCategoryName()} /{' '}
+            Back / {getCategoryName()} /{' '}
             <Text
               className={`font-black text-xs ${
                 isDarkMode ? 'text-slate-100' : 'text-slate-900'
@@ -86,7 +152,7 @@ export const ProductDetailView: React.FC = () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
       >
         {/* 1. Top Product Card (First element is the Product Image) */}
         <View
@@ -329,28 +395,38 @@ export const ProductDetailView: React.FC = () => {
             {/* Add To Cart */}
             <TouchableOpacity
               activeOpacity={0.85}
+              onPress={handleAddToCart}
               className={`flex-1 h-13 py-3.5 rounded-2xl border items-center justify-center shadow-sm ${
-                isDarkMode
+                isAdded
+                  ? 'bg-emerald-600 border-emerald-600'
+                  : isDarkMode
                   ? 'bg-slate-800 border-slate-700'
                   : 'bg-slate-50 border-slate-200'
               }`}
             >
               <Text
                 className={`font-black text-xs sm:text-sm tracking-wide ${
-                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                  isAdded ? 'text-white' : isDarkMode ? 'text-slate-50' : 'text-slate-900'
                 }`}
               >
-                ADD TO CART
+                {isAdded
+                  ? isBangla
+                    ? 'যোগ করা হয়েছে'
+                    : 'ADDED TO CART'
+                  : isBangla
+                  ? 'কার্টে যোগ করুন'
+                  : 'ADD TO CART'}
               </Text>
             </TouchableOpacity>
 
             {/* Buy Now */}
             <TouchableOpacity
               activeOpacity={0.85}
+              onPress={handleBuyNow}
               className="flex-1 h-13 py-3.5 rounded-2xl bg-blue-600 items-center justify-center shadow-md shadow-blue-500/30"
             >
               <Text className="text-white font-black text-xs sm:text-sm tracking-wide">
-                BUY NOW
+                {isBangla ? 'এখনই কিনুন' : 'BUY NOW'}
               </Text>
             </TouchableOpacity>
           </View>

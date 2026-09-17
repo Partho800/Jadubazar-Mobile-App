@@ -458,7 +458,7 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
             <View
               style={[
                 styles.sheetContainer,
-                { backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF' },
+                { backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF', flex: 1 },
               ]}
             >
               {/* Top Handle / Drag Bar */}
@@ -708,7 +708,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheetContainer: {
-    maxHeight: screenHeight * 0.85,
+    maxHeight: screenHeight * 0.90,
+    minHeight: screenHeight * 0.65,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingTop: 8,
@@ -718,6 +719,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 16,
     elevation: 20,
+    overflow: 'hidden',
   },
   handleContainer: {
     alignItems: 'center',

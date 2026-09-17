@@ -39,6 +39,7 @@ interface CategoryContextType {
   setIsCategorySheetOpen: (open: boolean) => void;
   openCategorySheet: () => void;
   closeCategorySheet: () => void;
+  isCategoryLoading: boolean;
 }
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
@@ -47,6 +48,7 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [activeCategory, setActiveCategoryState] = useState<string>(getInitialCategory);
   const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState<boolean>(false);
+  const [isCategoryLoading, setIsCategoryLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // Async fallback check for mobile / AsyncStorage
@@ -58,8 +60,14 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   const setActiveCategory = React.useCallback((category: string) => {
+    setIsCategoryLoading(true);
     setActiveCategoryState(category);
     setActiveSubCategory(null); // Reset subcategory when category changes
+
+    setTimeout(() => {
+      setIsCategoryLoading(false);
+    }, 220);
+
     setTimeout(() => {
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
@@ -88,6 +96,7 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
       setIsCategorySheetOpen,
       openCategorySheet,
       closeCategorySheet,
+      isCategoryLoading,
     }),
     [
       activeCategory,
@@ -98,6 +107,7 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
       isCategorySheetOpen,
       openCategorySheet,
       closeCategorySheet,
+      isCategoryLoading,
     ]
   );
 
@@ -121,7 +131,9 @@ export const useCategory = (): CategoryContextType => {
       setIsCategorySheetOpen: () => {},
       openCategorySheet: () => {},
       closeCategorySheet: () => {},
+      isCategoryLoading: false,
     };
   }
   return context;
 };
+

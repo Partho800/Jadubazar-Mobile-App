@@ -31,6 +31,7 @@ export const SupportChatFloatingButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [inputText, setInputText] = useState('');
+  const scrollViewRef = React.useRef<ScrollView>(null);
   const [messages, setMessages] = useState<SupportChatMessage[]>([
     {
       id: 'supp-1',
@@ -90,6 +91,10 @@ export const SupportChatFloatingButton: React.FC = () => {
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputText('');
 
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
     // Auto bot / support response
     setTimeout(() => {
       let replyText = isBangla
@@ -114,6 +119,9 @@ export const SupportChatFloatingButton: React.FC = () => {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, botMsg]);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     }, 1000);
   };
 
@@ -146,87 +154,94 @@ export const SupportChatFloatingButton: React.FC = () => {
         transparent={true}
         onRequestClose={() => setIsOpen(false)}
       >
-        <View className="flex-1 bg-black/60 justify-end">
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            className={`w-full h-[90%] max-h-[780px] rounded-t-[32px] overflow-hidden border-t shadow-2xl ${
-              isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-            }`}
-          >
-            {/* Top Sheet Drag Indicator Bar */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        >
+          <View className="flex-1 bg-black/60 justify-end">
             <View
-              className={`py-2 items-center border-b ${
-                isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'
+              className={`w-full h-[88%] max-h-[760px] rounded-t-[32px] overflow-hidden border-t shadow-2xl ${
+                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}
             >
+              {/* Top Sheet Drag Indicator Bar */}
               <View
-                className={`w-12 h-1.5 rounded-full ${
-                  isDarkMode ? 'bg-slate-700' : 'bg-slate-300'
-                }`}
-              />
-            </View>
-
-            {/* HEADER BAR */}
-            <View
-              className={`px-4 py-3 border-b flex-row items-center justify-between ${
-                isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'
-              }`}
-            >
-              {/* Support Agent Info */}
-              <View className="flex-row items-center flex-1 mr-2">
-                <View className="relative mr-3">
-                  <View
-                    style={{ backgroundColor: `${activeCategoryColor}20` }}
-                    className="w-11 h-11 rounded-2xl items-center justify-center border border-amber-400/30"
-                  >
-                    <Ionicons name="headset" size={22} color={activeCategoryColor} />
-                  </View>
-                  <View className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0" />
-                </View>
-
-                <View className="flex-1">
-                  <View className="flex-row items-center gap-2">
-                    <Text
-                      className={`text-base font-black ${
-                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                      }`}
-                    >
-                      {isBangla ? 'জাদুলাইভ সাপোর্ট' : 'JaduBazar Support'}
-                    </Text>
-                    <View className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
-                      <Text className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
-                        Live 24/7
-                      </Text>
-                    </View>
-                  </View>
-                  <Text
-                    className={`text-xs font-semibold mt-0.5 ${
-                      isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                    }`}
-                  >
-                    {isBangla ? '২৪/৭ গ্রাহক সেবা হেল্পডেস্ক' : 'Always here to help you'}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Close Button */}
-              <TouchableOpacity
-                activeOpacity={0.75}
-                onPress={() => setIsOpen(false)}
-                className={`w-9 h-9 rounded-full items-center justify-center border ${
-                  isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'
+                className={`py-2 items-center border-b ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'
                 }`}
               >
-                <Ionicons name="close" size={20} color={isDarkMode ? '#CBD5E1' : '#475569'} />
-              </TouchableOpacity>
-            </View>
+                <View
+                  className={`w-12 h-1.5 rounded-full ${
+                    isDarkMode ? 'bg-slate-700' : 'bg-slate-300'
+                  }`}
+                />
+              </View>
 
-            {/* CHAT MESSAGES BODY */}
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 20 }}
-              className="flex-1"
-            >
+              {/* HEADER BAR */}
+              <View
+                className={`px-4 py-3 border-b flex-row items-center justify-between ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'
+                }`}
+              >
+                {/* Support Agent Info */}
+                <View className="flex-row items-center flex-1 mr-2">
+                  <View className="relative mr-3">
+                    <View
+                      style={{ backgroundColor: `${activeCategoryColor}20` }}
+                      className="w-11 h-11 rounded-2xl items-center justify-center border border-amber-400/30"
+                    >
+                      <Ionicons name="headset" size={22} color={activeCategoryColor} />
+                    </View>
+                    <View className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0" />
+                  </View>
+
+                  <View className="flex-1">
+                    <View className="flex-row items-center gap-2">
+                      <Text
+                        className={`text-base font-black ${
+                          isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                        }`}
+                      >
+                        {isBangla ? 'জাদুলাইভ সাপোর্ট' : 'JaduBazar Support'}
+                      </Text>
+                      <View className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+                        <Text className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                          Live 24/7
+                        </Text>
+                      </View>
+                    </View>
+                    <Text
+                      className={`text-xs font-semibold mt-0.5 ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                      }`}
+                    >
+                      {isBangla ? '২৪/৭ গ্রাহক সেবা হেল্পডেস্ক' : 'Always here to help you'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Close Button */}
+                <TouchableOpacity
+                  activeOpacity={0.75}
+                  onPress={() => setIsOpen(false)}
+                  className={`w-9 h-9 rounded-full items-center justify-center border ${
+                    isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'
+                  }`}
+                >
+                  <Ionicons name="close" size={20} color={isDarkMode ? '#CBD5E1' : '#475569'} />
+                </TouchableOpacity>
+              </View>
+
+              {/* CHAT MESSAGES BODY */}
+              <ScrollView
+                ref={scrollViewRef}
+                onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 20 }}
+                className="flex-1"
+              >
               {messages.map((msg) => {
                 const isUser = msg.sender === 'user';
                 return (
@@ -368,8 +383,9 @@ export const SupportChatFloatingButton: React.FC = () => {
                 <Ionicons name="send" size={18} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
+          </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );

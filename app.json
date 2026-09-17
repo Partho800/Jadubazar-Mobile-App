@@ -14,7 +14,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jadubazar.app",
-      "icon": "./src/assets/images/image.jpeg"
+      "icon": "./src/assets/images/image.jpeg",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "JaduBazar needs access to your location to accurately detect your delivery address for order checkout and live rider tracking.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "JaduBazar needs your location to track live delivery order status in real time.",
+        "NSCameraUsageDescription": "JaduBazar requires camera permission for profile picture uploads and prescription scanning.",
+        "NSPhotoLibraryUsageDescription": "JaduBazar requires photo gallery access to upload prescriptions and profile avatars.",
+        "NSMicrophoneUsageDescription": "JaduBazar requires microphone permission for live voice support."
+      }
     },
     "android": {
       "package": "com.jadubazar.app",
@@ -22,7 +29,18 @@
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./src/assets/images/image.jpeg"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CALL_PHONE",
+        "READ_CONTACTS",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./src/assets/images/image.jpeg"

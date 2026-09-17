@@ -18,6 +18,7 @@ import { useCategory } from '../../context/CategoryContext';
 import { Header } from '../../components/common/Header/Header';
 import { EmptyBagCard } from '../../components/common/EmptyBagCard';
 import { cartStore, CartItem } from '../../store/cartStore';
+import { requestLocationPermission } from '../../utils/permissionHelper';
 import { AppText as Text } from '../../components/common/AppText';
 
 export const CheckoutScreen: React.FC = () => {
@@ -47,10 +48,16 @@ export const CheckoutScreen: React.FC = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const handleUseCurrentLocation = () => {
+  const handleUseCurrentLocation = async () => {
     setAddressOption('location');
     setIsLocating(true);
     setDetectedAddress('');
+
+    const hasPermission = await requestLocationPermission(isBangla);
+    if (!hasPermission) {
+      setIsLocating(false);
+      return;
+    }
 
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(

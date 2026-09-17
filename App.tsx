@@ -12,7 +12,13 @@ import { MenuDrawerProvider } from './src/context/MenuDrawerContext';
 import { UserProvider } from './src/context/UserContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
+import { requestAppStartupPermissions } from './src/utils/permissionHelper';
+
 export default function App() {
+  React.useEffect(() => {
+    requestAppStartupPermissions();
+  }, []);
+
   const [fontsLoaded, fontError] = useFonts({
     'LiAdorNoirrit': require('./src/assets/fonts/LiAdorNoirrit-Regular.ttf'),
     'LiAdorNoirrit-Regular': require('./src/assets/fonts/LiAdorNoirrit-Regular.ttf'),

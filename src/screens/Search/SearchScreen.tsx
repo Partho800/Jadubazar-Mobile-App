@@ -16,6 +16,8 @@ import { Header } from '../../components/common/Header/Header';
 import { cartStore } from '../../store/cartStore';
 import { useProduct } from '../../context/ProductContext';
 import { useService } from '../../context/ServiceContext';
+import { ProductDetailView } from '../../components/product/ProductDetailView';
+import { ServiceDetailView } from '../../components/Services/ServiceDetailView';
 import { AppText as Text } from '../../components/common/AppText';
 
 export interface SearchProductItem {
@@ -272,8 +274,8 @@ export const SearchScreen: React.FC = () => {
   const { theme, isDarkMode } = useTheme();
   const { t, isBangla } = useLanguage();
   const { activeCategory } = useCategory();
-  const { openProductDetails } = useProduct();
-  const { openServiceDetails } = useService();
+  const { selectedProduct, openProductDetails, closeProductDetails } = useProduct();
+  const { selectedService, openServiceDetails, closeServiceDetails } = useService();
 
   const [query, setQuery] = useState<string>('');
   const [addedItemId, setAddedItemId] = useState<string | null>(null);
@@ -336,6 +338,28 @@ export const SearchScreen: React.FC = () => {
       item.description.toLowerCase().includes(q)
     );
   });
+
+  if (selectedProduct) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Header />
+        <View style={{ flex: 1 }}>
+          <ProductDetailView />
+        </View>
+      </View>
+    );
+  }
+
+  if (selectedService) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Header />
+        <View style={{ flex: 1 }}>
+          <ServiceDetailView />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>

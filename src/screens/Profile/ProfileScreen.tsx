@@ -229,7 +229,7 @@ export const ProfileScreen: React.FC = () => {
   return (
     <View className={`flex-1 ${isDarkMode ? 'bg-slate-950' : 'bg-[#F8FAFC]'}`}>
       {/* Top App Header */}
-      <Header title={isBangla ? 'আমার অ্যাকাউন্ট' : 'My Account'} showBack={false} />
+      <Header />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

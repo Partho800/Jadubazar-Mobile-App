@@ -18,6 +18,8 @@ import { MAIN_CATEGORIES_DATA, SubCategoryItem } from '../../components/Category
 import { Header } from '../../components/common/Header/Header';
 import { AppText as Text } from '../../components/common/AppText';
 import { cartStore } from '../../store/cartStore';
+import { useProduct } from '../../context/ProductContext';
+import { ProductDetailView } from '../../components/product/ProductDetailView';
 
 export interface CatalogProductItem {
   id: string;
@@ -43,7 +45,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'JADU STUDIO',
     title: 'Urban Classic Oversized Hoodie',
     categoryKey: 'ecommerce',
-    subCategoryName: 'Fashion',
+    subCategoryName: "Men's Fashion",
     discountBadge: '16% OFF',
     originalPrice: 6460,
     price: 5385,
@@ -58,7 +60,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'JADU SPORT',
     title: 'Air Max 270 Sport Sneaker',
     categoryKey: 'ecommerce',
-    subCategoryName: 'Fashion',
+    subCategoryName: 'Footwear & Shoes',
     discountBadge: '24% OFF',
     originalPrice: 15625,
     price: 11875,
@@ -73,7 +75,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'AURA LIFESTYLE',
     title: "Women's Floral Tiered Maxi Dress",
     categoryKey: 'ecommerce',
-    subCategoryName: 'Fashion',
+    subCategoryName: "Women's Fashion",
     discountBadge: '18% OFF',
     originalPrice: 10000,
     price: 8145,
@@ -88,7 +90,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'LUXE STUDIO',
     title: "Women's Leather Handbag",
     categoryKey: 'ecommerce',
-    subCategoryName: 'Fashion',
+    subCategoryName: 'Bags & Luggage',
     discountBadge: '10% OFF',
     originalPrice: 2750,
     price: 2475,
@@ -103,7 +105,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'TECH PRO',
     title: 'Wireless Active Noise Cancelling Headphones',
     categoryKey: 'ecommerce',
-    subCategoryName: 'Electronics',
+    subCategoryName: 'Smart Electronics',
     discountBadge: '15% OFF',
     originalPrice: 8500,
     price: 7225,
@@ -118,7 +120,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'CHRONO TECH',
     title: 'Smart Fitness Watch Pro Series 8',
     categoryKey: 'ecommerce',
-    subCategoryName: 'Electronics',
+    subCategoryName: 'Smart Electronics',
     discountBadge: '20% OFF',
     originalPrice: 5000,
     price: 4000,
@@ -128,6 +130,111 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
+  {
+    id: 'eco-7',
+    brand: 'NINJA HOME',
+    title: 'Smart Inverter Air Fryer 5L',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Home Appliances',
+    discountBadge: '12% OFF',
+    originalPrice: 12000,
+    price: 10560,
+    rating: 4.9,
+    reviewsCount: 88,
+    specBadge: '5L',
+    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-8',
+    brand: 'GLOW BEAUTY',
+    title: 'Organic Vitamin C Face Serum Set',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Beauty & Care',
+    discountBadge: '25% OFF',
+    originalPrice: 2200,
+    price: 1650,
+    rating: 4.8,
+    reviewsCount: 310,
+    specBadge: '50ML',
+    imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-9',
+    brand: 'CASIO LUXE',
+    title: 'Luxury Gold Stainless Analog Watch',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Watches & Jewelry',
+    discountBadge: '15% OFF',
+    originalPrice: 7500,
+    price: 6375,
+    rating: 4.9,
+    reviewsCount: 175,
+    specBadge: '1 WATCH',
+    imageUrl: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-10',
+    brand: 'FLEX FIT',
+    title: 'Non-Slip Eco Yoga Mat 6mm',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Sports & Fitness',
+    discountBadge: '10% OFF',
+    originalPrice: 1800,
+    price: 1620,
+    rating: 4.7,
+    reviewsCount: 95,
+    specBadge: '6MM',
+    imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-11',
+    brand: 'LEGO CITY',
+    title: 'Remote Control High-Speed Racing Car',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Toys & Gaming',
+    discountBadge: '20% OFF',
+    originalPrice: 3500,
+    price: 2800,
+    rating: 4.8,
+    reviewsCount: 140,
+    specBadge: '1 TOY',
+    imageUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-12',
+    brand: 'DELL TECH',
+    title: 'Ultra Slim Core i7 Gaming Laptop 16GB',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Laptops & Computers',
+    discountBadge: '8% OFF',
+    originalPrice: 95000,
+    price: 87400,
+    rating: 4.9,
+    reviewsCount: 62,
+    specBadge: '16GB RAM',
+    imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'eco-13',
+    brand: 'CHEF PRO',
+    title: 'Non-Stick Granite Cookware Set 5 Pcs',
+    categoryKey: 'ecommerce',
+    subCategoryName: 'Kitchenware',
+    discountBadge: '18% OFF',
+    originalPrice: 4800,
+    price: 3936,
+    rating: 4.8,
+    reviewsCount: 210,
+    specBadge: '5 PCS',
+    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
 
   // GROCERY PRODUCTS
   {
@@ -135,7 +242,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'SUNSHINE',
     title: 'Sunshine Maida Premium 2kg',
     categoryKey: 'grocery',
-    subCategoryName: 'Atta, Maida & Suji',
+    subCategoryName: 'Rice & Flour',
     discountBadge: '10% OFF',
     originalPrice: 160,
     price: 150,
@@ -147,40 +254,70 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
   },
   {
     id: 'gro-2',
-    brand: 'PUSTI',
-    title: 'Pusti Multi-Grain Maida 2kg',
+    brand: 'FARM FRESH',
+    title: 'Farm Fresh Organic Potatoes 5kg Pack',
     categoryKey: 'grocery',
-    subCategoryName: 'Atta, Maida & Suji',
-    discountBadge: '10% OFF',
-    originalPrice: 150,
-    price: 140,
-    rating: 4.8,
-    reviewsCount: 95,
-    specBadge: '2KG',
-    imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80',
+    subCategoryName: 'Fresh Vegetables',
+    discountBadge: '15% OFF',
+    originalPrice: 200,
+    price: 170,
+    rating: 4.9,
+    reviewsCount: 320,
+    specBadge: '5KG',
+    imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
   {
     id: 'gro-3',
-    brand: 'SUNSHINE',
-    title: 'Sunshine Whole Wheat Atta 2kg',
+    brand: 'ORCHARD',
+    title: 'Imported Sweet Fuji Red Apple 1kg',
     categoryKey: 'grocery',
-    subCategoryName: 'Atta, Maida & Suji',
-    discountBadge: '15% OFF',
-    originalPrice: 130,
-    price: 115,
-    rating: 4.9,
-    reviewsCount: 120,
-    specBadge: '2KG',
-    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=700&q=80',
+    subCategoryName: 'Fresh Fruits',
+    discountBadge: '12% OFF',
+    originalPrice: 320,
+    price: 280,
+    rating: 4.8,
+    reviewsCount: 240,
+    specBadge: '1KG',
+    imageUrl: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
   {
     id: 'gro-4',
+    brand: 'AARONG DAIRY',
+    title: 'Aarong Dairy Pure Pasteurized Milk 1L',
+    categoryKey: 'grocery',
+    subCategoryName: 'Milk & Dairy',
+    discountBadge: '5% OFF',
+    originalPrice: 100,
+    price: 95,
+    rating: 4.9,
+    reviewsCount: 510,
+    specBadge: '1L',
+    imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-5',
+    brand: 'RUPCHANDA',
+    title: 'Rupchanda Fortified Soybean Oil 5L',
+    categoryKey: 'grocery',
+    subCategoryName: 'Cooking Oil & Ghee',
+    discountBadge: '8% OFF',
+    originalPrice: 850,
+    price: 782,
+    rating: 4.9,
+    reviewsCount: 620,
+    specBadge: '5L',
+    imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-6',
     brand: 'FORTUNE',
     title: 'Fortune Premium Miniket Rice 5kg',
     categoryKey: 'grocery',
-    subCategoryName: 'Packed Rice',
+    subCategoryName: 'Rice & Flour',
     discountBadge: '12% OFF',
     originalPrice: 450,
     price: 396,
@@ -188,6 +325,111 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     reviewsCount: 340,
     specBadge: '5KG',
     imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-7',
+    brand: 'LAYS',
+    title: 'Lays Classic Salted Potato Chips 150g',
+    categoryKey: 'grocery',
+    subCategoryName: 'Snacks & Biscuits',
+    discountBadge: '10% OFF',
+    originalPrice: 120,
+    price: 108,
+    rating: 4.7,
+    reviewsCount: 180,
+    specBadge: '150G',
+    imageUrl: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-8',
+    brand: 'PRAN',
+    title: 'Pran Frooto Mango Fruit Juice 1L',
+    categoryKey: 'grocery',
+    subCategoryName: 'Beverages & Juices',
+    discountBadge: '15% OFF',
+    originalPrice: 110,
+    price: 93,
+    rating: 4.8,
+    reviewsCount: 290,
+    specBadge: '1L',
+    imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-9',
+    brand: 'BENGAL MEAT',
+    title: 'Fresh Farm Broiler Chicken Whole 1kg',
+    categoryKey: 'grocery',
+    subCategoryName: 'Fish & Meat',
+    discountBadge: '10% OFF',
+    originalPrice: 220,
+    price: 198,
+    rating: 4.9,
+    reviewsCount: 410,
+    specBadge: '1KG',
+    imageUrl: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-10',
+    brand: 'WHEEL',
+    title: 'Wheel Wash Powder Lemon Fresh 1kg',
+    categoryKey: 'grocery',
+    subCategoryName: 'Household & Cleaning',
+    discountBadge: '10% OFF',
+    originalPrice: 150,
+    price: 135,
+    rating: 4.8,
+    reviewsCount: 210,
+    specBadge: '1KG',
+    imageUrl: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-11',
+    brand: 'DETTOL',
+    title: 'Dettol Original Skincare Soap 4x100g',
+    categoryKey: 'grocery',
+    subCategoryName: 'Personal Care',
+    discountBadge: '12% OFF',
+    originalPrice: 240,
+    price: 211,
+    rating: 4.9,
+    reviewsCount: 380,
+    specBadge: '4 PACK',
+    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-12',
+    brand: 'PAMPERS',
+    title: 'Pampers Baby Dry Diapers Large 50s',
+    categoryKey: 'grocery',
+    subCategoryName: 'Baby Care',
+    discountBadge: '18% OFF',
+    originalPrice: 1400,
+    price: 1148,
+    rating: 4.9,
+    reviewsCount: 190,
+    specBadge: '50 DIAPERS',
+    imageUrl: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'gro-13',
+    brand: 'RADHUNI',
+    title: 'Radhuni Special Garam Masala 100g',
+    categoryKey: 'grocery',
+    subCategoryName: 'Spices & Masala',
+    discountBadge: '10% OFF',
+    originalPrice: 110,
+    price: 99,
+    rating: 4.9,
+    reviewsCount: 310,
+    specBadge: '100G',
+    imageUrl: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
 
@@ -209,6 +451,51 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
   },
   {
     id: 'foo-2',
+    brand: 'GRAND SHAHI',
+    title: 'Pre-Order Mutton Kacchi Family Feast Platter',
+    categoryKey: 'food',
+    subCategoryName: 'Pre-Order Platters',
+    discountBadge: '25% OFF',
+    originalPrice: 2200,
+    price: 1650,
+    rating: 4.9,
+    reviewsCount: 150,
+    specBadge: 'FAMILY',
+    imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-3',
+    brand: 'DHAKA TIFFIN',
+    title: 'Traditional Paratha & Beef Bhuna Breakfast Set',
+    categoryKey: 'food',
+    subCategoryName: 'Breakfast',
+    discountBadge: '15% OFF',
+    originalPrice: 250,
+    price: 212,
+    rating: 4.8,
+    reviewsCount: 420,
+    specBadge: 'SET MEAL',
+    imageUrl: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-4',
+    brand: 'EVENING BITES',
+    title: 'Crispy BBQ Chicken Skewers & Wings Platter',
+    categoryKey: 'food',
+    subCategoryName: 'Evening Specials',
+    discountBadge: '18% OFF',
+    originalPrice: 450,
+    price: 369,
+    rating: 4.8,
+    reviewsCount: 290,
+    specBadge: 'PLATTER',
+    imageUrl: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-5',
     brand: 'CHILLOX',
     title: 'Double Beef Cheese Blast Burger',
     categoryKey: 'food',
@@ -223,7 +510,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     inStock: true,
   },
   {
-    id: 'foo-3',
+    id: 'foo-6',
     brand: 'PIZZABURG',
     title: 'Four Cheese Meat Lovers Loaded Pizza',
     categoryKey: 'food',
@@ -237,6 +524,126 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
+  {
+    id: 'foo-7',
+    brand: 'KFC EXPRESS',
+    title: 'Golden Crispy Fried Chicken Bucket (8 Pcs)',
+    categoryKey: 'food',
+    subCategoryName: 'Chicken',
+    discountBadge: '20% OFF',
+    originalPrice: 990,
+    price: 792,
+    rating: 4.9,
+    reviewsCount: 780,
+    specBadge: '8 PCS',
+    imageUrl: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-8',
+    brand: 'WOK & ROLL',
+    title: 'Special Egg Fried Rice & Chili Chicken',
+    categoryKey: 'food',
+    subCategoryName: 'Chinese',
+    discountBadge: '15% OFF',
+    originalPrice: 420,
+    price: 357,
+    rating: 4.8,
+    reviewsCount: 360,
+    specBadge: 'COMBO',
+    imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-9',
+    brand: 'TASTY BITES',
+    title: 'Loaded Cheesy Nachos & Fries Bucket',
+    categoryKey: 'food',
+    subCategoryName: 'Fast Food',
+    discountBadge: '10% OFF',
+    originalPrice: 280,
+    price: 252,
+    rating: 4.7,
+    reviewsCount: 220,
+    specBadge: 'BUCKET',
+    imageUrl: 'https://images.unsplash.com/photo-1619881589283-7d7d2427a157?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-10',
+    brand: 'BREAD & BEYOND',
+    title: 'Shahi Sweet Rasmalai & Gulab Jamun Box',
+    categoryKey: 'food',
+    subCategoryName: 'Bakery & Sweets',
+    discountBadge: '12% OFF',
+    originalPrice: 350,
+    price: 308,
+    rating: 4.9,
+    reviewsCount: 510,
+    specBadge: '500G',
+    imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-11',
+    brand: 'NORTH END',
+    title: 'Cold Brew Iced Caramel Espresso Latte',
+    categoryKey: 'food',
+    subCategoryName: 'Coffee',
+    discountBadge: '10% OFF',
+    originalPrice: 260,
+    price: 234,
+    rating: 4.8,
+    reviewsCount: 340,
+    specBadge: 'LARGE',
+    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-12',
+    brand: 'SWEET CRAVINGS',
+    title: 'Red Velvet Cream Cheese Cupcake Deluxe',
+    categoryKey: 'food',
+    subCategoryName: 'Desserts',
+    discountBadge: '15% OFF',
+    originalPrice: 180,
+    price: 153,
+    rating: 4.9,
+    reviewsCount: 270,
+    specBadge: '2 PCS',
+    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-13',
+    brand: 'FRESH SIP',
+    title: 'Fresh Cold Pressed Lemon Mint Juice',
+    categoryKey: 'food',
+    subCategoryName: 'Drinks',
+    discountBadge: '10% OFF',
+    originalPrice: 120,
+    price: 108,
+    rating: 4.8,
+    reviewsCount: 190,
+    specBadge: '500ML',
+    imageUrl: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'foo-14',
+    brand: 'DESHI KITCHEN',
+    title: 'Chittagong Beef Kala Bhuna & Plain Rice',
+    categoryKey: 'food',
+    subCategoryName: 'Bangladeshi',
+    discountBadge: '18% OFF',
+    originalPrice: 480,
+    price: 393,
+    rating: 4.9,
+    reviewsCount: 640,
+    specBadge: 'FULL MEAL',
+    imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
 
   // PHARMACY PRODUCTS
   {
@@ -244,7 +651,7 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'SQUARE PHARMA',
     title: 'Napa Extra 500mg Paracetamol (100s)',
     categoryKey: 'pharmacy',
-    subCategoryName: 'Medicines',
+    subCategoryName: 'Prescription Medicine',
     discountBadge: '10% OFF',
     originalPrice: 250,
     price: 225,
@@ -259,14 +666,89 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'BEXIMCO',
     title: 'Ace Plus Pain Relief 500mg Tablets',
     categoryKey: 'pharmacy',
-    subCategoryName: 'Medicines',
+    subCategoryName: 'OTC & First Aid',
     discountBadge: '5% OFF',
     originalPrice: 200,
     price: 190,
     rating: 4.8,
     reviewsCount: 850,
     specBadge: '10 STRIPS',
-    imageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=700&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'pha-3',
+    brand: 'OMRON MEDICAL',
+    title: 'Digital Automatic Upper Arm BP Monitor',
+    categoryKey: 'pharmacy',
+    subCategoryName: 'Healthcare Devices',
+    discountBadge: '15% OFF',
+    originalPrice: 4200,
+    price: 3570,
+    rating: 4.9,
+    reviewsCount: 310,
+    specBadge: '1 DEVICE',
+    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'pha-4',
+    brand: 'SAVION CARE',
+    title: 'Antibacterial Hand Wash Refill 500ml',
+    categoryKey: 'pharmacy',
+    subCategoryName: 'Personal Hygiene',
+    discountBadge: '10% OFF',
+    originalPrice: 180,
+    price: 162,
+    rating: 4.8,
+    reviewsCount: 420,
+    specBadge: '500ML',
+    imageUrl: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'pha-5',
+    brand: 'JOHNSON BABY',
+    title: 'Gentle Baby Moisturizing Lotion 200ml',
+    categoryKey: 'pharmacy',
+    subCategoryName: 'Baby & Mother Care',
+    discountBadge: '12% OFF',
+    originalPrice: 350,
+    price: 308,
+    rating: 4.9,
+    reviewsCount: 280,
+    specBadge: '200ML',
+    imageUrl: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'pha-6',
+    brand: 'NUTRI LIFE',
+    title: 'Vitamin C 500mg Immunity Boost Chewable',
+    categoryKey: 'pharmacy',
+    subCategoryName: 'Vitamins & Supplements',
+    discountBadge: '20% OFF',
+    originalPrice: 450,
+    price: 360,
+    rating: 4.8,
+    reviewsCount: 390,
+    specBadge: '60 TABS',
+    imageUrl: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'pha-7',
+    brand: 'ACCU-CHEK',
+    title: 'Accu-Chek Blood Glucose Monitor Kit',
+    categoryKey: 'pharmacy',
+    subCategoryName: 'Diabetic Care',
+    discountBadge: '15% OFF',
+    originalPrice: 2800,
+    price: 2380,
+    rating: 4.9,
+    reviewsCount: 520,
+    specBadge: 'KIT',
+    imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
 
@@ -274,9 +756,9 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
   {
     id: 'ser-1',
     brand: 'JADU CARE',
-    title: 'Deep House Cleaning & Disinfection',
+    title: 'Deep House Cleaning & Disinfection Pack',
     categoryKey: 'services',
-    subCategoryName: 'Cleaning',
+    subCategoryName: 'Home Cleaning',
     discountBadge: '20% OFF',
     originalPrice: 3500,
     price: 2800,
@@ -291,14 +773,59 @@ const ALL_CATALOG_PRODUCTS: CatalogProductItem[] = [
     brand: 'TECH FIX',
     title: 'Split AC Master Servicing & Gas Refill',
     categoryKey: 'services',
-    subCategoryName: 'Appliance',
+    subCategoryName: 'AC Repair & Servicing',
     discountBadge: '15% OFF',
     originalPrice: 2200,
     price: 1870,
     rating: 4.8,
     reviewsCount: 490,
     specBadge: 'SERVICE',
+    imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'ser-3',
+    brand: 'ELECTRO PRO',
+    title: 'Full House Electrical Circuit Repair',
+    categoryKey: 'services',
+    subCategoryName: 'Electrical Wiring',
+    discountBadge: '10% OFF',
+    originalPrice: 1500,
+    price: 1350,
+    rating: 4.8,
+    reviewsCount: 220,
+    specBadge: 'SERVICE',
     imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'ser-4',
+    brand: 'PLUMB FIX',
+    title: 'Water Pipe Leak Fix & Motor Fitting',
+    categoryKey: 'services',
+    subCategoryName: 'Plumbing Services',
+    discountBadge: '12% OFF',
+    originalPrice: 1200,
+    price: 1056,
+    rating: 4.7,
+    reviewsCount: 180,
+    specBadge: 'SERVICE',
+    imageUrl: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&w=700&q=80',
+    inStock: true,
+  },
+  {
+    id: 'ser-5',
+    brand: 'REPAIR MASTER',
+    title: 'Refrigerator & Washing Machine Repair',
+    categoryKey: 'services',
+    subCategoryName: 'Appliance Repair',
+    discountBadge: '15% OFF',
+    originalPrice: 1800,
+    price: 1530,
+    rating: 4.9,
+    reviewsCount: 310,
+    specBadge: 'SERVICE',
+    imageUrl: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80',
     inStock: true,
   },
 ];
@@ -307,6 +834,7 @@ type SortOption = 'popularity' | 'price_low' | 'price_high' | 'rating' | 'newest
 
 export const CategoryScreen: React.FC = () => {
   const { isDarkMode } = useTheme();
+  const { selectedProduct, openProductDetails } = useProduct();
   const {
     activeCategory,
     setActiveCategory,
@@ -349,6 +877,11 @@ export const CategoryScreen: React.FC = () => {
 
   React.useEffect(() => {
     setSelectedSubCatState(activeSubCategory);
+    if (activeSubCategory && subCatScrollRef.current) {
+      setTimeout(() => {
+        subCatScrollRef.current?.scrollTo({ x: 120, animated: true });
+      }, 100);
+    }
   }, [activeSubCategory, activeCategory]);
 
   React.useEffect(() => {
@@ -452,9 +985,19 @@ export const CategoryScreen: React.FC = () => {
 
     // 1. Subcategory Filter
     if (selectedSubCat && selectedSubCat !== 'all') {
-      list = list.filter(
-        (item) => item.subCategoryName?.toLowerCase() === selectedSubCat.toLowerCase()
-      );
+      const subLower = selectedSubCat.toLowerCase();
+      const matched = list.filter((item) => {
+        if (!item.subCategoryName) return false;
+        const itemSubLower = item.subCategoryName.toLowerCase();
+        return (
+          itemSubLower === subLower ||
+          itemSubLower.includes(subLower) ||
+          subLower.includes(itemSubLower)
+        );
+      });
+      if (matched.length > 0) {
+        list = matched;
+      }
     }
 
     // 2. Price Range Bar Filter
@@ -493,6 +1036,22 @@ export const CategoryScreen: React.FC = () => {
   ]);
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
+
+  if (selectedProduct) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC',
+        }}
+      >
+        <Header />
+        <View style={{ flex: 1 }}>
+          <ProductDetailView />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -718,53 +1277,69 @@ export const CategoryScreen: React.FC = () => {
                       : 'bg-white border-slate-100 shadow-slate-200/40'
                   }`}
                 >
-                  {/* Product Image Area */}
-                  <View className="w-full h-44 sm:h-52 bg-slate-100 dark:bg-slate-950 relative items-center justify-center overflow-hidden">
-                    {/* Top-Left Discount Ribbon Badge */}
-                    {prod.discountBadge ? (
-                      <View className="absolute top-0 left-2.5 z-10 bg-red-600 px-2 py-1 rounded-b-lg shadow-sm">
-                        <Text className="text-white text-[10px] font-black uppercase tracking-wide">
-                          {prod.discountBadge}
-                        </Text>
-                      </View>
-                    ) : null}
+                  <TouchableOpacity
+                    activeOpacity={0.88}
+                    onPress={() => {
+                      openProductDetails({
+                        id: prod.id,
+                        title: prod.title,
+                        brand: prod.brand,
+                        category: prod.categoryKey,
+                        price: `৳${prod.price}`,
+                        oldPrice: prod.originalPrice > prod.price ? `৳${prod.originalPrice}` : undefined,
+                        rating: prod.rating,
+                        reviewsCount: prod.reviewsCount,
+                        imageUrl: prod.imageUrl,
+                        description: `${prod.brand} - ${prod.title}. High quality item available for instant delivery.`,
+                      });
+                    }}
+                  >
+                    {/* Product Image Area */}
+                    <View className="w-full h-44 sm:h-52 bg-slate-100 dark:bg-slate-950 relative items-center justify-center overflow-hidden">
+                      {/* Top-Left Discount Ribbon Badge */}
+                      {prod.discountBadge ? (
+                        <View className="absolute top-0 left-2.5 z-10 bg-red-600 px-2 py-1 rounded-b-lg shadow-sm">
+                          <Text className="text-white text-[10px] font-black uppercase tracking-wide">
+                            {prod.discountBadge}
+                          </Text>
+                        </View>
+                      ) : null}
 
-                    {/* Top-Right Wishlist Heart Button */}
-                    <TouchableOpacity
-                      activeOpacity={0.8}
-                      onPress={() => toggleWishlist(prod.id)}
-                      className={`absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
-                        isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
-                      }`}
-                    >
-                      <Ionicons
-                        name={isFaved ? 'heart' : 'heart-outline'}
-                        size={16}
-                        color={isFaved ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
+                      {/* Top-Right Wishlist Heart Button */}
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => toggleWishlist(prod.id)}
+                        className={`absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
+                          isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                        }`}
+                      >
+                        <Ionicons
+                          name={isFaved ? 'heart' : 'heart-outline'}
+                          size={16}
+                          color={isFaved ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
+                        />
+                      </TouchableOpacity>
+
+                      {/* Full Bleed Image */}
+                      <Image
+                        source={{ uri: prod.imageUrl }}
+                        className="w-full h-full"
+                        resizeMode="cover"
                       />
-                    </TouchableOpacity>
 
-                    {/* Full Bleed Image */}
-                    <Image
-                      source={{ uri: prod.imageUrl }}
-                      className="w-full h-full"
-                      resizeMode="cover"
-                    />
+                      {/* Bottom-Right Spec Badge */}
+                      {prod.specBadge ? (
+                        <View className="absolute bottom-2 right-2 bg-slate-900/85 dark:bg-slate-800/90 px-2.5 py-0.5 rounded-full flex-row items-center gap-1 z-10">
+                          <Text className="text-white text-[9px] font-black tracking-wider uppercase">
+                            {prod.specBadge}
+                          </Text>
+                          <Ionicons name="chevron-down" size={9} color="#FFFFFF" />
+                        </View>
+                      ) : null}
+                    </View>
 
-                    {/* Bottom-Right Spec Badge */}
-                    {prod.specBadge ? (
-                      <View className="absolute bottom-2 right-2 bg-slate-900/85 dark:bg-slate-800/90 px-2.5 py-0.5 rounded-full flex-row items-center gap-1 z-10">
-                        <Text className="text-white text-[9px] font-black tracking-wider uppercase">
-                          {prod.specBadge}
-                        </Text>
-                        <Ionicons name="chevron-down" size={9} color="#FFFFFF" />
-                      </View>
-                    ) : null}
-                  </View>
-
-                  {/* Product Details Area */}
-                  <View className="p-3.5 flex-1 justify-between">
-                    <View>
+                    {/* Product Details Area */}
+                    <View className="p-3.5 pb-0">
                       {/* Brand Name */}
                       <Text className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
                         {prod.brand}
@@ -795,43 +1370,43 @@ export const CategoryScreen: React.FC = () => {
                         </Text>
                       </View>
                     </View>
+                  </TouchableOpacity>
 
-                    {/* Price & Add Button Row */}
-                    <View className="flex-row items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80">
-                      <View>
-                        {prod.originalPrice > prod.price ? (
-                          <Text className="text-[10px] font-bold text-slate-400 line-through">
-                            ৳{prod.originalPrice}
-                          </Text>
-                        ) : null}
-                        <Text
-                          className={`text-sm sm:text-base font-black ${
-                            isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                          }`}
-                        >
-                          ৳{prod.price}
+                  {/* Price & Add Button Row */}
+                  <View className="p-3.5 pt-0 flex-row items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                    <View>
+                      {prod.originalPrice > prod.price ? (
+                        <Text className="text-[10px] font-bold text-slate-400 line-through">
+                          ৳{prod.originalPrice}
                         </Text>
-                      </View>
-
-                      {/* Add Button */}
-                      <TouchableOpacity
-                        activeOpacity={0.85}
-                        onPress={() => {
-                          cartStore.addItem({
-                            id: prod.id,
-                            name: prod.title,
-                            price: prod.price,
-                            originalPrice: prod.originalPrice,
-                            image: prod.imageUrl,
-                          });
-                        }}
-                        style={{ backgroundColor: activeCategoryColor }}
-                        className="px-3 py-1.5 rounded-xl flex-row items-center gap-1 shadow-xs"
+                      ) : null}
+                      <Text
+                        className={`text-sm sm:text-base font-black ${
+                          isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                        }`}
                       >
-                        <Ionicons name="add" size={14} color="#FFFFFF" />
-                        <Text className="text-white text-xs font-extrabold">Add</Text>
-                      </TouchableOpacity>
+                        ৳{prod.price}
+                      </Text>
                     </View>
+
+                    {/* Add Button */}
+                    <TouchableOpacity
+                      activeOpacity={0.85}
+                      onPress={() => {
+                        cartStore.addItem({
+                          id: prod.id,
+                          name: prod.title,
+                          price: prod.price,
+                          originalPrice: prod.originalPrice,
+                          image: prod.imageUrl,
+                        });
+                      }}
+                      style={{ backgroundColor: activeCategoryColor }}
+                      className="px-3 py-1.5 rounded-xl flex-row items-center gap-1 shadow-xs"
+                    >
+                      <Ionicons name="add" size={14} color="#FFFFFF" />
+                      <Text className="text-white text-xs font-extrabold">Add</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               );

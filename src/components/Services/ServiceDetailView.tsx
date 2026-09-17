@@ -47,9 +47,18 @@ export const ServiceDetailView: React.FC = () => {
   ];
 
   return (
-    <View className="w-full min-h-screen py-6">
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 24, paddingBottom: 160 }}>
       {/* 1. Breadcrumb Path Row */}
       <View className="w-full max-w-[1100px] self-center px-4 mb-2 flex-row items-center flex-wrap gap-1">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={closeServiceDetails}
+          className="flex-row items-center gap-1 mr-3 py-1 px-2 rounded-lg bg-slate-100 dark:bg-slate-800"
+        >
+          <Ionicons name="arrow-back" size={16} color={isDarkMode ? '#F8FAFC' : '#0F172A'} />
+          <Text className="text-xs font-black text-slate-800 dark:text-slate-100">Back</Text>
+        </TouchableOpacity>
+
         {breadcrumbs.map((crumb, idx) => (
           <React.Fragment key={idx}>
             {idx > 0 && (
@@ -627,6 +636,6 @@ export const ServiceDetailView: React.FC = () => {
           </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };

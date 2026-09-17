@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useCategory } from '../../context/CategoryContext';
+import { requestCallPermission } from '../../utils/permissionHelper';
 import { AppText as Text } from '../common/AppText';
 
 export interface ChatMessage {
@@ -146,8 +147,11 @@ export const RiderChatModal: React.FC<RiderChatModalProps> = ({
     }, 1200);
   };
 
-  const handleCallRider = () => {
-    Linking.openURL(`tel:${riderPhone}`).catch((err) => console.log('Call error', err));
+  const handleCallRider = async () => {
+    const hasPermission = await requestCallPermission(isBangla);
+    if (hasPermission) {
+      Linking.openURL(`tel:${riderPhone}`).catch((err) => console.log('Call error', err));
+    }
   };
 
   return (

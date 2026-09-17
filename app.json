@@ -13,9 +13,11 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.jadubazar.app",
       "icon": "./src/assets/images/image.jpeg"
     },
     "android": {
+      "package": "com.jadubazar.app",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./src/assets/images/image.jpeg"

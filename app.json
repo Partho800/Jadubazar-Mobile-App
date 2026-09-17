@@ -26,6 +26,12 @@
     },
     "web": {
       "favicon": "./src/assets/images/image.jpeg"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "50a83429-df6b-4fa9-8824-1257de916780"
+      }
+    },
+    "owner": "raju018"
   }
 }

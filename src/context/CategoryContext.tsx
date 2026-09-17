@@ -60,24 +60,18 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   const setActiveCategory = React.useCallback((category: string) => {
-    setIsCategoryLoading(true);
     setActiveCategoryState(category);
     setActiveSubCategory(null); // Reset subcategory when category changes
+    setIsCategoryLoading(false);
 
-    setTimeout(() => {
-      setIsCategoryLoading(false);
-    }, 220);
-
-    setTimeout(() => {
-      try {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          window.localStorage.setItem(STORAGE_KEY, category);
-        }
-      } catch (e) {
-        console.error('Error writing category to localStorage:', e);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(STORAGE_KEY, category);
       }
-      storage.setItem(STORAGE_KEY, category);
-    }, 0);
+    } catch (e) {
+      console.error('Error writing category to localStorage:', e);
+    }
+    storage.setItem(STORAGE_KEY, category);
   }, []);
 
   const openCategorySheet = React.useCallback(() => setIsCategorySheetOpen(true), []);

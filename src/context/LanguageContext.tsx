@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { storage } from '../storage/storage';
 
 export type Language = 'EN' | 'BN';
 
@@ -573,11 +574,25 @@ const translations: Record<string, { EN: string; BN: string }> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const getInitialLanguage = (): Language => {
+  const saved = storage.getItemSync('app_language');
+  return saved === 'BN' || saved === 'EN' ? saved : 'EN';
+};
+
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('EN');
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    storage.setItem('app_language', lang);
+  };
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'EN' ? 'BN' : 'EN'));
+    setLanguageState((prev) => {
+      const next = prev === 'EN' ? 'BN' : 'EN';
+      storage.setItem('app_language', next);
+      return next;
+    });
   };
 
   const isBangla = language === 'BN';

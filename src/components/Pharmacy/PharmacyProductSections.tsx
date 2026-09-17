@@ -9,9 +9,11 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { wishlistStore } from '../../store/wishlistStore';
 import { AppText as Text } from '../common/AppText';
@@ -275,6 +277,8 @@ interface PharmacyProductSectionProps {
 }
 
 const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section }) => {
+  const navigation = useNavigation<any>();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const { openProductDetails } = useProduct();
@@ -283,6 +287,19 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
   const scrollX = useRef<number>(0);
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [wishlistState, setWishlistState] = useState<Record<string, boolean>>({});
+
+  const handleViewAll = (secId: string) => {
+    setActiveCategory('pharmacy');
+    let subCat: string | null = null;
+    if (secId === 'sec_medicines') subCat = 'Prescription Medicine';
+    else if (secId === 'sec_babycare') subCat = 'Baby & Mother Care';
+    else if (secId === 'sec_devices') subCat = 'Healthcare Devices';
+    else if (secId === 'sec_supplements') subCat = 'Vitamins & Supplements';
+    setActiveSubCategory(subCat);
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {}
+  };
 
   const cardWidth = width >= 640 ? 276 : 246; // card (260/230) + gap (16)
 
@@ -336,8 +353,18 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
         {/* Title & Badge Row */}
         <View className="flex-row items-center flex-wrap gap-2 mb-1">
           {/* Icon Pill */}
-          <View className="w-8 h-8 rounded-full bg-teal-50 dark:bg-teal-950/70 items-center justify-center border border-teal-100 dark:border-teal-900/50">
-            <Ionicons name={section.iconName} size={18} color="#009688" />
+          <View
+            className={`w-8 h-8 rounded-full items-center justify-center border ${
+              isDarkMode
+                ? 'bg-teal-950 border-teal-800'
+                : 'bg-teal-50 border-teal-100'
+            }`}
+          >
+            <Ionicons
+              name={section.iconName}
+              size={18}
+              color={isDarkMode ? '#2DD4BF' : '#0D9488'}
+            />
           </View>
 
           {/* Section Title */}
@@ -350,8 +377,18 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
           </Text>
 
           {/* Items Count Badge */}
-          <View className="bg-teal-50 dark:bg-teal-950/60 px-2.5 py-0.5 rounded-full border border-teal-200/50 dark:border-teal-800/60">
-            <Text className="text-xs font-bold text-[#009688] dark:text-teal-400">
+          <View
+            className={`px-2.5 py-0.5 rounded-full border ${
+              isDarkMode
+                ? 'bg-teal-950 border-teal-800'
+                : 'bg-teal-50 border-teal-200/60'
+            }`}
+          >
+            <Text
+              className={`text-xs font-bold ${
+                isDarkMode ? 'text-teal-400' : 'text-[#0D9488]'
+              }`}
+            >
               {section.itemsCount}
             </Text>
           </View>
@@ -368,46 +405,54 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
 
         {/* Navigation Arrows & View All Button Row */}
         <View className="flex-row items-center justify-end gap-2 mt-2 sm:-mt-6">
-          {/* Scroll Prev */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={handleScrollPrev}
-            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border items-center justify-center shadow-xs ${
-              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          {/* Scroll Buttons */}
+          <View
+            className={`flex-row items-center rounded-full border p-1 shadow-xs ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100/90 border-slate-200'
             }`}
           >
-            <Ionicons
-              name="chevron-back"
-              size={16}
-              color={isDarkMode ? '#CBD5E1' : '#475569'}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleScrollPrev}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center shadow-xs ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={16}
+                color={isDarkMode ? '#CBD5E1' : '#334155'}
+              />
+            </TouchableOpacity>
 
-          {/* Scroll Next */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={handleScrollNext}
-            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border items-center justify-center shadow-xs ${
-              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-            }`}
-          >
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={isDarkMode ? '#CBD5E1' : '#475569'}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleScrollNext}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center shadow-xs ml-1 ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
+            >
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={isDarkMode ? '#CBD5E1' : '#334155'}
+              />
+            </TouchableOpacity>
+          </View>
 
           {/* View All Button */}
           <TouchableOpacity
             activeOpacity={0.8}
-            className={`flex-row items-center px-3.5 py-1.5 sm:py-2 rounded-full border shadow-xs gap-1 ${
-              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+            onPress={() => handleViewAll(section.id)}
+            className={`flex-row items-center px-3 py-1.5 rounded-full border shadow-xs gap-1 ${
+              isDarkMode
+                ? 'bg-teal-950 border-teal-800'
+                : 'bg-teal-50 border-teal-200/80'
             }`}
           >
             <Text
               className={`text-xs sm:text-sm font-extrabold ${
-                isDarkMode ? 'text-slate-100' : 'text-[#0F172A]'
+                isDarkMode ? 'text-teal-300' : 'text-[#0D9488]'
               }`}
             >
               {t('viewAll')}
@@ -415,7 +460,7 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
             <Ionicons
               name="chevron-forward"
               size={14}
-              color={isDarkMode ? '#CBD5E1' : '#0F172A'}
+              color={isDarkMode ? '#5EEAD4' : '#0D9488'}
             />
           </TouchableOpacity>
         </View>
@@ -466,7 +511,7 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
 
                 {/* Top-Left Discount Ribbon Badge */}
                 {prod.discountBadge ? (
-                  <View className="absolute top-0 left-3 bg-red-600 px-2 py-1 rounded-b-lg shadow-sm">
+                  <View className="absolute top-0 left-3 z-10 bg-red-600 px-2 py-1 rounded-b-lg shadow-sm">
                     <Text className="text-white text-[10px] font-black uppercase tracking-wide">
                       {prod.discountBadge}
                     </Text>
@@ -477,12 +522,14 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => handleToggleWishlist(prod)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 items-center justify-center shadow-xs"
+                  className={`absolute top-3 right-3 w-8 h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
+                    isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                  }`}
                 >
                   <Ionicons
                     name={isLiked ? 'heart' : 'heart-outline'}
                     size={18}
-                    color={isLiked ? '#EF4444' : '#64748B'}
+                    color={isLiked ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
                   />
                 </TouchableOpacity>
 

@@ -14,6 +14,10 @@ export interface HealthcareServiceItem {
   actionKey: string;
   defaultAction: string;
   iconName: keyof typeof Ionicons.glyphMap;
+  iconColorLight: string;
+  iconColorDark: string;
+  bgColorLight: string;
+  bgColorDark: string;
 }
 
 const HEALTHCARE_SERVICES: HealthcareServiceItem[] = [
@@ -26,6 +30,10 @@ const HEALTHCARE_SERVICES: HealthcareServiceItem[] = [
     actionKey: 'bookNow',
     defaultAction: 'Book Now',
     iconName: 'person-outline',
+    iconColorLight: '#0D9488',
+    iconColorDark: '#2DD4BF',
+    bgColorLight: 'bg-teal-100',
+    bgColorDark: 'bg-teal-900/60',
   },
   {
     id: 'lab_tests',
@@ -36,6 +44,10 @@ const HEALTHCARE_SERVICES: HealthcareServiceItem[] = [
     actionKey: 'bookNow',
     defaultAction: 'Book Now',
     iconName: 'flask-outline',
+    iconColorLight: '#059669',
+    iconColorDark: '#34D399',
+    bgColorLight: 'bg-emerald-100',
+    bgColorDark: 'bg-emerald-900/60',
   },
   {
     id: 'med_reminder',
@@ -46,6 +58,10 @@ const HEALTHCARE_SERVICES: HealthcareServiceItem[] = [
     actionKey: 'setReminder',
     defaultAction: 'Set Reminder',
     iconName: 'notifications-outline',
+    iconColorLight: '#2563EB',
+    iconColorDark: '#60A5FA',
+    bgColorLight: 'bg-blue-100',
+    bgColorDark: 'bg-blue-900/60',
   },
   {
     id: 'full_checkup',
@@ -56,6 +72,10 @@ const HEALTHCARE_SERVICES: HealthcareServiceItem[] = [
     actionKey: 'exploreNow',
     defaultAction: 'Explore Now',
     iconName: 'clipboard-outline',
+    iconColorLight: '#9333EA',
+    iconColorDark: '#C084FC',
+    bgColorLight: 'bg-purple-100',
+    bgColorDark: 'bg-purple-900/60',
   },
 ];
 
@@ -122,8 +142,16 @@ export const PharmacyHealthcareServices: React.FC<PharmacyHealthcareServicesProp
             }`}
           >
             {/* Left Icon Area */}
-            <View className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-teal-50/70 dark:bg-teal-950/50 items-center justify-center border border-teal-100/60 dark:border-teal-900/40 shrink-0">
-              <Ionicons name={item.iconName} size={36} color="#009688" />
+            <View
+              className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl items-center justify-center shrink-0 ${
+                isDarkMode ? item.bgColorDark : item.bgColorLight
+              }`}
+            >
+              <Ionicons
+                name={item.iconName}
+                size={34}
+                color={isDarkMode ? item.iconColorDark : item.iconColorLight}
+              />
             </View>
 
             {/* Right Details Area */}

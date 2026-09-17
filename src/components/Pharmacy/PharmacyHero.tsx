@@ -6,8 +6,10 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useCategory } from '../../context/CategoryContext';
 import { AppText as Text } from '../common/AppText';
 
 interface PharmacyHeroProps {
@@ -19,9 +21,22 @@ export const PharmacyHero: React.FC<PharmacyHeroProps> = ({
   onShopMedicinesPress,
   onUploadPrescriptionPress,
 }) => {
+  const navigation = useNavigation<any>();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const { width } = useWindowDimensions();
+
+  const handleShopMedicinesClick = () => {
+    if (onShopMedicinesPress) {
+      onShopMedicinesPress();
+    }
+    setActiveCategory('pharmacy');
+    setActiveSubCategory(null);
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {}
+  };
 
   const isWide = width >= 768;
 
@@ -58,24 +73,40 @@ export const PharmacyHero: React.FC<PharmacyHeroProps> = ({
       icon: 'car-outline' as keyof typeof Ionicons.glyphMap,
       titleKey: 'expressDeliveryTitle',
       descKey: 'expressDeliverySub',
+      iconColorLight: '#059669',
+      iconColorDark: '#34D399',
+      bgColorLight: 'bg-emerald-100',
+      bgColorDark: 'bg-emerald-900/60',
     },
     {
       id: 'secure',
       icon: 'shield-checkmark-outline' as keyof typeof Ionicons.glyphMap,
       titleKey: 'securePaymentsTitle',
       descKey: 'securePaymentsSub',
+      iconColorLight: '#0D9488',
+      iconColorDark: '#2DD4BF',
+      bgColorLight: 'bg-teal-100',
+      bgColorDark: 'bg-teal-900/60',
     },
     {
       id: 'returns',
       icon: 'refresh-outline' as keyof typeof Ionicons.glyphMap,
       titleKey: 'easyReturnsTitleText',
       descKey: 'easyReturnsSubText',
+      iconColorLight: '#2563EB',
+      iconColorDark: '#60A5FA',
+      bgColorLight: 'bg-blue-100',
+      bgColorDark: 'bg-blue-900/60',
     },
     {
       id: 'support',
       icon: 'headset-outline' as keyof typeof Ionicons.glyphMap,
       titleKey: 'support247Title',
       descKey: 'support247Sub',
+      iconColorLight: '#9333EA',
+      iconColorDark: '#C084FC',
+      bgColorLight: 'bg-purple-100',
+      bgColorDark: 'bg-purple-900/60',
     },
   ];
 
@@ -87,14 +118,24 @@ export const PharmacyHero: React.FC<PharmacyHeroProps> = ({
     >
       <View className="w-full max-w-[1100px] items-center">
         {/* 1. Tagline Badge */}
-        <View className="flex-row items-center justify-center bg-[#E6F7F5] dark:bg-teal-950/80 px-4 py-1.5 rounded-full border border-teal-200/50 dark:border-teal-800/60 mb-3">
+        <View
+          className={`flex-row items-center justify-center px-4 py-1.5 rounded-full border mb-3 ${
+            isDarkMode
+              ? 'bg-teal-950/80 border-teal-800'
+              : 'bg-teal-100/90 border-teal-200'
+          }`}
+        >
           <Ionicons
             name="heart-outline"
             size={16}
-            color="#009688"
-            className="mr-1.5"
+            color={isDarkMode ? '#2DD4BF' : '#0D9488'}
+            style={{ marginRight: 6 }}
           />
-          <Text className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#009688] dark:text-teal-400">
+          <Text
+            className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
+              isDarkMode ? 'text-teal-300' : 'text-teal-800'
+            }`}
+          >
             {t('pharmacyBadge')}
           </Text>
         </View>
@@ -141,8 +182,8 @@ export const PharmacyHero: React.FC<PharmacyHeroProps> = ({
           {/* Primary Button */}
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={onShopMedicinesPress}
-            className="flex-1 h-13 bg-[#009688] flex-row items-center justify-center rounded-full px-5 py-3 shadow-lg shadow-teal-700/30 gap-2"
+            onPress={handleShopMedicinesClick}
+            className="flex-1 h-13 bg-[#009688] flex-row items-center justify-center rounded-full px-5 py-3 shadow-lg shadow-teal-700/30 gap-2 cursor-pointer"
           >
             <Text className="text-white text-xs sm:text-sm font-extrabold tracking-wide">
               {t('shopMedicines')}
@@ -248,15 +289,29 @@ export const PharmacyHero: React.FC<PharmacyHeroProps> = ({
         </View>
 
         {/* 8. Bottom Trust Cards Container */}
-        <View className="w-full max-w-[1000px] bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-md shadow-slate-200/40 dark:shadow-none mt-4">
+        <View
+          className={`w-full max-w-[1000px] rounded-2xl p-4 sm:p-6 border shadow-md mt-4 ${
+            isDarkMode
+              ? 'bg-slate-900 border-slate-800 shadow-none'
+              : 'bg-white border-slate-100 shadow-slate-200/40'
+          }`}
+        >
           <View className="flex-row flex-wrap justify-between items-center gap-y-4">
             {bottomTrustCards.map((card) => (
               <View
                 key={card.id}
                 className="w-[48%] md:w-[23%] flex-row items-center gap-3 px-1"
               >
-                <View className="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950/70 items-center justify-center border border-teal-100 dark:border-teal-900/50">
-                  <Ionicons name={card.icon} size={22} color="#009688" />
+                <View
+                  className={`w-11 h-11 rounded-xl items-center justify-center ${
+                    isDarkMode ? card.bgColorDark : card.bgColorLight
+                  }`}
+                >
+                  <Ionicons
+                    name={card.icon}
+                    size={22}
+                    color={isDarkMode ? card.iconColorDark : card.iconColorLight}
+                  />
                 </View>
                 <View className="flex-1">
                   <Text

@@ -7,14 +7,17 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useCategory } from '../../context/CategoryContext';
 import { AppText as Text } from '../common/AppText';
 
 export interface CategoryCardItem {
   id: string;
   titleKey: string;
   titleEn: string;
+  subCategoryName: string;
   imageUrl: string;
 }
 
@@ -23,6 +26,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     id: '1',
     titleKey: 'catFashion',
     titleEn: 'Fashion',
+    subCategoryName: 'Fashion',
     imageUrl:
       'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80',
   },
@@ -30,6 +34,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     id: '2',
     titleKey: 'catElectronics',
     titleEn: 'Electronics',
+    subCategoryName: 'Electronics',
     imageUrl:
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
   },
@@ -37,6 +42,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     id: '3',
     titleKey: 'catBeauty',
     titleEn: 'Beauty',
+    subCategoryName: 'Beauty',
     imageUrl:
       'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
   },
@@ -44,17 +50,30 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     id: '4',
     titleKey: 'catHome',
     titleEn: 'Home Decor',
+    subCategoryName: 'Home Decor',
     imageUrl:
       'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
 export const ShopByCategory: React.FC = () => {
+  const navigation = useNavigation<any>();
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
 
   const cardWidth = (width - 48) / 2;
+
+  const handleCategoryPress = (subCategoryName?: string) => {
+    setActiveCategory('ecommerce');
+    setActiveSubCategory(subCategoryName || null);
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {
+      console.log('Navigation error:', e);
+    }
+  };
 
   return (
     <View className="mx-4 mb-11">
@@ -77,7 +96,11 @@ export const ShopByCategory: React.FC = () => {
           </Text>
         </View>
 
-        <TouchableOpacity activeOpacity={0.7} className="flex-row items-center gap-1 pt-0.5">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => handleCategoryPress()}
+          className="flex-row items-center gap-1 pt-0.5 cursor-pointer"
+        >
           <Text className="text-xs font-bold text-blue-600 text-right leading-4">
             {t('viewAll')}
           </Text>
@@ -91,8 +114,9 @@ export const ShopByCategory: React.FC = () => {
           <TouchableOpacity
             key={cat.id}
             activeOpacity={0.9}
+            onPress={() => handleCategoryPress(cat.subCategoryName)}
             style={{ width: cardWidth, height: 220, borderRadius: 14 }}
-            className="overflow-hidden shadow-md"
+            className="overflow-hidden shadow-md cursor-pointer"
           >
             <ImageBackground
               source={{ uri: cat.imageUrl }}

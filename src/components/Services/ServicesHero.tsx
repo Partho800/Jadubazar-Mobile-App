@@ -46,14 +46,24 @@ export const ServicesHero: React.FC<ServicesHeroProps> = ({
             {/* Left Column: Text & CTA Button (100% Left Aligned) */}
             <View className="flex-1 items-start">
               {/* 1. Tagline Badge */}
-              <View className="flex-row items-center bg-[#EDE9FE] dark:bg-purple-950/80 px-4 py-1.5 rounded-full border border-purple-200/60 dark:border-purple-800/60 mb-4">
+              <View
+                className={`flex-row items-center px-4 py-1.5 rounded-full border mb-4 ${
+                  isDarkMode
+                    ? 'bg-purple-950/80 border-purple-800'
+                    : 'bg-purple-100/90 border-purple-200'
+                }`}
+              >
                 <Ionicons
                   name="shield-checkmark"
                   size={16}
-                  color="#5B50E6"
-                  className="mr-2"
+                  color={isDarkMode ? '#A78BFA' : '#5B50E6'}
+                  style={{ marginRight: 6 }}
                 />
-                <Text className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#5B50E6] dark:text-purple-300">
+                <Text
+                  className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${
+                    isDarkMode ? 'text-purple-300' : 'text-[#4C1D95]'
+                  }`}
+                >
                   {t('verifiedInsuredBadge') !== 'verifiedInsuredBadge'
                     ? t('verifiedInsuredBadge')
                     : 'VERIFIED & INSURED PROFESSIONALS'}

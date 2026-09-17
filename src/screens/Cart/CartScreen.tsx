@@ -10,15 +10,20 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useCategory } from '../../context/CategoryContext';
 import { Header } from '../../components/common/Header/Header';
+import { EmptyBagCard } from '../../components/common/EmptyBagCard';
 import { cartStore, CartItem } from '../../store/cartStore';
 import { AppText as Text } from '../../components/common/AppText';
 
 export const CartScreen: React.FC = () => {
+  const navigation = useNavigation<any>();
   const { theme, isDarkMode } = useTheme();
   const { t, isBangla } = useLanguage();
+  const { activeCategoryColor } = useCategory();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(cartStore.getItems());
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -27,23 +32,28 @@ export const CartScreen: React.FC = () => {
 
   // Sync with cartStore
   useEffect(() => {
-    // If cart is completely empty initially, add default item from screenshot for demo
-    if (cartStore.getItems().length === 0) {
-      cartStore.addItem({
-        id: 'pusti-maida-2kg',
-        name: 'Pusti Maida 2kg',
-        price: 140,
-        image: 'https://images.unsplash.com/photo-1586201375761-83865001e8ac?auto=format&fit=crop&w=300&q=80',
-      });
-    }
+    let items = cartStore.getItems();
+    const sanitizedItems = items.map((item) => ({
+      ...item,
+      image:
+        !item.image || item.image.includes('83865001e8ac')
+          ? 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=80'
+          : item.image,
+    }));
 
-    setCartItems(cartStore.getItems());
-    setSelectedIds(cartStore.getItems().map((i) => i.id));
+    setCartItems(sanitizedItems);
+    setSelectedIds(sanitizedItems.map((i) => i.id));
 
     return cartStore.subscribe(() => {
-      const items = cartStore.getItems();
-      setCartItems(items);
-      setSelectedIds((prev) => prev.filter((id) => items.some((item) => item.id === id)));
+      const currentItems = cartStore.getItems().map((item) => ({
+        ...item,
+        image:
+          !item.image || item.image.includes('83865001e8ac')
+            ? 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=80'
+            : item.image,
+      }));
+      setCartItems(currentItems);
+      setSelectedIds((prev) => prev.filter((id) => currentItems.some((item) => item.id === id)));
     });
   }, []);
 
@@ -124,10 +134,11 @@ export const CartScreen: React.FC = () => {
       );
       return;
     }
-    Alert.alert(
-      isBangla ? 'অর্ডার সফল হয়েছে!' : 'Order Placed!',
-      isBangla ? `আপনার মোট বিল ৳${grandTotal}। যাদুবাজারে কেনাকাটা করার জন্য ধন্যবাদ!` : `Your order total is ৳${grandTotal}. Thank you for shopping with Jadubazar!`
-    );
+    try {
+      navigation.navigate('CheckoutTab');
+    } catch (e) {
+      console.log('Navigation error:', e);
+    }
   };
 
   return (
@@ -145,10 +156,10 @@ export const CartScreen: React.FC = () => {
             <View
               style={[
                 styles.bagIconBox,
-                { backgroundColor: isDarkMode ? '#312E81' : '#FEF3C7' },
+                { backgroundColor: activeCategoryColor + '20' },
               ]}
             >
-              <Ionicons name="bag-handle" size={20} color="#F59E0B" />
+              <Ionicons name="bag-handle" size={20} color={activeCategoryColor} />
             </View>
             <Text
               style={[
@@ -161,10 +172,10 @@ export const CartScreen: React.FC = () => {
             <View
               style={[
                 styles.countBadgePill,
-                { backgroundColor: isDarkMode ? '#1E293B' : '#FEF3C7' },
+                { backgroundColor: activeCategoryColor + '20' },
               ]}
             >
-              <Text style={styles.countBadgePillText}>{totalItemCount} {t('items')}</Text>
+              <Text style={[styles.countBadgePillText, { color: activeCategoryColor }]}>{totalItemCount} {t('items')}</Text>
             </View>
           </View>
 
@@ -184,62 +195,40 @@ export const CartScreen: React.FC = () => {
         </View>
 
         {/* 3. Free Delivery Progress Tracker */}
-        <View style={styles.deliveryProgressCard}>
+        <View style={[styles.deliveryProgressCard, { backgroundColor: activeCategoryColor + '12', borderColor: activeCategoryColor + '35' }]}>
           <View style={styles.deliveryProgressHeader}>
             <View style={styles.deliveryLeftRow}>
-              <Ionicons name="car-outline" size={18} color="#10B981" />
+              <Ionicons name="car-outline" size={18} color={activeCategoryColor} />
               <Text style={styles.deliveryProgressText}>
                 {remainingForFreeDelivery > 0 ? (
                   isBangla ? (
                     <>
-                      ফ্রি ডেলিভারির জন্য আরও <Text style={styles.deliveryHighlight}>৳{remainingForFreeDelivery}</Text> যোগ করুন!
+                      ফ্রি ডেলিভারির জন্য আরও <Text style={[styles.deliveryHighlight, { color: activeCategoryColor }]}>৳{remainingForFreeDelivery}</Text> যোগ করুন!
                     </>
                   ) : (
                     <>
-                      Add <Text style={styles.deliveryHighlight}>৳{remainingForFreeDelivery}</Text> more for{' '}
-                      <Text style={styles.deliveryBoldGreen}>FREE Delivery!</Text>
+                      Add <Text style={[styles.deliveryHighlight, { color: activeCategoryColor }]}>৳{remainingForFreeDelivery}</Text> more for{' '}
+                      <Text style={[styles.deliveryBoldGreen, { color: activeCategoryColor }]}>FREE Delivery!</Text>
                     </>
                   )
                 ) : (
-                  <Text style={styles.deliveryBoldGreen}>
+                  <Text style={[styles.deliveryBoldGreen, { color: activeCategoryColor }]}>
                     {t('freeDeliveryUnlocked')}
                   </Text>
                 )}
               </Text>
             </View>
-            <Text style={styles.deliveryPercentText}>{freeDeliveryPercent}%</Text>
+            <Text style={[styles.deliveryPercentText, { color: activeCategoryColor }]}>{freeDeliveryPercent}%</Text>
           </View>
 
-          <View style={styles.progressBarTrack}>
-            <View style={[styles.progressBarFill, { width: `${freeDeliveryPercent}%` }]} />
+          <View style={[styles.progressBarTrack, { backgroundColor: activeCategoryColor + '25' }]}>
+            <View style={[styles.progressBarFill, { width: `${freeDeliveryPercent}%`, backgroundColor: activeCategoryColor }]} />
           </View>
         </View>
 
         {cartItems.length === 0 ? (
           /* EMPTY CART VIEW */
-          <View style={styles.emptyCartState}>
-            <Ionicons
-              name="cart-outline"
-              size={64}
-              color={isDarkMode ? '#475569' : '#CBD5E1'}
-            />
-            <Text
-              style={[
-                styles.emptyTitle,
-                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-              ]}
-            >
-              {t('emptyCartTitle')}
-            </Text>
-            <Text
-              style={[
-                styles.emptySubtitle,
-                { color: isDarkMode ? '#94A3B8' : '#64748B' },
-              ]}
-            >
-              {t('emptyCartSub')}
-            </Text>
-          </View>
+          <EmptyBagCard />
         ) : (
           <>
             {/* 4. Select All Items Card */}
@@ -262,7 +251,7 @@ export const CartScreen: React.FC = () => {
                     style={[
                       styles.checkboxSquare,
                       selectedIds.length === cartItems.length
-                        ? styles.checkboxSquareChecked
+                        ? [styles.checkboxSquareChecked, { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor }]
                         : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
                     ]}
                   >
@@ -283,10 +272,10 @@ export const CartScreen: React.FC = () => {
                 <View
                   style={[
                     styles.selectedCountBadge,
-                    { backgroundColor: isDarkMode ? '#0F172A' : '#FEF3C7' },
+                    { backgroundColor: activeCategoryColor + '18' },
                   ]}
                 >
-                  <Text style={styles.selectedCountBadgeText}>
+                  <Text style={[styles.selectedCountBadgeText, { color: activeCategoryColor }]}>
                     {selectedIds.length} / {cartItems.length} {t('selectedCount')}
                   </Text>
                 </View>
@@ -306,7 +295,7 @@ export const CartScreen: React.FC = () => {
               {/* Group Header */}
               <View style={styles.groupHeaderRow}>
                 <View style={styles.groupTitleLeft}>
-                  <Ionicons name="cart" size={20} color="#059669" />
+                  <Ionicons name="cart" size={20} color={activeCategoryColor} />
                   <Text
                     style={[
                       styles.groupTitleText,
@@ -315,8 +304,8 @@ export const CartScreen: React.FC = () => {
                   >
                     {isBangla ? 'গ্রোসারী প্রয়োজনীয় পণ্য' : 'Grocery Essentials'}
                   </Text>
-                  <View style={styles.groupCountPill}>
-                    <Text style={styles.groupCountPillText}>{cartItems.length}</Text>
+                  <View style={[styles.groupCountPill, { backgroundColor: activeCategoryColor }]}>
+                    <Text style={[styles.groupCountPillText, { color: '#FFFFFF' }]}>{cartItems.length}</Text>
                   </View>
                 </View>
 
@@ -329,7 +318,7 @@ export const CartScreen: React.FC = () => {
                     style={[
                       styles.checkboxSquare,
                       styles.checkboxSquareChecked,
-                      { width: 18, height: 18 },
+                      { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor, width: 18, height: 18 },
                     ]}
                   >
                     <Ionicons name="checkmark" size={12} color="#FFFFFF" />
@@ -366,7 +355,7 @@ export const CartScreen: React.FC = () => {
                           style={[
                             styles.checkboxSquare,
                             isSelected
-                              ? styles.checkboxSquareChecked
+                              ? [styles.checkboxSquareChecked, { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor }]
                               : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
                           ]}
                         >
@@ -381,7 +370,7 @@ export const CartScreen: React.FC = () => {
                           style={styles.itemImage}
                           resizeMode="cover"
                         />
-                        <View style={styles.categoryImageTag}>
+                        <View style={[styles.categoryImageTag, { backgroundColor: activeCategoryColor }]}>
                           <Text style={styles.categoryImageTagText}>{t('grocery')}</Text>
                         </View>
                       </View>
@@ -500,8 +489,8 @@ export const CartScreen: React.FC = () => {
               ]}
             >
               <View style={styles.promoHeaderRow}>
-                <Ionicons name="pricetag-outline" size={18} color="#F59E0B" />
-                <Text style={styles.promoHeaderText}>{t('applyPromoCode')}</Text>
+                <Ionicons name="pricetag-outline" size={18} color={activeCategoryColor} />
+                <Text style={[styles.promoHeaderText, { color: activeCategoryColor }]}>{t('applyPromoCode')}</Text>
               </View>
 
               <View style={styles.promoInputRow}>
@@ -522,9 +511,9 @@ export const CartScreen: React.FC = () => {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => handleApplyPromo()}
-                  style={styles.applyBtn}
+                  style={[styles.applyBtn, { backgroundColor: activeCategoryColor }]}
                 >
-                  <Text style={styles.applyBtnText}>{t('applyBtn')}</Text>
+                  <Text style={[styles.applyBtnText, { color: '#FFFFFF' }]}>{t('applyBtn')}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -548,12 +537,12 @@ export const CartScreen: React.FC = () => {
                   style={[
                     styles.promoCodePillBtn,
                     {
-                      backgroundColor: isDarkMode ? '#312E81' : '#FEF3C7',
-                      borderColor: isDarkMode ? '#4338CA' : '#FCD34D',
+                      backgroundColor: activeCategoryColor + '18',
+                      borderColor: activeCategoryColor + '50',
                     },
                   ]}
                 >
-                  <Text style={styles.promoCodePillText}>JADUFIRST</Text>
+                  <Text style={[styles.promoCodePillText, { color: activeCategoryColor }]}>JADUFIRST</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -630,7 +619,7 @@ export const CartScreen: React.FC = () => {
                 >
                   {t('grandTotalTitle')}
                 </Text>
-                <Text style={styles.grandTotalValue}>৳{grandTotal}</Text>
+                <Text style={[styles.grandTotalValue, { color: activeCategoryColor }]}>৳{grandTotal}</Text>
               </View>
             </View>
           </>
@@ -651,16 +640,16 @@ export const CartScreen: React.FC = () => {
             <Text style={styles.stickyGrandLabel}>
               {t('grandTotalHeader')} ({selectedIds.length} {t('items')})
             </Text>
-            <Text style={styles.stickyGrandVal}>৳{grandTotal}</Text>
+            <Text style={[styles.stickyGrandVal, { color: activeCategoryColor }]}>৳{grandTotal}</Text>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleCheckout}
-            style={styles.checkoutButton}
+            style={[styles.checkoutButton, { backgroundColor: activeCategoryColor, shadowColor: activeCategoryColor }]}
           >
-            <Text style={styles.checkoutBtnText}>{t('checkoutBtn')}</Text>
-            <Ionicons name="arrow-forward" size={18} color="#0F172A" />
+            <Text style={[styles.checkoutBtnText, { color: '#FFFFFF' }]}>{t('checkoutBtn')}</Text>
+            <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       )}

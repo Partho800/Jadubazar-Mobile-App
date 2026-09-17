@@ -6,9 +6,11 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
@@ -80,11 +82,24 @@ export const BestSellers: React.FC<BestSellersProps> = ({
   onViewAllPress,
   onQuickAddPress,
 }) => {
+  const navigation = useNavigation<any>();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
   const { openProductDetails } = useProduct();
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+
+  const handleViewAll = () => {
+    if (onViewAllPress) {
+      onViewAllPress();
+    }
+    setActiveCategory('ecommerce');
+    setActiveSubCategory(null);
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {}
+  };
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -114,8 +129,8 @@ export const BestSellers: React.FC<BestSellersProps> = ({
         {/* View All Action Link */}
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={onViewAllPress}
-          className="flex-row items-center gap-1.5 mt-1 self-start"
+          onPress={handleViewAll}
+          className="flex-row items-center gap-1.5 mt-1 self-start cursor-pointer"
         >
           <Text className="text-xs font-black text-blue-600 max-w-[120px] text-right">
             {t('viewAllBestSellers')}

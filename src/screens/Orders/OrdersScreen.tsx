@@ -530,7 +530,16 @@ export const OrdersScreen: React.FC = () => {
                         <>
                           <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={() => setSelectedTrackingOrder(order)}
+                            onPress={() => {
+                              try {
+                                navigation.navigate('OrderTrackingTab', {
+                                  orderId: order.orderNumber,
+                                  estimatedDelivery: order.expectedDelivery || (isBangla ? '৪৫ মিনিট' : '45 Minutes'),
+                                });
+                              } catch (e) {
+                                setSelectedTrackingOrder(order);
+                              }
+                            }}
                             className="flex-1 bg-amber-500 py-3 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm"
                           >
                             <Ionicons name="navigate" size={16} color="#0F172A" />

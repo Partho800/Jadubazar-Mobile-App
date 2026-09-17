@@ -10,7 +10,8 @@ export interface TrustBadgeItem {
   titleKey: string;
   subKey: string;
   iconName: keyof typeof Ionicons.glyphMap;
-  iconColor: string;
+  iconColorLight: string;
+  iconColorDark: string;
   bgColorLight: string;
   bgColorDark: string;
 }
@@ -21,36 +22,40 @@ const BADGES: TrustBadgeItem[] = [
     titleKey: 'expressFastDelivery',
     subKey: 'expressFastDeliverySub',
     iconName: 'bus-outline',
-    iconColor: '#059669',
-    bgColorLight: 'bg-emerald-100/80',
-    bgColorDark: 'dark:bg-emerald-950/80',
+    iconColorLight: '#059669',
+    iconColorDark: '#34D399',
+    bgColorLight: 'bg-emerald-100',
+    bgColorDark: 'bg-emerald-900/60',
   },
   {
     id: 'b2',
     titleKey: 'genuineFresh',
     subKey: 'genuineFreshSub',
     iconName: 'shield-checkmark-outline',
-    iconColor: '#059669',
-    bgColorLight: 'bg-emerald-100/80',
-    bgColorDark: 'dark:bg-emerald-950/80',
+    iconColorLight: '#059669',
+    iconColorDark: '#34D399',
+    bgColorLight: 'bg-emerald-100',
+    bgColorDark: 'bg-emerald-900/60',
   },
   {
     id: 'b3',
     titleKey: 'secureEasyPayment',
     subKey: 'secureEasyPaymentSub',
     iconName: 'card-outline',
-    iconColor: '#2563EB',
-    bgColorLight: 'bg-blue-100/80',
-    bgColorDark: 'dark:bg-blue-950/80',
+    iconColorLight: '#2563EB',
+    iconColorDark: '#60A5FA',
+    bgColorLight: 'bg-blue-100',
+    bgColorDark: 'bg-blue-900/60',
   },
   {
     id: 'b4',
     titleKey: 'support247Dedicated',
     subKey: 'support247DedicatedSub',
     iconName: 'headset-outline',
-    iconColor: '#9333EA',
-    bgColorLight: 'bg-purple-100/80',
-    bgColorDark: 'dark:bg-purple-950/80',
+    iconColorLight: '#9333EA',
+    iconColorDark: '#C084FC',
+    bgColorLight: 'bg-purple-100',
+    bgColorDark: 'bg-purple-900/60',
   },
 ];
 
@@ -74,9 +79,15 @@ export const GroceryTrustBadges: React.FC = () => {
           >
             {/* Rounded Icon Box */}
             <View
-              className={`w-10 h-10 rounded-xl items-center justify-center mb-2.5 ${item.bgColorLight} ${item.bgColorDark}`}
+              className={`w-10 h-10 rounded-xl items-center justify-center mb-2.5 ${
+                isDarkMode ? item.bgColorDark : item.bgColorLight
+              }`}
             >
-              <Ionicons name={item.iconName} size={20} color={item.iconColor} />
+              <Ionicons
+                name={item.iconName}
+                size={20}
+                color={isDarkMode ? item.iconColorDark : item.iconColorLight}
+              />
             </View>
 
             {/* Text Area */}

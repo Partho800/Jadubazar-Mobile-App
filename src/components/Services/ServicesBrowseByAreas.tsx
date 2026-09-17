@@ -10,6 +10,10 @@ export interface ServiceAreaItem {
   titleKey: string;
   defaultTitle: string;
   iconName: keyof typeof Ionicons.glyphMap;
+  iconColorLight: string;
+  iconColorDark: string;
+  bgColorLight: string;
+  bgColorDark: string;
 }
 
 const SERVICE_AREAS: ServiceAreaItem[] = [
@@ -18,42 +22,70 @@ const SERVICE_AREAS: ServiceAreaItem[] = [
     titleKey: 'areaHomeCleaning',
     defaultTitle: 'Home Cleaning',
     iconName: 'sparkles-outline',
+    iconColorLight: '#9333EA',
+    iconColorDark: '#C084FC',
+    bgColorLight: 'bg-purple-100',
+    bgColorDark: 'bg-purple-900/60',
   },
   {
     id: 'appliance_repair',
     titleKey: 'areaApplianceRepair',
     defaultTitle: 'Appliance Repair',
     iconName: 'construct-outline',
+    iconColorLight: '#D97706',
+    iconColorDark: '#FBBF24',
+    bgColorLight: 'bg-amber-100',
+    bgColorDark: 'bg-amber-900/60',
   },
   {
     id: 'electrical',
     titleKey: 'areaElectrical',
     defaultTitle: 'Electrical Services',
     iconName: 'flash-outline',
+    iconColorLight: '#CA8A04',
+    iconColorDark: '#FACC15',
+    bgColorLight: 'bg-yellow-100',
+    bgColorDark: 'bg-yellow-900/60',
   },
   {
     id: 'plumbing',
     titleKey: 'areaPlumbing',
     defaultTitle: 'Plumbing Services',
     iconName: 'water-outline',
+    iconColorLight: '#0284C7',
+    iconColorDark: '#38BDF8',
+    bgColorLight: 'bg-sky-100',
+    bgColorDark: 'bg-sky-900/60',
   },
   {
     id: 'home_improvement',
     titleKey: 'areaHomeImprovement',
     defaultTitle: 'Home Improvement',
     iconName: 'hammer-outline',
+    iconColorLight: '#4F46E5',
+    iconColorDark: '#818CF8',
+    bgColorLight: 'bg-indigo-100',
+    bgColorDark: 'bg-indigo-900/60',
   },
   {
     id: 'personal_care',
     titleKey: 'areaPersonalCare',
     defaultTitle: 'Personal Care',
     iconName: 'cut-outline',
+    iconColorLight: '#DB2777',
+    iconColorDark: '#F472B6',
+    bgColorLight: 'bg-pink-100',
+    bgColorDark: 'bg-pink-900/60',
   },
   {
     id: 'other_services',
     titleKey: 'areaOtherServices',
     defaultTitle: 'Other Services',
     iconName: 'grid-outline',
+    iconColorLight: '#0D9488',
+    iconColorDark: '#2DD4BF',
+    bgColorLight: 'bg-teal-100',
+    bgColorDark: 'bg-teal-900/60',
   },
 ];
 
@@ -105,8 +137,16 @@ export const ServicesBrowseByAreas: React.FC<ServicesBrowseByAreasProps> = ({
             }`}
           >
             {/* Centered Icon Badge */}
-            <View className="w-14 h-14 rounded-2xl bg-[#EEF2FF] dark:bg-indigo-950/60 items-center justify-center border border-indigo-100/60 dark:border-indigo-900/40 mb-3">
-              <Ionicons name={item.iconName} size={28} color="#5B50E6" />
+            <View
+              className={`w-14 h-14 rounded-2xl items-center justify-center mb-3 ${
+                isDarkMode ? item.bgColorDark : item.bgColorLight
+              }`}
+            >
+              <Ionicons
+                name={item.iconName}
+                size={28}
+                color={isDarkMode ? item.iconColorDark : item.iconColorLight}
+              />
             </View>
 
             {/* Title Text */}

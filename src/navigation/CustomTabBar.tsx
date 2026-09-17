@@ -81,9 +81,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
             const { options } = descriptors[route.key];
             const currentActiveRoute = state.routes[state.index];
             const isCurrentRouteFocused = currentActiveRoute?.key === route.key;
-            const isFocused = isCategorySheetOpen
-              ? route.name === 'CategoriesTab'
-              : isCurrentRouteFocused;
+            const isFocused = isCurrentRouteFocused;
             const isCartTab = route.name === 'CartTab';
 
           const label =
@@ -94,16 +92,16 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
               : route.name;
 
           const onPress = () => {
-            if (route.name === 'CategoriesTab') {
-              openCategorySheet();
-              return;
-            }
-
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,
               canPreventDefault: true,
             });
+
+            if (route.name === 'CategoriesTab') {
+              openCategorySheet();
+              return;
+            }
 
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { HeaderTopBar, HeaderCategoryBar } from '../../components/common/Header/Header';
 import { EcommercePage } from '../../components/Ecommerce/EcommercePage';
 import { GroceryPage } from '../../components/Grocery/GroceryPage';
@@ -16,12 +16,15 @@ import { useService } from '../../context/ServiceContext';
 import { useCategory } from '../../context/CategoryContext';
 import { Ionicons } from '@expo/vector-icons';
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const { selectedProduct, closeProductDetails } = useProduct();
   const { selectedService, closeServiceDetails } = useService();
-  const { activeCategory, setActiveCategory } = useCategory();
+  const { activeCategory, setActiveCategory, activeCategoryColor } = useCategory();
+  const [isTabLoading, setIsTabLoading] = useState<boolean>(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -31,9 +34,19 @@ export const HomeScreen: React.FC = () => {
   }, [selectedProduct, selectedService]);
 
   const handleCategoryChange = (catId: string) => {
-    closeProductDetails();
-    closeServiceDetails();
-    setActiveCategory(catId);
+    if (catId === activeCategory && !selectedProduct && !selectedService) return;
+
+    if (selectedProduct) closeProductDetails();
+    if (selectedService) closeServiceDetails();
+
+    setIsTabLoading(true);
+
+    requestAnimationFrame(() => {
+      setActiveCategory(catId);
+      setTimeout(() => {
+        setIsTabLoading(false);
+      }, 150);
+    });
   };
 
   const getCategoryTitle = () => {
@@ -81,6 +94,7 @@ export const HomeScreen: React.FC = () => {
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
       >
         {/* Category Navigation Bar */}
         <HeaderCategoryBar
@@ -88,11 +102,15 @@ export const HomeScreen: React.FC = () => {
           onCategoryChange={handleCategoryChange}
         />
 
-        {/* Render Product Detail View or Service Detail View if active, else Category Page */}
+        {/* Render Product Detail View or Service Detail View if active, else Simple Ring Loader or Category Page */}
         {selectedProduct ? (
           <ProductDetailView />
         ) : selectedService ? (
           <ServiceDetailView />
+        ) : isTabLoading ? (
+          <View style={styles.ringLoadingContainer}>
+            <ActivityIndicator size="large" color={activeCategoryColor} />
+          </View>
         ) : activeCategory === 'ecommerce' ? (
           <EcommercePage
             onShopCollectionPress={() => {
@@ -135,5 +153,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 120,
+  },
+  ringLoadingContainer: {
+    width: '100%',
+    minHeight: Math.max(380, SCREEN_HEIGHT - 240),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

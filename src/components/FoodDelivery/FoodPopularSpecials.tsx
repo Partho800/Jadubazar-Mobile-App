@@ -260,7 +260,9 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleScrollPrev}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center bg-white dark:bg-slate-800 shadow-xs"
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center shadow-xs ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
             >
               <Ionicons
                 name="chevron-back"
@@ -272,7 +274,9 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleScrollNext}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center bg-white dark:bg-slate-800 shadow-xs ml-1"
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center shadow-xs ml-1 ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
             >
               <Ionicons
                 name="chevron-forward"

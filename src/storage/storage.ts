@@ -1,6 +1,18 @@
 // Local Storage Wrapper for App Data Persistence
 
 export const storage = {
+  getItemSync(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+      return null;
+    } catch (e) {
+      console.error('Storage getItemSync error:', e);
+      return null;
+    }
+  },
+
   async getItem(key: string): Promise<string | null> {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {

@@ -329,10 +329,12 @@ const FILTER_TABS = [
 
 interface GroceryHappyHourProps {
   onAddToCart?: (product: HappyHourProduct) => void;
+  onViewAllPress?: () => void;
 }
 
 export const GroceryHappyHour: React.FC<GroceryHappyHourProps> = ({
   onAddToCart,
+  onViewAllPress,
 }) => {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
@@ -423,6 +425,22 @@ export const GroceryHappyHour: React.FC<GroceryHappyHourProps> = ({
                 {t('leftText')}
               </Text>
             </View>
+
+            {/* View All Button */}
+            {onViewAllPress ? (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={onViewAllPress}
+                className={`flex-row items-center px-3 py-1.5 rounded-full border shadow-xs gap-1 cursor-pointer ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                }`}
+              >
+                <Text className={`text-xs font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                  {t('viewAll')}
+                </Text>
+                <Ionicons name="chevron-forward" size={14} color={isDarkMode ? '#94A3B8' : '#475569'} />
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
 
@@ -528,12 +546,14 @@ export const GroceryHappyHour: React.FC<GroceryHappyHourProps> = ({
                   <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={() => toggleWishlist(item.id)}
-                    className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/85 dark:bg-slate-900/85 items-center justify-center z-10 shadow-xs"
+                    className={`absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
+                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    }`}
                   >
                     <Ionicons
                       name={wishlist[item.id] ? 'heart' : 'heart-outline'}
                       size={15}
-                      color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#94A3B8' : '#64748B'}
+                      color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
                     />
                   </TouchableOpacity>
 

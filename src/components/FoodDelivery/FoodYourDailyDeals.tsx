@@ -156,11 +156,13 @@ export const FoodYourDailyDeals: React.FC<FoodYourDailyDealsProps> = ({ onDealPr
             transform: [{ translateY: -20 }],
             zIndex: 30,
           }}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white dark:bg-slate-900 items-center justify-center border border-slate-200 dark:border-slate-800 shadow-2xl active:scale-95"
+          className={`w-10 h-10 rounded-full items-center justify-center border shadow-md active:scale-95 ${
+            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+          }`}
         >
           <Ionicons
-            name="arrow-back"
-            size={20}
+            name="chevron-back"
+            size={22}
             color={isDarkMode ? '#F8FAFC' : '#0F172A'}
           />
         </TouchableOpacity>
@@ -176,11 +178,13 @@ export const FoodYourDailyDeals: React.FC<FoodYourDailyDealsProps> = ({ onDealPr
             transform: [{ translateY: -20 }],
             zIndex: 30,
           }}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white dark:bg-slate-900 items-center justify-center border border-slate-200 dark:border-slate-800 shadow-2xl active:scale-95"
+          className={`w-10 h-10 rounded-full items-center justify-center border shadow-md active:scale-95 ${
+            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+          }`}
         >
           <Ionicons
-            name="arrow-forward"
-            size={20}
+            name="chevron-forward"
+            size={22}
             color={isDarkMode ? '#F8FAFC' : '#0F172A'}
           />
         </TouchableOpacity>

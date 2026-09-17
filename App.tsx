@@ -9,6 +9,7 @@ import { ProductProvider } from './src/context/ProductContext';
 import { ServiceProvider } from './src/context/ServiceContext';
 import { CategoryProvider } from './src/context/CategoryContext';
 import { MenuDrawerProvider } from './src/context/MenuDrawerContext';
+import { UserProvider } from './src/context/UserContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
@@ -39,17 +40,19 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <ProductProvider>
-            <ServiceProvider>
-              <CategoryProvider>
-                <MenuDrawerProvider>
-                  <NavigationContainer>
-                    <AppNavigator />
-                  </NavigationContainer>
-                </MenuDrawerProvider>
-              </CategoryProvider>
-            </ServiceProvider>
-          </ProductProvider>
+          <UserProvider>
+            <ProductProvider>
+              <ServiceProvider>
+                <CategoryProvider>
+                  <MenuDrawerProvider>
+                    <NavigationContainer>
+                      <AppNavigator />
+                    </NavigationContainer>
+                  </MenuDrawerProvider>
+                </CategoryProvider>
+              </ServiceProvider>
+            </ProductProvider>
+          </UserProvider>
         </LanguageProvider>
       </ThemeProvider>
     </SafeAreaProvider>

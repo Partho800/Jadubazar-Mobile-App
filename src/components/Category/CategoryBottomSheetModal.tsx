@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useCategory, CATEGORY_COLORS } from '../../context/CategoryContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -381,7 +382,14 @@ interface CategoryBottomSheetModalProps {
 export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> = ({
   onSelectSubCategory,
 }) => {
-  const { isCategorySheetOpen, closeCategorySheet, activeCategory, setActiveCategory } = useCategory();
+  const navigation = useNavigation<any>();
+  const {
+    isCategorySheetOpen,
+    closeCategorySheet,
+    activeCategory,
+    setActiveCategory,
+    setActiveSubCategory,
+  } = useCategory();
   const { isDarkMode } = useTheme();
   const { t, isBangla } = useLanguage();
 
@@ -404,16 +412,34 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
     setSearchQuery('');
   };
 
+  const handleBrowseAllCategoryProducts = () => {
+    setActiveCategory(selectedCatKey);
+    setActiveSubCategory(null);
+    closeCategorySheet();
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {
+      console.log('Navigation error:', e);
+    }
+  };
+
   const filteredSubcategories = currentCategoryData.subcategories.filter((sub) => {
     const nameToMatch = isBangla && sub.nameBN ? `${sub.name} ${sub.nameBN}` : sub.name;
     return nameToMatch.toLowerCase().includes(searchQuery.trim().toLowerCase());
   });
 
   const handleSubCatItemPress = (item: SubCategoryItem) => {
+    setActiveCategory(selectedCatKey);
+    setActiveSubCategory(item.name);
     if (onSelectSubCategory) {
       onSelectSubCategory(item, selectedCatKey);
     }
     closeCategorySheet();
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {
+      console.log('Navigation error:', e);
+    }
   };
 
   if (!isCategorySheetOpen) return null;
@@ -436,39 +462,35 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
               ]}
             >
               {/* Top Handle / Drag Bar */}
-              <View style={styles.handleContainer}>
+              <View className="items-center py-1.5">
                 <View
-                  style={[
-                    styles.handleBar,
-                    { backgroundColor: isDarkMode ? '#334155' : '#CBD5E1' },
-                  ]}
+                  className={`w-11 h-1.5 rounded-full ${
+                    isDarkMode ? 'bg-slate-700' : 'bg-slate-300'
+                  }`}
                 />
               </View>
 
               {/* Header: Title, Count Badge, Subtitle & Close Button */}
-              <View style={styles.headerRow}>
-                <View style={styles.headerTextGroup}>
-                  <View style={styles.titleWithBadge}>
+              <View className="flex-row items-start justify-between px-5 mt-1 mb-2">
+                <View className="flex-1 mr-3">
+                  <View className="flex-row items-center gap-2">
                     <Text
                       numberOfLines={1}
-                      style={[
-                        styles.headerTitle,
-                        { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                      ]}
+                      className={`text-lg font-black ${
+                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                      }`}
                     >
                       {t(currentCategoryData.labelKey)} {isBangla ? 'ক্যাটাগরিসমূহ' : 'Categories'}
                     </Text>
                     <View
-                      style={[
-                        styles.countBadge,
-                        { backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9' },
-                      ]}
+                      className={`px-2 py-0.5 rounded-full ${
+                        isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                      }`}
                     >
                       <Text
-                        style={[
-                          styles.countBadgeText,
-                          { color: isDarkMode ? '#94A3B8' : '#475569' },
-                        ]}
+                        className={`text-xs font-bold ${
+                          isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                        }`}
                       >
                         {currentCategoryData.subcategories.length}
                       </Text>
@@ -476,10 +498,9 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
                   </View>
                   <Text
                     numberOfLines={1}
-                    style={[
-                      styles.headerSubtitle,
-                      { color: isDarkMode ? '#94A3B8' : '#64748B' },
-                    ]}
+                    className={`text-xs font-medium mt-0.5 ${
+                      isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                    }`}
                   >
                     {isBangla ? 'আপনার পছন্দের বিভাগ থেকে কেনাকাটা করুন' : currentCategoryData.subtitle}
                   </Text>
@@ -488,10 +509,9 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={closeCategorySheet}
-                  style={[
-                    styles.closeButton,
-                    { backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9' },
-                  ]}
+                  className={`w-8 h-8 rounded-full items-center justify-center ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                  }`}
                 >
                   <Ionicons
                     name="close"
@@ -502,11 +522,11 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
               </View>
 
               {/* Top 5 Category Horizontal Selector Pills (No Icons) */}
-              <View style={styles.pillsScrollWrapper}>
+              <View className="mb-2">
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.pillsScrollContainer}
+                  contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
                 >
                   {TOP_CATEGORIES_ORDER.map((key) => {
                     const cat = MAIN_CATEGORIES_DATA[key];
@@ -519,31 +539,27 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
                         key={key}
                         activeOpacity={0.8}
                         onPress={() => handleCategoryTabPress(key)}
-                        style={[
-                          styles.categoryPill,
+                        style={
                           isSelected
-                            ? {
-                                backgroundColor: activeColor,
-                                borderColor: activeColor,
-                                shadowColor: activeColor,
-                                shadowOffset: { width: 0, height: 3 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 5,
-                                elevation: 4,
-                              }
-                            : {
-                                backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-                                borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-                              },
-                        ]}
+                            ? { backgroundColor: activeColor, borderColor: activeColor }
+                            : undefined
+                        }
+                        className={`px-4 py-2 rounded-full border ${
+                          isSelected
+                            ? ''
+                            : isDarkMode
+                            ? 'bg-slate-800 border-slate-700'
+                            : 'bg-white border-slate-200'
+                        }`}
                       >
                         <Text
-                          style={[
-                            styles.categoryPillText,
+                          className={`text-xs font-extrabold ${
                             isSelected
-                              ? styles.categoryPillTextActive
-                              : { color: isDarkMode ? '#E2E8F0' : '#334155' },
-                          ]}
+                              ? 'text-white'
+                              : isDarkMode
+                              ? 'text-slate-200'
+                              : 'text-slate-700'
+                          }`}
                         >
                           {t(cat.labelKey)}
                         </Text>
@@ -554,31 +570,28 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
               </View>
 
               {/* Search Bar Input */}
-              <View style={styles.searchSection}>
+              <View className="px-5 mb-3">
                 <View
-                  style={[
-                    styles.searchBox,
-                    {
-                      backgroundColor: isDarkMode ? '#1E293B' : '#F8FAFC',
-                      borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-                    },
-                  ]}
+                  className={`flex-row items-center px-3.5 h-11 rounded-2xl border ${
+                    isDarkMode
+                      ? 'bg-slate-800 border-slate-700'
+                      : 'bg-slate-50 border-slate-200'
+                  }`}
                 >
                   <Ionicons
                     name="search-outline"
                     size={18}
                     color={isDarkMode ? '#64748B' : '#94A3B8'}
-                    style={{ marginRight: 8 }}
+                    className="mr-2"
                   />
                   <TextInput
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     placeholder={isBangla ? `${t(currentCategoryData.labelKey)} ক্যাটাগরি খুঁজুন...` : `Search ${currentCategoryData.title} categories...`}
                     placeholderTextColor={isDarkMode ? '#64748B' : '#94A3B8'}
-                    style={[
-                      styles.searchInput,
-                      { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                    ]}
+                    className={`flex-1 text-xs font-semibold ${
+                      isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                    }`}
                   />
                   {searchQuery.length > 0 && (
                     <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -592,65 +605,83 @@ export const CategoryBottomSheetModal: React.FC<CategoryBottomSheetModalProps> =
                 </View>
               </View>
 
+              {/* Browse All Products Banner */}
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={handleBrowseAllCategoryProducts}
+                style={{
+                  backgroundColor: CATEGORY_COLORS[selectedCatKey] || '#2563EB',
+                }}
+                className="mx-5 mb-3 p-3.5 rounded-2xl flex-row items-center justify-between shadow-md"
+              >
+                <View className="flex-1 mr-2">
+                  <Text className="text-white text-xs sm:text-sm font-black">
+                    {isBangla ? `সমস্ত ${t(currentCategoryData.labelKey)} পণ্য দেখুন` : `Browse All ${currentCategoryData.title} Products`}
+                  </Text>
+                  <Text className="text-white/80 text-[11px] font-medium mt-0.5">
+                    {isBangla ? 'ক্যাটালগ শপে সব প্রোডাক্ট দেখুন' : 'Explore full catalog with filters & deals'}
+                  </Text>
+                </View>
+                <View className="w-8 h-8 rounded-full bg-white/20 items-center justify-center">
+                  <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+                </View>
+              </TouchableOpacity>
+
               {/* Sub-categories 3-Column Grid */}
               <ScrollView
-                style={styles.gridScrollView}
-                contentContainerStyle={styles.gridContentContainer}
+                className="flex-1 px-5"
+                contentContainerStyle={{ paddingBottom: 24 }}
                 showsVerticalScrollIndicator={true}
               >
                 {filteredSubcategories.length === 0 ? (
-                  <View style={styles.emptyState}>
+                  <View className="items-center justify-center py-10">
                     <Ionicons
                       name="search-outline"
                       size={36}
                       color={isDarkMode ? '#475569' : '#94A3B8'}
                     />
                     <Text
-                      style={[
-                        styles.emptyStateText,
-                        { color: isDarkMode ? '#94A3B8' : '#64748B' },
-                      ]}
+                      className={`text-xs font-semibold text-center mt-2 ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                      }`}
                     >
                       {isBangla ? `"${searchQuery}" মিলযুক্ত কোনো ক্যাটাগরি পাওয়া যায়নি` : `No categories found matching "${searchQuery}"`}
                     </Text>
                   </View>
                 ) : (
-                  <View style={styles.gridContainer}>
+                  <View className="flex-row flex-wrap gap-2.5 justify-between">
                     {filteredSubcategories.map((sub) => (
                       <TouchableOpacity
                         key={sub.id}
                         activeOpacity={0.8}
                         onPress={() => handleSubCatItemPress(sub)}
-                        style={[
-                          styles.subCatCard,
-                          {
-                            backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-                            borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-                          },
-                        ]}
+                        style={{ width: '31%' }}
+                        className={`p-2 rounded-2xl border items-center shadow-xs ${
+                          isDarkMode
+                            ? 'bg-slate-800 border-slate-700'
+                            : 'bg-white border-slate-200'
+                        }`}
                       >
                         <View
-                          style={[
-                            styles.imageWrapper,
-                            { backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC' },
-                          ]}
+                          className={`w-full aspect-square rounded-xl overflow-hidden mb-1.5 items-center justify-center ${
+                            isDarkMode ? 'bg-slate-900' : 'bg-slate-50'
+                          }`}
                         >
                           {sub.imageUrl ? (
                             <Image
                               source={{ uri: sub.imageUrl }}
-                              style={styles.subCatImage}
+                              className="w-full h-full"
                               resizeMode="cover"
                             />
                           ) : null}
                         </View>
 
-                        <View style={styles.cardTextContainer}>
+                        <View className="w-full items-center justify-center px-0.5">
                           <Text
                             numberOfLines={2}
-                            style={[
-                              styles.subCatTitle,
-                              { color: isDarkMode ? '#F1F5F9' : '#1E293B' },
-                            ]}
+                            className={`text-[11px] font-bold text-center leading-tight ${
+                              isDarkMode ? 'text-slate-200' : 'text-slate-800'
+                            }`}
                           >
                             {isBangla && sub.nameBN ? sub.nameBN : sub.name}
                           </Text>
@@ -842,5 +873,43 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  browseAllBanner: {
+    marginHorizontal: 16,
+    marginBottom: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+  },
+  browseAllTextGroup: {
+    flex: 1,
+    paddingRight: 10,
+  },
+  browseAllTitle: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  browseAllSubtitle: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  browseAllArrowIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

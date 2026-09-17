@@ -325,12 +325,14 @@ export const GroceryDailyEssentials: React.FC<GroceryDailyEssentialsProps> = ({
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => toggleWishlist(item.id)}
-                  className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 items-center justify-center z-10 shadow-xs"
+                  className={`absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
+                    isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                  }`}
                 >
                   <Ionicons
                     name={wishlist[item.id] ? 'heart' : 'heart-outline'}
                     size={15}
-                    color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#94A3B8' : '#64748B'}
+                    color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
                   />
                 </TouchableOpacity>
 

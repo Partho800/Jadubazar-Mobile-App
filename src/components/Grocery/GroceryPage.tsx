@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useCategory } from '../../context/CategoryContext';
 import { GroceryHero } from './GroceryHero';
 import { GroceryShopByCategory } from './GroceryShopByCategory';
 import { GrocerySpecialSavings } from './GrocerySpecialSavings';
@@ -21,16 +23,7 @@ interface GroceryPageProps {
   onExploreDealsPress?: () => void;
   onCategoryPress?: (categoryId: string) => void;
   onViewAllSavingsPress?: () => void;
-  onAddToCart?: (
-    product:
-      | HappyHourProduct
-      | SnackProduct
-      | UnileverProduct
-      | HotTrendingProduct
-      | TodaysFeaturedProduct
-      | FreshPicksProduct
-      | DailyEssentialsProduct
-  ) => void;
+  onAddToCart?: (product: any) => void;
   onBestDealsBannerPress?: () => void;
   onMeatBannerPress?: () => void;
   onFishBannerPress?: () => void;
@@ -52,79 +45,101 @@ export const GroceryPage: React.FC<GroceryPageProps> = ({
   onShopVegPress,
   onExploreFruitsPress,
 }) => {
+  const navigation = useNavigation<any>();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
+
+  const handleCategoryClick = (catId?: string) => {
+    setActiveCategory('grocery');
+    setActiveSubCategory(catId || null);
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {}
+  };
+
   return (
     <View style={styles.container}>
       {/* 1. Full-Width Grocery Hero Section */}
       <GroceryHero
-        onShopNowPress={onShopNowPress}
-        onExploreDealsPress={onExploreDealsPress}
+        onShopNowPress={onShopNowPress || (() => handleCategoryClick())}
+        onExploreDealsPress={onExploreDealsPress || (() => handleCategoryClick())}
       />
 
       {/* 2. Shop By Category Horizontal Section */}
       <GroceryShopByCategory
-        onCategoryPress={onCategoryPress}
+        onCategoryPress={(catId) => {
+          if (onCategoryPress) onCategoryPress(catId);
+          handleCategoryClick(catId);
+        }}
+        onAllCategoriesPress={() => handleCategoryClick()}
       />
 
       {/* 3. Special Savings Promo Card Section */}
       <GrocerySpecialSavings
-        onViewAllPress={onViewAllSavingsPress}
+        onViewAllPress={onViewAllSavingsPress || (() => handleCategoryClick())}
       />
 
       {/* 4. HAPPY HOUR Flash Deals Section */}
       <GroceryHappyHour
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick()}
       />
 
       {/* 5. SNACKS, NOODLES & MORE Section */}
       <GrocerySnacksNoodles
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick('Snacks & Biscuits')}
       />
 
       {/* 6. UNILEVER WEEK Section */}
       <GroceryUnileverWeek
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick('Household & Cleaning')}
       />
 
       {/* 7. Best Deals Banner Section (Only Image with 15px radius) */}
       <GroceryBestDealsBanner
-        onPress={onBestDealsBannerPress}
+        onPress={onBestDealsBannerPress || (() => handleCategoryClick())}
       />
 
       {/* 8. HOT & TRENDING RIGHT NOW Section */}
       <GroceryHotTrending
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick()}
       />
 
       {/* 9. TODAY'S FEATURED FINDS Dark Section */}
       <GroceryTodaysFeatured
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick()}
       />
 
       {/* 10. FRESH MEAT & FRESH FISH Promo Banners Section */}
       <GroceryMeatFishBanners
-        onMeatPress={onMeatBannerPress}
-        onFishPress={onFishBannerPress}
+        onMeatPress={onMeatBannerPress || (() => handleCategoryClick('Fish & Meat'))}
+        onFishPress={onFishBannerPress || (() => handleCategoryClick('Fish & Meat'))}
       />
 
       {/* 11. STOCK UP ON ESSENTIALS Pantry Staples Banner */}
       <GroceryEssentialsBanner
-        onPress={onEssentialsPress}
+        onPress={onEssentialsPress || (() => handleCategoryClick())}
       />
 
       {/* 12. FRESH VEGETABLES & FRESH FRUITS Offers Cards */}
       <GroceryVegFruitsOffers
-        onShopVegPress={onShopVegPress}
-        onExploreFruitsPress={onExploreFruitsPress}
+        onShopVegPress={onShopVegPress || (() => handleCategoryClick('Fresh Vegetables'))}
+        onExploreFruitsPress={onExploreFruitsPress || (() => handleCategoryClick('Fresh Fruits'))}
       />
 
       {/* 13. FRESH PICKS Section */}
       <GroceryFreshPicks
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick('Fresh Vegetables')}
       />
 
       {/* 14. DAILY ESSENTIALS Section */}
       <GroceryDailyEssentials
         onAddToCart={onAddToCart}
+        onViewAllPress={() => handleCategoryClick('Atta, Maida & Suji')}
       />
 
       {/* 15. TRUST BADGES Section (2 Cards Per Line Grid) */}

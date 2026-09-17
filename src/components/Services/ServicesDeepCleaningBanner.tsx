@@ -34,8 +34,18 @@ export const ServicesDeepCleaningBanner: React.FC<ServicesDeepCleaningBannerProp
         {/* Left Content Column */}
         <View className="flex-1 p-6 sm:p-10 items-start">
           {/* 1. Verified Services Badge */}
-          <View className="bg-[#EDE9FE] dark:bg-purple-950/80 px-3.5 py-1 rounded-full border border-purple-200/50 dark:border-purple-800/50 mb-4">
-            <Text className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#5B50E6] dark:text-purple-300">
+          <View
+            className={`px-3.5 py-1 rounded-full border mb-4 ${
+              isDarkMode
+                ? 'bg-purple-950/80 border-purple-800'
+                : 'bg-purple-100/90 border-purple-200'
+            }`}
+          >
+            <Text
+              className={`text-[11px] sm:text-xs font-black uppercase tracking-wider ${
+                isDarkMode ? 'text-purple-300' : 'text-[#4C1D95]'
+              }`}
+            >
               {t('verifiedServicesTag') !== 'verifiedServicesTag'
                 ? t('verifiedServicesTag')
                 : 'VERIFIED SERVICES'}

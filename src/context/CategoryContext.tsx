@@ -32,6 +32,8 @@ const getInitialCategory = (): string => {
 interface CategoryContextType {
   activeCategory: string;
   setActiveCategory: (category: string) => void;
+  activeSubCategory: string | null;
+  setActiveSubCategory: (subCategory: string | null) => void;
   activeCategoryColor: string;
   isCategorySheetOpen: boolean;
   setIsCategorySheetOpen: (open: boolean) => void;
@@ -43,6 +45,7 @@ const CategoryContext = createContext<CategoryContextType | undefined>(undefined
 
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeCategory, setActiveCategoryState] = useState<string>(getInitialCategory);
+  const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,35 +57,52 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
     });
   }, []);
 
-  const setActiveCategory = (category: string) => {
+  const setActiveCategory = React.useCallback((category: string) => {
     setActiveCategoryState(category);
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(STORAGE_KEY, category);
+    setActiveSubCategory(null); // Reset subcategory when category changes
+    setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem(STORAGE_KEY, category);
+        }
+      } catch (e) {
+        console.error('Error writing category to localStorage:', e);
       }
-    } catch (e) {
-      console.error('Error writing category to localStorage:', e);
-    }
-    storage.setItem(STORAGE_KEY, category);
-  };
+      storage.setItem(STORAGE_KEY, category);
+    }, 0);
+  }, []);
 
-  const openCategorySheet = () => setIsCategorySheetOpen(true);
-  const closeCategorySheet = () => setIsCategorySheetOpen(false);
+  const openCategorySheet = React.useCallback(() => setIsCategorySheetOpen(true), []);
+  const closeCategorySheet = React.useCallback(() => setIsCategorySheetOpen(false), []);
 
   const activeCategoryColor = CATEGORY_COLORS[activeCategory] || '#2563EB';
 
+  const contextValue = React.useMemo(
+    () => ({
+      activeCategory,
+      setActiveCategory,
+      activeSubCategory,
+      setActiveSubCategory,
+      activeCategoryColor,
+      isCategorySheetOpen,
+      setIsCategorySheetOpen,
+      openCategorySheet,
+      closeCategorySheet,
+    }),
+    [
+      activeCategory,
+      setActiveCategory,
+      activeSubCategory,
+      setActiveSubCategory,
+      activeCategoryColor,
+      isCategorySheetOpen,
+      openCategorySheet,
+      closeCategorySheet,
+    ]
+  );
+
   return (
-    <CategoryContext.Provider
-      value={{
-        activeCategory,
-        setActiveCategory,
-        activeCategoryColor,
-        isCategorySheetOpen,
-        setIsCategorySheetOpen,
-        openCategorySheet,
-        closeCategorySheet,
-      }}
-    >
+    <CategoryContext.Provider value={contextValue}>
       {children}
     </CategoryContext.Provider>
   );
@@ -94,6 +114,8 @@ export const useCategory = (): CategoryContextType => {
     return {
       activeCategory: 'ecommerce',
       setActiveCategory: () => {},
+      activeSubCategory: null,
+      setActiveSubCategory: () => {},
       activeCategoryColor: '#2563EB',
       isCategorySheetOpen: false,
       setIsCategorySheetOpen: () => {},

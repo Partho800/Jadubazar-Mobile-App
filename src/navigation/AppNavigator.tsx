@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { MainNavigator } from './MainNavigator';
 import { CategoryBottomSheetModal } from '../components/Category/CategoryBottomSheetModal';
 import { MenuDrawerModal } from '../components/common/Header/MenuDrawerModal';
+import { SupportChatFloatingButton } from '../components/common/SupportChatFloatingButton';
 
 export const AppNavigator: React.FC = () => {
   const { theme } = useTheme();
@@ -20,6 +21,7 @@ export const AppNavigator: React.FC = () => {
       <MainNavigator />
       <CategoryBottomSheetModal />
       <MenuDrawerModal />
+      <SupportChatFloatingButton />
     </>
   );
 };

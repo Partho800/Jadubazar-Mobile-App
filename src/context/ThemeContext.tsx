@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { ThemeColors, lightTheme, darkTheme } from '../theme/theme';
 
+import { storage } from '../storage/storage';
+
 interface ThemeContextType {
   theme: ThemeColors;
   isDarkMode: boolean;
@@ -9,12 +11,20 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const getInitialTheme = (): boolean => {
+  const saved = storage.getItemSync('app_theme');
+  return saved === 'dark';
+};
+
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Default is Light Mode (isDarkMode = false)
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(getInitialTheme);
 
   const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      storage.setItem('app_theme', next ? 'dark' : 'light');
+      return next;
+    });
   };
 
   const theme = isDarkMode ? darkTheme : lightTheme;

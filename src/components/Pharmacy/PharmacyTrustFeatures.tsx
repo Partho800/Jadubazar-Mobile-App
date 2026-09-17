@@ -67,8 +67,16 @@ export const PharmacyTrustFeatures: React.FC = () => {
             }`}
           >
             {/* Left Icon Area */}
-            <View className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl items-center justify-center bg-teal-50/60 dark:bg-teal-950/40 shrink-0">
-              <Ionicons name={item.iconName} size={34} color="#009688" />
+            <View
+              className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl items-center justify-center shrink-0 ${
+                isDarkMode ? 'bg-teal-900/60' : 'bg-teal-100'
+              }`}
+            >
+              <Ionicons
+                name={item.iconName}
+                size={34}
+                color={isDarkMode ? '#2DD4BF' : '#0D9488'}
+              />
             </View>
 
             {/* Right Text Details */}

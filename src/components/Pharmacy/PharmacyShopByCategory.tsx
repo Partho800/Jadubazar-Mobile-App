@@ -155,13 +155,29 @@ export const PharmacyShopByCategory: React.FC<PharmacyShopByCategoryProps> = ({
             >
               {item.isDashedRing ? (
                 /* Dashed Circle Outer Ring for Baby Category */
-                <View className="w-16 h-16 rounded-full border-2 border-dashed border-emerald-400/80 items-center justify-center bg-teal-50/40 dark:bg-teal-950/30">
-                  <Ionicons name={item.iconName} size={32} color="#009688" />
+                <View
+                  className={`w-16 h-16 rounded-full border-2 border-dashed border-teal-400/80 items-center justify-center ${
+                    isDarkMode ? 'bg-teal-900/40' : 'bg-teal-50'
+                  }`}
+                >
+                  <Ionicons
+                    name={item.iconName}
+                    size={32}
+                    color={isDarkMode ? '#2DD4BF' : '#0D9488'}
+                  />
                 </View>
               ) : (
                 /* Standard Icon */
-                <View className="w-16 h-16 rounded-xl items-center justify-center bg-teal-50/50 dark:bg-teal-950/30">
-                  <Ionicons name={item.iconName} size={34} color="#009688" />
+                <View
+                  className={`w-16 h-16 rounded-xl items-center justify-center ${
+                    isDarkMode ? 'bg-teal-900/40' : 'bg-teal-50'
+                  }`}
+                >
+                  <Ionicons
+                    name={item.iconName}
+                    size={34}
+                    color={isDarkMode ? '#2DD4BF' : '#0D9488'}
+                  />
                 </View>
               )}
             </View>

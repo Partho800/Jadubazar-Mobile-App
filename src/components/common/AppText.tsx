@@ -67,11 +67,17 @@ export const AppText: React.FC<AppTextProps> = ({ style, weight, children, ...pr
   }
 
   // Remove numeric/string fontWeight from base style to avoid native Android/iOS font lookup fallback
+  const removeFontWeight = (s: any) => {
+    if (s && typeof s === 'object') {
+      const { fontWeight, ...rest } = s;
+      return rest;
+    }
+    return s;
+  };
+
   const cleanStyle = Array.isArray(style)
-    ? style.map((s) => (s && typeof s === 'object' ? { ...s, fontWeight: undefined } : s))
-    : style && typeof style === 'object'
-    ? { ...style, fontWeight: undefined }
-    : style;
+    ? style.map(removeFontWeight)
+    : removeFontWeight(style);
 
   return (
     <RNText style={[cleanStyle, { fontFamily: targetFont }]} {...props}>

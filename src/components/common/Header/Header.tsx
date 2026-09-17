@@ -208,7 +208,7 @@ export const HeaderCategoryBar: React.FC<HeaderCategoryBarProps> = ({
               style={[
                 styles.categoryPill,
                 isActive
-                  ? [styles.activeCategoryPill, { backgroundColor: cat.activeBg || '#2563EB', shadowColor: cat.activeBg || '#2563EB' }]
+                  ? [styles.activeCategoryPill, { backgroundColor: cat.activeBg || '#2563EB' }]
                   : [
                       styles.inactiveCategoryPill,
                       {
@@ -344,11 +344,6 @@ const styles = StyleSheet.create({
   },
   activeCategoryPill: {
     backgroundColor: '#2563EB',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 3,
   },
   inactiveCategoryPill: {
     borderWidth: 1,

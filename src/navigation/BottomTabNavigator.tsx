@@ -10,6 +10,9 @@ import { SearchScreen } from '../screens/Search/SearchScreen';
 import { OrdersScreen } from '../screens/Orders/OrdersScreen';
 import { WishlistScreen } from '../screens/Wishlist/WishlistScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
+import { CheckoutScreen } from '../screens/Checkout/CheckoutScreen';
+import { OrderSuccessScreen } from '../screens/Checkout/OrderSuccessScreen';
+import { OrderTrackingScreen } from '../screens/Orders/OrderTrackingScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -51,6 +54,30 @@ export const BottomTabNavigator: React.FC = () => {
         component={CartScreen}
         options={{
           tabBarLabel: 'Cart',
+        }}
+      />
+
+      <Tab.Screen
+        name="CheckoutTab"
+        component={CheckoutScreen}
+        options={{
+          tabBarLabel: 'Checkout',
+        }}
+      />
+
+      <Tab.Screen
+        name="OrderSuccessTab"
+        component={OrderSuccessScreen}
+        options={{
+          tabBarLabel: 'Order Success',
+        }}
+      />
+
+      <Tab.Screen
+        name="OrderTrackingTab"
+        component={OrderTrackingScreen}
+        options={{
+          tabBarLabel: 'Order Tracking',
         }}
       />
 

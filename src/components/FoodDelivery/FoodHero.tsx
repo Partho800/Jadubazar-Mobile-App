@@ -121,8 +121,11 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
           <View className="flex-row flex-wrap sm:flex-nowrap justify-between gap-y-4 gap-x-2">
             {/* 1. FAST DELIVERY */}
             <View className="w-[48%] sm:w-[24%] items-center text-center">
-              <View className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/80 items-center justify-center mb-2 shadow-xs">
-                <Ionicons name="bicycle-outline" size={24} color="#EA580C" />
+              <View
+                style={{ backgroundColor: isDarkMode ? '#451A03' : '#FFEDD5' }}
+                className="w-12 h-12 rounded-full items-center justify-center mb-2 shadow-xs"
+              >
+                <Ionicons name="bicycle-outline" size={24} color="#FF6B00" />
               </View>
               <Text
                 className={`text-xs font-extrabold uppercase text-center mb-0.5 ${
@@ -142,8 +145,11 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
 
             {/* 2. FRESH INGREDIENTS */}
             <View className="w-[48%] sm:w-[24%] items-center text-center">
-              <View className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/80 items-center justify-center mb-2 shadow-xs">
-                <Ionicons name="leaf-outline" size={24} color="#EA580C" />
+              <View
+                style={{ backgroundColor: isDarkMode ? '#451A03' : '#FFEDD5' }}
+                className="w-12 h-12 rounded-full items-center justify-center mb-2 shadow-xs"
+              >
+                <Ionicons name="leaf-outline" size={24} color="#FF6B00" />
               </View>
               <Text
                 className={`text-xs font-extrabold uppercase text-center mb-0.5 ${
@@ -163,8 +169,11 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
 
             {/* 3. HOT & TASTY */}
             <View className="w-[48%] sm:w-[24%] items-center text-center">
-              <View className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/80 items-center justify-center mb-2 shadow-xs">
-                <Ionicons name="flame-outline" size={24} color="#EA580C" />
+              <View
+                style={{ backgroundColor: isDarkMode ? '#451A03' : '#FFEDD5' }}
+                className="w-12 h-12 rounded-full items-center justify-center mb-2 shadow-xs"
+              >
+                <Ionicons name="flame-outline" size={24} color="#FF6B00" />
               </View>
               <Text
                 className={`text-xs font-extrabold uppercase text-center mb-0.5 ${
@@ -184,8 +193,11 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
 
             {/* 4. BEST PRICES */}
             <View className="w-[48%] sm:w-[24%] items-center text-center">
-              <View className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/80 items-center justify-center mb-2 shadow-xs">
-                <Ionicons name="pricetag-outline" size={24} color="#EA580C" />
+              <View
+                style={{ backgroundColor: isDarkMode ? '#451A03' : '#FFEDD5' }}
+                className="w-12 h-12 rounded-full items-center justify-center mb-2 shadow-xs"
+              >
+                <Ionicons name="pricetag-outline" size={24} color="#FF6B00" />
               </View>
               <Text
                 className={`text-xs font-extrabold uppercase text-center mb-0.5 ${

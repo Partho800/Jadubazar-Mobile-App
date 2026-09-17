@@ -99,7 +99,9 @@ export const FoodPopularCategories: React.FC<FoodPopularCategoriesProps> = ({
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleScrollPrev}
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full items-center justify-center"
+              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full items-center justify-center ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white shadow-xs'
+              }`}
             >
               <Ionicons
                 name="chevron-back"

@@ -9,9 +9,11 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
+import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
@@ -111,12 +113,22 @@ const GADGET_PRODUCTS: GadgetItem[] = [
 ];
 
 export const SmartElectronics: React.FC = () => {
+  const navigation = useNavigation<any>();
+  const { setActiveCategory, setActiveSubCategory } = useCategory();
   const { isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
   const { openProductDetails } = useProduct();
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const [scrollIndex, setScrollIndex] = useState(0);
+
+  const handleViewAll = () => {
+    setActiveCategory('ecommerce');
+    setActiveSubCategory('Electronics');
+    try {
+      navigation.navigate('CategoriesTab');
+    } catch (e) {}
+  };
 
   const scrollViewRef = useRef<ScrollView>(null);
   const cardWidth = Math.min((width - 48) / 2, 210);
@@ -223,7 +235,8 @@ export const SmartElectronics: React.FC = () => {
 
             <TouchableOpacity
               activeOpacity={0.8}
-              className="flex-row items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm shrink-0"
+              onPress={handleViewAll}
+              className="flex-row items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm shrink-0 cursor-pointer"
             >
               <Text className="text-xs font-bold text-slate-900">{t('viewAll')}</Text>
               <Ionicons name="chevron-forward" size={14} color="#0F172A" />

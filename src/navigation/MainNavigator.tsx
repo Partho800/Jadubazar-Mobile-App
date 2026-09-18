@@ -7,6 +7,9 @@ import { OrderTrackingScreen } from '../screens/Orders/OrderTrackingScreen';
 import { OrdersScreen } from '../screens/Orders/OrdersScreen';
 import { WishlistScreen } from '../screens/Wishlist/WishlistScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
+import { LoginScreen } from '../screens/Auth/Login/LoginScreen';
+import { RegisterScreen } from '../screens/Auth/Register/RegisterScreen';
+import { ForgotPasswordScreen } from '../screens/Auth/ForgotPassword/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +22,11 @@ export const MainNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
+      
+      {/* Auth screens */}
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       
       {/* Supporting legacy & clean navigation route aliases */}
       <Stack.Screen name="CheckoutTab" component={CheckoutScreen} />
@@ -41,4 +49,5 @@ export const MainNavigator: React.FC = () => {
     </Stack.Navigator>
   );
 };
+
 

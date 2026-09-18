@@ -17,30 +17,34 @@ interface UserContextType {
   user: UserProfile;
   updateUser: (updatedFields: Partial<UserProfile>) => void;
   isLoggedIn: boolean;
+  loginUser: (userData?: Partial<UserProfile>) => void;
+  logoutUser: () => void;
 }
 
-const defaultUser: UserProfile = {
-  id: 'usr-89421',
-  name: 'Farhana Yasmin',
-  firstName: 'Farhana',
-  email: 'farhana@email.com',
-  phone: '+880 1712-345678',
-  dateOfBirth: '10/15/1995',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-  address: 'Parashmoni laboratory school., 16, Road 27, Sector 7, Uttara, Dhaka',
-  isVerified: true,
-  savedAddressesCount: 2,
+const emptyUser: UserProfile = {
+  id: '',
+  name: '',
+  firstName: '',
+  email: '',
+  phone: '',
+  dateOfBirth: '',
+  avatar: undefined,
+  address: '',
+  isVerified: false,
+  savedAddressesCount: 0,
 };
 
 const UserContext = createContext<UserContextType>({
-  user: defaultUser,
+  user: emptyUser,
   updateUser: () => {},
-  isLoggedIn: true,
+  isLoggedIn: false,
+  loginUser: () => {},
+  logoutUser: () => {},
 });
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile>(defaultUser);
-  const [isLoggedIn] = useState<boolean>(true);
+  const [user, setUser] = useState<UserProfile>(emptyUser);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const updateUser = (updatedFields: Partial<UserProfile>) => {
     setUser((prev) => {
@@ -54,11 +58,37 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const loginUser = (userData?: Partial<UserProfile>) => {
+    const rawName = userData?.name || (userData?.email ? userData.email.split('@')[0] : 'User');
+    const computedFirstName = userData?.firstName || rawName.trim().split(' ')[0] || rawName;
+
+    setUser({
+      id: `usr-${Date.now().toString().slice(-5)}`,
+      name: rawName,
+      firstName: computedFirstName,
+      email: userData?.email || '',
+      phone: userData?.phone || '',
+      dateOfBirth: userData?.dateOfBirth || '',
+      avatar: userData?.avatar,
+      address: userData?.address || '',
+      isVerified: true,
+      savedAddressesCount: userData?.savedAddressesCount || 0,
+      ...userData,
+    });
+    setIsLoggedIn(true);
+  };
+
+  const logoutUser = () => {
+    setIsLoggedIn(false);
+    setUser(emptyUser);
+  };
+
   return (
-    <UserContext.Provider value={{ user, updateUser, isLoggedIn }}>
+    <UserContext.Provider value={{ user, updateUser, isLoggedIn, loginUser, logoutUser }}>
       {children}
     </UserContext.Provider>
   );
 };
 
 export const useUser = () => useContext(UserContext);
+

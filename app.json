@@ -50,6 +50,9 @@
         "projectId": "50a83429-df6b-4fa9-8824-1257de916780"
       }
     },
-    "owner": "raju018"
+    "owner": "raju018",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

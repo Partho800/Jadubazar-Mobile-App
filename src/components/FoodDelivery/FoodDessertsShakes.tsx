@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 
 import { foodData } from '../../data/productsData';
@@ -45,7 +46,7 @@ export const FoodDessertsShakes: React.FC<FoodDessertsShakesProps> = ({
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const { openProductDetails } = useProduct();
   const cardWidth = width >= 640 ? 260 : 225;
@@ -62,10 +63,6 @@ export const FoodDessertsShakes: React.FC<FoodDessertsShakesProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -148,7 +145,7 @@ export const FoodDessertsShakes: React.FC<FoodDessertsShakesProps> = ({
         }}
       >
         {DESSERT_DISHES.map((item) => {
-          const isFaved = wishlist[item.id];
+          const isFaved = isWishlisted(item.id);
           return (
             <TouchableOpacity
               key={item.id}
@@ -201,9 +198,9 @@ export const FoodDessertsShakes: React.FC<FoodDessertsShakesProps> = ({
                   className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md items-center justify-center shadow-md absolute top-2 right-2 z-10"
                 >
                   <Ionicons
-                    name={isFaved ? 'heart' : 'heart-outline'}
+                    name={isWishlisted(item.id) ? 'heart' : 'heart-outline'}
                     size={16}
-                    color={isFaved ? '#EF4444' : '#64748B'}
+                    color={isWishlisted(item.id) ? '#EF4444' : '#64748B'}
                   />
                 </TouchableOpacity>
 

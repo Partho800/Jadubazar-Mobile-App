@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -36,8 +36,13 @@ export default function App() {
 
   if (!fontsLoaded && !fontError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFBE00' }}>
+        <Image
+          source={require('./assets/icon.png')}
+          style={{ width: 140, height: 140 }}
+          resizeMode="contain"
+        />
+        <ActivityIndicator size="small" color="#0F172A" style={{ marginTop: 24 }} />
       </View>
     );
   }

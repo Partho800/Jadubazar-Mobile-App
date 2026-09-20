@@ -19,6 +19,8 @@ import { useCategory } from '../../context/CategoryContext';
 import { Header } from '../../components/common/Header/Header';
 import { AppText as Text } from '../../components/common/AppText';
 import { RiderChatModal } from '../../components/order/RiderChatModal';
+import { wishlistStore } from '../../store/wishlistStore';
+import { DefaultUserAvatar } from '../../components/common/DefaultUserAvatar';
 
 export interface SavedAddressItem {
   id: string;
@@ -26,6 +28,44 @@ export interface SavedAddressItem {
   icon: keyof typeof Ionicons.glyphMap;
   addressLine: string;
   isDefault: boolean;
+}
+
+export interface DeliveryOrderItem {
+  id: string;
+  date: string;
+  status: 'active' | 'completed' | 'cancelled';
+  statusLabelEn: string;
+  statusLabelBn: string;
+  totalAmount: number;
+  itemsSummary: string;
+  deliveryAddress: string;
+  rider?: {
+    name: string;
+    rating: number;
+    phone: string;
+    vehicleInfo: string;
+    photoUrl: string;
+    deliveryCount: string;
+  };
+}
+
+export interface UserReviewItem {
+  id: string;
+  itemName: string;
+  category: string;
+  date: string;
+  rating: number;
+  comment: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  time: string;
+  message: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  type?: 'promo' | 'order' | 'system';
+  isRead?: boolean;
 }
 
 export const ProfileScreen: React.FC = () => {
@@ -47,26 +87,43 @@ export const ProfileScreen: React.FC = () => {
   const [deliveryFilter, setDeliveryFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [searchOrderQuery, setSearchOrderQuery] = useState('');
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
-  const [chatOrderId, setChatOrderId] = useState('JB-670457');
-  const [chatRiderName, setChatRiderName] = useState('Abul Hasan');
+  const [chatOrderId, setChatOrderId] = useState('');
+  const [chatRiderName, setChatRiderName] = useState('');
+  const [deliveryOrders, setDeliveryOrders] = useState<DeliveryOrderItem[]>([]);
+  const [userReviews, setUserReviews] = useState<UserReviewItem[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [wishlistCount, setWishlistCount] = useState<number>(wishlistStore.getItems().length);
 
-  // Saved Addresses State (Matching Screenshot Exactly)
-  const [savedAddresses, setSavedAddresses] = useState<SavedAddressItem[]>([
-    {
-      id: 'addr-1',
-      title: 'Home',
-      icon: 'home-outline',
-      addressLine: 'House 42, Road 11, Banani, Dhaka',
-      isDefault: true,
-    },
-    {
-      id: 'addr-2',
-      title: 'Office',
-      icon: 'briefcase-outline',
-      addressLine: 'Level 8, Tower B, Gulshan-2, Dhaka',
-      isDefault: false,
-    },
-  ]);
+  useEffect(() => {
+    setWishlistCount(wishlistStore.getItems().length);
+    const unsubscribe = wishlistStore.subscribe(() => {
+      setWishlistCount(wishlistStore.getItems().length);
+    });
+    return () => unsubscribe();
+  }, [isFocused]);
+
+  const activeDeliveriesCount = deliveryOrders.filter((o) => o.status === 'active').length;
+  const assignedRidersCount = deliveryOrders.filter((o) => !!o.rider).length;
+  const completedDeliveriesCount = deliveryOrders.filter((o) => o.status === 'completed').length;
+
+  const filteredDeliveryOrders = deliveryOrders.filter((order) => {
+    const matchesFilter =
+      deliveryFilter === 'all'
+        ? true
+        : deliveryFilter === 'active'
+        ? order.status === 'active'
+        : order.status === 'completed';
+    const query = searchOrderQuery.toLowerCase().trim();
+    const matchesSearch =
+      !query ||
+      order.id.toLowerCase().includes(query) ||
+      (order.rider?.name && order.rider.name.toLowerCase().includes(query)) ||
+      order.itemsSummary.toLowerCase().includes(query);
+    return matchesFilter && matchesSearch;
+  });
+
+  // Saved Addresses State (Starts empty at 0, populated from user actions)
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddressItem[]>([]);
 
   // Add/Edit Address Form State
   const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -418,28 +475,36 @@ export const ProfileScreen: React.FC = () => {
           <>
             {/* WELCOME BACK CARD */}
             <View
-              className={`p-5 rounded-2xl border shadow-sm ${
+              className={`p-5 rounded-2xl border shadow-sm flex-row items-center gap-4 ${
                 isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'
               }`}
             >
-              <Text
-                className={`text-xl font-black tracking-tight ${
-                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                }`}
-              >
-                {isBangla
-                  ? `ফিরে আসার জন্য স্বাগতম, ${user.firstName || user.name}!`
-                  : `Welcome Back, ${user.firstName || user.name}!`}
-              </Text>
-              <Text
-                className={`text-xs font-semibold leading-relaxed mt-1.5 ${
-                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                }`}
-              >
-                {isBangla
-                  ? 'আপনার অর্ডার ট্র্যাকিং করুন, সার্ভিস বুকিং তদারকি করুন এবং আপনার প্রিয় উইশলিস্ট দেখুন।'
-                  : 'Monitor your orders, coordinate upcoming service slots, and view favorited catalogs.'}
-              </Text>
+              <DefaultUserAvatar
+                uri={user.avatar}
+                size={54}
+                isDarkMode={isDarkMode}
+                borderColor="#F59E0B"
+              />
+              <View className="flex-1">
+                <Text
+                  className={`text-lg font-black tracking-tight ${
+                    isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                  }`}
+                >
+                  {isBangla
+                    ? `স্বাগতম, ${user.firstName || user.name || 'ইউজার'}!`
+                    : `Welcome Back, ${user.firstName || user.name || 'User'}!`}
+                </Text>
+                <Text
+                  className={`text-xs font-semibold leading-relaxed mt-1 ${
+                    isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                  }`}
+                >
+                  {isBangla
+                    ? 'আপনার অর্ডার ট্র্যাকিং, সার্ভিস বুকিং এবং প্রিয় পণ্যসমূহ পরিচালনা করুন।'
+                    : 'Monitor orders, service bookings, and saved preferences.'}
+                </Text>
+              </View>
             </View>
 
             {/* 4 STAT CARDS GRID (2x2) */}
@@ -474,7 +539,7 @@ export const ProfileScreen: React.FC = () => {
                       isDarkMode ? 'text-slate-50' : 'text-slate-900'
                     }`}
                   >
-                    4
+                    0
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -509,7 +574,7 @@ export const ProfileScreen: React.FC = () => {
                       isDarkMode ? 'text-slate-50' : 'text-slate-900'
                     }`}
                   >
-                    1
+                    0
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -544,7 +609,7 @@ export const ProfileScreen: React.FC = () => {
                       isDarkMode ? 'text-slate-50' : 'text-slate-900'
                     }`}
                   >
-                    0
+                    {wishlistCount}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -612,98 +677,23 @@ export const ProfileScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Order 1 */}
-              <View
-                className={`p-3.5 rounded-xl border mb-3 ${
-                  isDarkMode
-                    ? 'bg-slate-950/70 border-slate-800'
-                    : 'bg-slate-50/80 border-slate-100'
-                }`}
-              >
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text
-                    className={`text-sm font-black ${
-                      isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                    }`}
-                  >
-                    JB-670457
-                  </Text>
-                  <Text className="text-xs font-bold text-slate-400">17 Sept 2026</Text>
+              {/* Empty State */}
+              <View className="items-center justify-center py-8 gap-2">
+                <View
+                  className={`w-14 h-14 rounded-2xl items-center justify-center mb-1 ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                  }`}
+                >
+                  <Ionicons name="receipt-outline" size={28} color={isDarkMode ? '#475569' : '#94A3B8'} />
                 </View>
-                <Text className="text-xs font-semibold text-slate-500 mb-2">
-                  Sunshine Maida 2kg x1
+                <Text className={`text-sm font-black ${
+                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}>
+                  {isBangla ? 'কোনো অর্ডার নেই' : 'No orders yet'}
                 </Text>
-                <View className="flex-row items-center justify-between pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                  <Text
-                    className={`text-base font-black ${
-                      isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                    }`}
-                  >
-                    ৳195
-                  </Text>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-full border ${
-                      isDarkMode
-                        ? 'bg-amber-950/60 border-amber-800'
-                        : 'bg-amber-50 border-amber-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-black uppercase ${
-                        isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                      }`}
-                    >
-                      ORDER CONFIRMED
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Order 2 */}
-              <View
-                className={`p-3.5 rounded-xl border ${
-                  isDarkMode
-                    ? 'bg-slate-950/70 border-slate-800'
-                    : 'bg-slate-50/80 border-slate-100'
-                }`}
-              >
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text
-                    className={`text-sm font-black ${
-                      isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                    }`}
-                  >
-                    JB-193592
-                  </Text>
-                  <Text className="text-xs font-bold text-slate-400">17 Sept 2026</Text>
-                </View>
-                <Text className="text-xs font-semibold text-slate-500 mb-2">
-                  Pusti Maida 2kg x1
+                <Text className="text-xs font-medium text-slate-400 text-center">
+                  {isBangla ? 'আপনার প্রথম অর্ডার দিন!' : 'Place your first order to see it here.'}
                 </Text>
-                <View className="flex-row items-center justify-between pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                  <Text
-                    className={`text-base font-black ${
-                      isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                    }`}
-                  >
-                    ৳185
-                  </Text>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-full border ${
-                      isDarkMode
-                        ? 'bg-amber-950/60 border-amber-800'
-                        : 'bg-amber-50 border-amber-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-black uppercase ${
-                        isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                      }`}
-                    >
-                      ORDER CONFIRMED
-                    </Text>
-                  </View>
-                </View>
               </View>
             </View>
 
@@ -713,100 +703,23 @@ export const ProfileScreen: React.FC = () => {
                 isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'
               }`}
             >
-              {/* Card Header */}
-              <View className="flex-row items-center justify-between mb-3.5">
-                <Text className="text-xs font-extrabold text-slate-500 tracking-wider uppercase">
-                  {isBangla ? 'সক্রিয় বুকিং' : 'ACTIVE BOOKINGS'}
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => navigation.navigate('OrdersTab')}
-                  className="flex-row items-center gap-1"
+              {/* Empty State */}
+              <View className="items-center justify-center py-8 gap-2">
+                <View
+                  className={`w-14 h-14 rounded-2xl items-center justify-center mb-1 ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                  }`}
                 >
-                  <Text
-                    className={`text-xs font-extrabold ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                    }`}
-                  >
-                    View All
-                  </Text>
-                  <Ionicons name="arrow-forward" size={14} color={isDarkMode ? '#CBD5E1' : '#334155'} />
-                </TouchableOpacity>
-              </View>
-
-              {/* Booking Item */}
-              <View
-                className={`p-4 rounded-xl border ${
-                  isDarkMode
-                    ? 'bg-slate-950/70 border-slate-800'
-                    : 'bg-slate-50/80 border-slate-100'
-                }`}
-              >
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text
-                    className={`text-sm font-black flex-1 mr-2 ${
-                      isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                    }`}
-                  >
-                    Home Deep Cleaning Service
-                  </Text>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-full border ${
-                      isDarkMode
-                        ? 'bg-indigo-950/60 border-indigo-800'
-                        : 'bg-indigo-50 border-indigo-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-black uppercase ${
-                        isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
-                      }`}
-                    >
-                      SCHEDULED
-                    </Text>
-                  </View>
+                  <Ionicons name="calendar-outline" size={28} color={isDarkMode ? '#475569' : '#94A3B8'} />
                 </View>
-
-                <Text className="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase mb-3">
-                  ASSIGNED PRO: RAHIM UDDIN
+                <Text className={`text-sm font-black ${
+                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}>
+                  {isBangla ? 'কোনো বুকিং নেই' : 'No active bookings'}
                 </Text>
-
-                <View className="flex-row items-center gap-1.5 mb-3">
-                  <Ionicons name="time-outline" size={15} color="#6366F1" />
-                  <Text className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                    Today (Aug 15) at 02:00 PM - 05:00 PM
-                  </Text>
-                </View>
-
-                <View className="flex-row items-center justify-between pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                  <Text
-                    className={`text-sm font-extrabold ${
-                      isDarkMode ? 'text-slate-200' : 'text-slate-700'
-                    }`}
-                  >
-                    Price:{' '}
-                    <Text className="font-black text-slate-900 dark:text-slate-50">৳1,800</Text>
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() =>
-                      Alert.alert(
-                        isBangla ? 'বুকিং ডিটেইলস' : 'Booking Details',
-                        isBangla
-                          ? 'সার্ভিস: হোম ডিপ ক্লিনিং\nপ্রো: রহিম উদ্দিন\nসময়: দুপুর ২:০০ - ৫:০০'
-                          : 'Service: Home Deep Cleaning\nPro: Rahim Uddin\nTime: 02:00 PM - 05:00 PM'
-                      )
-                    }
-                  >
-                    <Text
-                      className={`text-xs font-black underline ${
-                        isDarkMode ? 'text-slate-100' : 'text-slate-900'
-                      }`}
-                    >
-                      View Details
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                <Text className="text-xs font-medium text-slate-400 text-center">
+                  {isBangla ? 'একটি সার্ভিস বুক করুন!' : 'Book a service to see it here.'}
+                </Text>
               </View>
             </View>
           </>
@@ -819,8 +732,8 @@ export const ProfileScreen: React.FC = () => {
               isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'
             }`}
           >
-            {/* Header Row: Title */}
-            <View className="flex-row items-center justify-between mb-2">
+            {/* Header Row: Title & Badge */}
+            <View className="flex-row items-center justify-between mb-4">
               <Text
                 className={`text-lg font-black tracking-tight ${
                   isDarkMode ? 'text-slate-50' : 'text-slate-900'
@@ -828,10 +741,6 @@ export const ProfileScreen: React.FC = () => {
               >
                 {isBangla ? 'প্রোফাইল সেটিংস' : 'PROFILE SETTINGS'}
               </Text>
-            </View>
-
-            {/* Verified User Badge */}
-            <View className="flex-row items-center mb-6">
               <View
                 className={`flex-row items-center gap-1 px-2.5 py-0.5 rounded-md border ${
                   isDarkMode
@@ -848,6 +757,42 @@ export const ProfileScreen: React.FC = () => {
                   VERIFIED USER
                 </Text>
               </View>
+            </View>
+
+            {/* Profile Avatar with Default SVG Icon and Camera Badge */}
+            <View className="items-center justify-center mb-6">
+              <View className="relative">
+                <DefaultUserAvatar
+                  uri={user.avatar}
+                  size={84}
+                  isDarkMode={isDarkMode}
+                  borderColor="#F59E0B"
+                />
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => {
+                    Alert.alert(
+                      isBangla ? 'ছবি পরিবর্তন' : 'Change Photo',
+                      isBangla
+                        ? 'গ্যালারি বা ক্যামেরা থেকে প্রোফাইল ছবি যুক্ত করতে চান?'
+                        : 'Upload a custom profile photo from gallery or camera?'
+                    );
+                  }}
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-amber-500 items-center justify-center border-2 border-white shadow-sm"
+                >
+                  <Ionicons name="camera" size={13} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+              <Text
+                className={`text-base font-black mt-2.5 ${
+                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                }`}
+              >
+                {user.name || (isBangla ? 'নাম নির্ধারণ করা হয়নি' : 'No Name Set')}
+              </Text>
+              <Text className="text-xs font-semibold text-slate-400">
+                {user.email || (isBangla ? 'ইমেইল নেই' : 'No Email')}
+              </Text>
             </View>
 
             {/* Form Fields Container */}
@@ -1066,6 +1011,33 @@ export const ProfileScreen: React.FC = () => {
 
             {/* Addresses List Container */}
             <View className="gap-3.5">
+              {savedAddresses.length === 0 && !isAddingAddress && (
+                <View
+                  className={`p-6 rounded-2xl border items-center justify-center text-center ${
+                    isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  <View
+                    className={`w-12 h-12 rounded-2xl items-center justify-center mb-2.5 border ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                    }`}
+                  >
+                    <Ionicons name="location-outline" size={24} color="#94A3B8" />
+                  </View>
+                  <Text className={`text-sm font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {isBangla ? 'কোনো সংরক্ষিত ঠিকানা নেই' : 'No saved addresses'}
+                  </Text>
+                  <Text
+                    className={`text-xs font-medium text-center mt-1 max-w-[240px] ${
+                      isDarkMode ? 'text-slate-500' : 'text-slate-400'
+                    }`}
+                  >
+                    {isBangla
+                      ? 'নতুন ডেলিভারি ঠিকানা যোগ করতে নিচের বাটনে চাপুন।'
+                      : 'Add a delivery address below for quick checkout.'}
+                  </Text>
+                </View>
+              )}
               {savedAddresses.map((item) => (
                 <TouchableOpacity
                   key={item.id}
@@ -1331,7 +1303,7 @@ export const ProfileScreen: React.FC = () => {
           </View>
         )}
 
-        {/* ----------------- MY REVIEWS VIEW (Matching User Screenshot 1 Exactly) ----------------- */}
+        {/* ----------------- MY REVIEWS VIEW ----------------- */}
         {activeTab === 'reviews' && (
           <View
             className={`p-5 rounded-3xl border shadow-sm ${
@@ -1357,99 +1329,93 @@ export const ProfileScreen: React.FC = () => {
             </Text>
 
             <View className="gap-3.5">
-              {/* Review 1 */}
-              <View
-                className={`p-4 rounded-2xl border ${
-                  isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
-                }`}
-              >
-                <View className="flex-row items-center justify-between">
-                  <Text
-                    className={`text-base font-black ${
-                      isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                    }`}
-                  >
-                    Fresh Red Apples (Gala)
-                  </Text>
-                  <Text className="text-xs font-bold text-slate-400">14 Aug 2026</Text>
-                </View>
-                <Text className="text-[10px] font-black tracking-wider text-slate-400 uppercase mt-0.5 mb-2">
-                  GROCERY
-                </Text>
-
-                {/* 5 Stars */}
-                <View className="flex-row items-center gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Ionicons key={s} name="star" size={18} color="#F59E0B" />
-                  ))}
-                </View>
-
-                {/* Quote Box */}
+              {userReviews.length === 0 ? (
                 <View
-                  className={`p-3.5 rounded-2xl border flex-row items-start gap-2.5 ${
-                    isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'
+                  className={`p-8 rounded-2xl border items-center justify-center text-center ${
+                    isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'
                   }`}
                 >
-                  <Ionicons name="chatbubble-outline" size={16} color="#64748B" style={{ marginTop: 2 }} />
-                  <Text
-                    className={`flex-1 text-xs font-bold italic leading-relaxed ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                  <View
+                    className={`w-14 h-14 rounded-2xl items-center justify-center mb-3 border ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-amber-50 border-amber-200'
                     }`}
                   >
-                    “Freshly packed, came in an hour. Strongly recommended.”
-                  </Text>
-                </View>
-              </View>
-
-              {/* Review 2 */}
-              <View
-                className={`p-4 rounded-2xl border ${
-                  isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
-                }`}
-              >
-                <View className="flex-row items-center justify-between">
+                    <Ionicons name="star-outline" size={26} color="#F59E0B" />
+                  </View>
                   <Text
-                    className={`text-base font-black ${
-                      isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                    className={`text-sm font-bold ${
+                      isDarkMode ? 'text-slate-200' : 'text-slate-800'
                     }`}
                   >
-                    Ultimate Cheese Blast Burger
+                    {isBangla ? 'কোনো রিভিউ পাওয়া যায়নি' : 'No reviews yet'}
                   </Text>
-                  <Text className="text-xs font-bold text-slate-400">10 Aug 2026</Text>
-                </View>
-                <Text className="text-[10px] font-black tracking-wider text-slate-400 uppercase mt-0.5 mb-2">
-                  FOOD
-                </Text>
-
-                {/* 4 Stars filled, 1 star outline */}
-                <View className="flex-row items-center gap-1 mb-3">
-                  {[1, 2, 3, 4].map((s) => (
-                    <Ionicons key={s} name="star" size={18} color="#F59E0B" />
-                  ))}
-                  <Ionicons name="star-outline" size={18} color="#CBD5E1" />
-                </View>
-
-                {/* Quote Box */}
-                <View
-                  className={`p-3.5 rounded-2xl border flex-row items-start gap-2.5 ${
-                    isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'
-                  }`}
-                >
-                  <Ionicons name="chatbubble-outline" size={16} color="#64748B" style={{ marginTop: 2 }} />
                   <Text
-                    className={`flex-1 text-xs font-bold italic leading-relaxed ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                    className={`text-xs font-medium text-center mt-1 leading-relaxed max-w-[260px] ${
+                      isDarkMode ? 'text-slate-400' : 'text-slate-500'
                     }`}
                   >
-                    “Cheesy and hot. Delivery took about 25 mins. Good experience.”
+                    {isBangla
+                      ? 'আপনার কেনা পণ্য বা সার্ভিসের ওপর কোনো রিভিউ দিলে তা এখানে দেখা যাবে।'
+                      : 'Reviews and ratings you submit for completed orders or services will appear here.'}
                   </Text>
                 </View>
-              </View>
+              ) : (
+                userReviews.map((review) => (
+                  <View
+                    key={review.id}
+                    className={`p-4 rounded-2xl border ${
+                      isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
+                    }`}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <Text
+                        className={`text-base font-black ${
+                          isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                        }`}
+                      >
+                        {review.itemName}
+                      </Text>
+                      <Text className="text-xs font-bold text-slate-400">{review.date}</Text>
+                    </View>
+                    <Text className="text-[10px] font-black tracking-wider text-slate-400 uppercase mt-0.5 mb-2">
+                      {review.category}
+                    </Text>
+
+                    {/* Stars */}
+                    <View className="flex-row items-center gap-1 mb-3">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Ionicons
+                          key={s}
+                          name={s <= review.rating ? 'star' : 'star-outline'}
+                          size={18}
+                          color={s <= review.rating ? '#F59E0B' : isDarkMode ? '#475569' : '#CBD5E1'}
+                        />
+                      ))}
+                    </View>
+
+                    {/* Quote Box */}
+                    <View
+                      className={`p-3.5 rounded-2xl border flex-row items-start gap-2.5 ${
+                        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'
+                      }`}
+                    >
+                      <Ionicons name="chatbubble-outline" size={16} color="#64748B" style={{ marginTop: 2 }} />
+                      <Text
+                        className={`flex-1 text-xs font-bold italic leading-relaxed ${
+                          isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                        }`}
+                      >
+                        “{review.comment}”
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              )}
             </View>
           </View>
         )}
 
-        {/* ----------------- NOTIFICATIONS VIEW (Matching User Screenshot 2 Exactly) ----------------- */}
+        {/* ----------------- NOTIFICATIONS VIEW ----------------- */}
         {activeTab === 'notifications' && (
           <View
             className={`p-5 rounded-3xl border shadow-sm ${
@@ -1475,83 +1441,78 @@ export const ProfileScreen: React.FC = () => {
             </Text>
 
             <View className="gap-3.5">
-              {/* Notification 1 */}
-              <View
-                className={`p-4 rounded-2xl border flex-row items-start ${
-                  isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
-                }`}
-              >
-                {/* Left Tag Icon Container */}
+              {notifications.length === 0 ? (
                 <View
-                  className={`w-12 h-16 rounded-2xl border items-center justify-center mr-3.5 ${
-                    isDarkMode
-                      ? 'bg-amber-950/60 border-amber-800'
-                      : 'bg-amber-100/70 border-amber-200'
+                  className={`p-8 rounded-2xl border items-center justify-center text-center ${
+                    isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'
                   }`}
                 >
-                  <Ionicons name="pricetag-outline" size={22} color={isDarkMode ? '#FBBF24' : '#D97706'} />
-                </View>
-
-                {/* Right Details */}
-                <View className="flex-1">
-                  <View className="flex-row items-center justify-between mb-1">
-                    <Text
-                      className={`text-sm font-black flex-1 mr-2 ${
-                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                      }`}
-                    >
-                      Coupon JADUFIRST Available!
-                    </Text>
-                    <Text className="text-xs font-bold text-slate-400">2 hours ago</Text>
-                  </View>
-                  <Text
-                    className={`text-xs font-semibold leading-relaxed ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                  <View
+                    className={`w-14 h-14 rounded-2xl items-center justify-center mb-3 border ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-blue-50 border-blue-200'
                     }`}
                   >
-                    Get flat 20% discount on your first food or grocery order inside the app. Code valid till 31 Dec.
-                  </Text>
-                </View>
-              </View>
-
-              {/* Notification 2 */}
-              <View
-                className={`p-4 rounded-2xl border flex-row items-start ${
-                  isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
-                }`}
-              >
-                {/* Left Shield Icon Container */}
-                <View
-                  className={`w-12 h-16 rounded-2xl border items-center justify-center mr-3.5 ${
-                    isDarkMode
-                      ? 'bg-indigo-950/60 border-indigo-800'
-                      : 'bg-indigo-100/70 border-indigo-200'
-                  }`}
-                >
-                  <Ionicons name="shield-checkmark-outline" size={22} color={isDarkMode ? '#818CF8' : '#4F46E5'} />
-                </View>
-
-                {/* Right Details */}
-                <View className="flex-1">
-                  <View className="flex-row items-center justify-between mb-1">
-                    <Text
-                      className={`text-sm font-black flex-1 mr-2 ${
-                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                      }`}
-                    >
-                      Service Booking Confirmed
-                    </Text>
-                    <Text className="text-xs font-bold text-slate-400">1 day ago</Text>
+                    <Ionicons name="notifications-outline" size={26} color="#60A5FA" />
                   </View>
                   <Text
-                    className={`text-xs font-semibold leading-relaxed ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                    className={`text-sm font-bold ${
+                      isDarkMode ? 'text-slate-200' : 'text-slate-800'
                     }`}
                   >
-                    Your deep cleaning service scheduled for Aug 15 has been confirmed. Rahim Uddin is assigned as your cleaning pro.
+                    {isBangla ? 'কোনো নোটিফিকেশন নেই' : 'No notifications yet'}
+                  </Text>
+                  <Text
+                    className={`text-xs font-medium text-center mt-1 leading-relaxed max-w-[260px] ${
+                      isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                    }`}
+                  >
+                    {isBangla
+                      ? 'নতুন অফার, অর্ডার আপডেট অথবা অ্যাকাউন্টের নোটিফিকেশন এখানে পাবেন।'
+                      : 'You will receive order logs, hot promo alerts, and system updates here.'}
                   </Text>
                 </View>
-              </View>
+              ) : (
+                notifications.map((notif) => (
+                  <View
+                    key={notif.id}
+                    className={`p-4 rounded-2xl border flex-row items-start ${
+                      isDarkMode ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-900'
+                    }`}
+                  >
+                    {/* Left Icon Container */}
+                    <View
+                      className={`w-12 h-16 rounded-2xl border items-center justify-center mr-3.5 ${
+                        isDarkMode
+                          ? 'bg-amber-950/60 border-amber-800'
+                          : 'bg-amber-100/70 border-amber-200'
+                      }`}
+                    >
+                      <Ionicons name={notif.icon || 'notifications-outline'} size={22} color={isDarkMode ? '#FBBF24' : '#D97706'} />
+                    </View>
+
+                    {/* Right Details */}
+                    <View className="flex-1">
+                      <View className="flex-row items-center justify-between mb-1">
+                        <Text
+                          className={`text-sm font-black flex-1 mr-2 ${
+                            isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                          }`}
+                        >
+                          {notif.title}
+                        </Text>
+                        <Text className="text-xs font-bold text-slate-400">{notif.time}</Text>
+                      </View>
+                      <Text
+                        className={`text-xs font-semibold leading-relaxed ${
+                          isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                        }`}
+                      >
+                        {notif.message}
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              )}
             </View>
           </View>
         )}
@@ -1641,7 +1602,7 @@ export const ProfileScreen: React.FC = () => {
                           isDarkMode ? 'text-slate-50' : 'text-slate-900'
                         }`}
                       >
-                        2
+                        {activeDeliveriesCount}
                       </Text>
                     </View>
                   </View>
@@ -1668,7 +1629,7 @@ export const ProfileScreen: React.FC = () => {
                           isDarkMode ? 'text-slate-50' : 'text-slate-900'
                         }`}
                       >
-                        4
+                        {assignedRidersCount}
                       </Text>
                     </View>
                   </View>
@@ -1727,7 +1688,7 @@ export const ProfileScreen: React.FC = () => {
                         : 'text-slate-700'
                     }`}
                   >
-                    All Orders (4)
+                    {isBangla ? 'সব অর্ডার' : 'All Orders'} ({deliveryOrders.length})
                   </Text>
                 </TouchableOpacity>
 
@@ -1751,7 +1712,7 @@ export const ProfileScreen: React.FC = () => {
                         : 'text-slate-700'
                     }`}
                   >
-                    Active (2)
+                    {isBangla ? 'সক্রিয়' : 'Active'} ({activeDeliveriesCount})
                   </Text>
                 </TouchableOpacity>
 
@@ -1775,7 +1736,7 @@ export const ProfileScreen: React.FC = () => {
                         : 'text-slate-700'
                     }`}
                   >
-                    Completed (2)
+                    {isBangla ? 'সম্পন্ন' : 'Completed'} ({completedDeliveriesCount})
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1803,473 +1764,281 @@ export const ProfileScreen: React.FC = () => {
 
             {/* RIDER ORDER CARDS LIST */}
             <View className="gap-4">
-              {/* Order Card 1: JB-670457 */}
-              <View
-                className={`p-4 rounded-3xl border shadow-sm ${
-                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/90'
-                }`}
-              >
-                {/* Header: Order ID & Track */}
-                <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center gap-2">
-                    <Text
-                      className={`text-base font-black ${
-                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                      }`}
-                    >
-                      JB-670457
-                    </Text>
-                    <Text className="text-xs font-bold text-slate-400">• 17 Sept 2026</Text>
-                  </View>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-full border ${
-                      isDarkMode
-                        ? 'bg-amber-950/60 border-amber-800'
-                        : 'bg-amber-50 border-amber-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-black uppercase ${
-                        isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                      }`}
-                    >
-                      ORDER CONFIRMED
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Price & Track Link */}
-                <View className="flex-row items-center justify-between mb-4">
-                  <Text
-                    className={`text-sm font-extrabold ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                    }`}
-                  >
-                    Total:{' '}
-                    <Text className="font-black text-slate-900 dark:text-slate-50 text-base">
-                      ৳195
-                    </Text>
-                  </Text>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('OrderTrackingTab')}
-                    className="flex-row items-center gap-1"
-                  >
-                    <Text className="text-xs font-black text-amber-600 dark:text-amber-400">
-                      Track
-                    </Text>
-                    <Ionicons name="arrow-forward" size={13} color="#F59E0B" />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Divider Line */}
+              {filteredDeliveryOrders.length === 0 ? (
                 <View
-                  className={`h-[1px] w-full mb-3.5 ${
-                    isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
-                  }`}
-                />
-
-                {/* Ordered Items & Delivery Address */}
-                <View className="mb-4 gap-2">
-                  <View>
-                    <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
-                      ORDERED ITEMS:
-                    </Text>
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-200' : 'text-slate-800'
-                      }`}
-                    >
-                      Sunshine Maida 2kg x1
-                    </Text>
-                  </View>
-
-                  <View>
-                    <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
-                      DELIVERY ADDRESS:
-                    </Text>
-                    <Text
-                      numberOfLines={2}
-                      className={`text-xs font-semibold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                      }`}
-                    >
-                      {user.address || 'Parashmoni laboratory school., 16, Road 27, Sector 7, Uttara, Dhaka'}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* RIDER INFO INNER CARD BOX */}
-                <View
-                  className={`p-3.5 rounded-2xl border mb-3 ${
-                    isDarkMode
-                      ? 'bg-slate-950/70 border-slate-800'
-                      : 'bg-slate-50/80 border-slate-100'
+                  className={`p-8 rounded-3xl border items-center justify-center text-center ${
+                    isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/90'
                   }`}
                 >
-                  <View className="flex-row items-center mb-3">
-                    <View className="relative mr-3">
-                      <Image
-                        source={{
-                          uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
-                        }}
-                        className="w-12 h-12 rounded-2xl bg-slate-200 border-2 border-emerald-500"
-                        style={{ width: 48, height: 48, borderRadius: 16 }}
-                      />
-                      <View className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0" />
-                    </View>
-
-                    <View className="flex-1">
+                  <View
+                    className={`w-16 h-16 rounded-2xl items-center justify-center mb-3.5 border ${
+                      isDarkMode ? 'bg-slate-950/80 border-slate-800' : 'bg-amber-50 border-amber-200'
+                    }`}
+                  >
+                    <Ionicons name="bicycle-outline" size={32} color="#F59E0B" />
+                  </View>
+                  <Text
+                    className={`text-base font-black tracking-tight mb-1 text-center ${
+                      isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                    }`}
+                  >
+                    {isBangla ? 'কোনো সক্রিয় ডেলিভারি বা রাইডার নেই' : 'No Active Deliveries or Riders'}
+                  </Text>
+                  <Text
+                    className={`text-xs font-semibold text-center leading-relaxed max-w-[280px] ${
+                      isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                    }`}
+                  >
+                    {isBangla
+                      ? 'আপনার কোনো চলমান অর্ডার থাকলে নির্ধারিত ডেলিভারি রাইডারের তথ্য, ফোন ও চ্যাট অপশন এখানে দেখা যাবে।'
+                      : 'When you have active orders, assigned delivery partner details, live tracking, and contact options will appear here.'}
+                  </Text>
+                </View>
+              ) : (
+                filteredDeliveryOrders.map((order) => (
+                  <View
+                    key={order.id}
+                    className={`p-4 rounded-3xl border shadow-sm ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/90'
+                    }`}
+                  >
+                    {/* Header: Order ID & Track */}
+                    <View className="flex-row items-center justify-between mb-2">
                       <View className="flex-row items-center gap-2">
                         <Text
-                          className={`text-sm font-black ${
+                          className={`text-base font-black ${
                             isDarkMode ? 'text-slate-50' : 'text-slate-900'
                           }`}
                         >
-                          Abul Hasan
+                          {order.id}
                         </Text>
-                        <View className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30">
-                          <Text className="text-[10px] font-black text-amber-600 dark:text-amber-400">
-                            ★ 4.9
-                          </Text>
+                        <Text className="text-xs font-bold text-slate-400">• {order.date}</Text>
+                      </View>
+                      <View
+                        className={`px-2.5 py-0.5 rounded-full border ${
+                          isDarkMode
+                            ? 'bg-amber-950/60 border-amber-800'
+                            : 'bg-amber-50 border-amber-200'
+                        }`}
+                      >
+                        <Text
+                          className={`text-[10px] font-black uppercase ${
+                            isDarkMode ? 'text-amber-400' : 'text-amber-600'
+                          }`}
+                        >
+                          {isBangla ? order.statusLabelBn : order.statusLabelEn}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* Price & Track Link */}
+                    <View className="flex-row items-center justify-between mb-4">
+                      <Text
+                        className={`text-sm font-extrabold ${
+                          isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                        }`}
+                      >
+                        Total:{' '}
+                        <Text className="font-black text-slate-900 dark:text-slate-50 text-base">
+                          ৳{order.totalAmount}
+                        </Text>
+                      </Text>
+
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('OrderTrackingTab')}
+                        className="flex-row items-center gap-1"
+                      >
+                        <Text className="text-xs font-black text-amber-600 dark:text-amber-400">
+                          {isBangla ? 'ট্র্যাক করুন' : 'Track'}
+                        </Text>
+                        <Ionicons name="arrow-forward" size={13} color="#F59E0B" />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Divider Line */}
+                    <View
+                      className={`h-[1px] w-full mb-3.5 ${
+                        isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                      }`}
+                    />
+
+                    {/* Ordered Items & Delivery Address */}
+                    <View className="mb-4 gap-2">
+                      <View>
+                        <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
+                          {isBangla ? 'অর্ডারকৃত আইটেম:' : 'ORDERED ITEMS:'}
+                        </Text>
+                        <Text
+                          className={`text-xs font-bold ${
+                            isDarkMode ? 'text-slate-200' : 'text-slate-800'
+                          }`}
+                        >
+                          {order.itemsSummary}
+                        </Text>
+                      </View>
+
+                      <View>
+                        <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
+                          {isBangla ? 'ডেলিভারি ঠিকানা:' : 'DELIVERY ADDRESS:'}
+                        </Text>
+                        <Text
+                          numberOfLines={2}
+                          className={`text-xs font-semibold ${
+                            isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                          }`}
+                        >
+                          {order.deliveryAddress || user.address || (isBangla ? 'ঠিকানা নির্ধারণ করা হয়নি' : 'No address set')}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* RIDER INFO INNER CARD BOX */}
+                    {order.rider && (
+                      <View
+                        className={`p-3.5 rounded-2xl border mb-3 ${
+                          isDarkMode
+                            ? 'bg-slate-950/70 border-slate-800'
+                            : 'bg-slate-50/80 border-slate-100'
+                        }`}
+                      >
+                        <View className="flex-row items-center mb-3">
+                          <View className="relative mr-3">
+                            <Image
+                              source={{
+                                uri: order.rider.photoUrl,
+                              }}
+                              className="w-12 h-12 rounded-2xl bg-slate-200 border-2 border-emerald-500"
+                              style={{ width: 48, height: 48, borderRadius: 16 }}
+                            />
+                            <View className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0" />
+                          </View>
+
+                          <View className="flex-1">
+                            <View className="flex-row items-center gap-2">
+                              <Text
+                                className={`text-sm font-black ${
+                                  isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                                }`}
+                              >
+                                {order.rider.name}
+                              </Text>
+                              <View className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30">
+                                <Text className="text-[10px] font-black text-amber-600 dark:text-amber-400">
+                                  ★ {order.rider.rating}
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View className="flex-row items-center gap-1.5 mt-1">
+                              <Ionicons name="bicycle-outline" size={13} color={isDarkMode ? '#94A3B8' : '#64748B'} />
+                              <Text
+                                numberOfLines={1}
+                                className={`text-[11px] font-semibold ${
+                                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                                }`}
+                              >
+                                {order.rider.vehicleInfo} • {order.rider.deliveryCount}
+                              </Text>
+                            </View>
+
+                            <View className="flex-row items-center gap-1 mt-1">
+                              <Ionicons name="lock-closed-outline" size={12} color="#10B981" />
+                              <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                {isBangla ? 'নিরাপত্তার জন্য নম্বর মাস্কড' : 'Number Masked For Privacy'}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        {/* 2 Action Buttons Grid */}
+                        <View className="flex-row items-center gap-2.5">
+                          <TouchableOpacity
+                            activeOpacity={0.85}
+                            onPress={() => handleCallRider(order.rider?.phone)}
+                            className="flex-1 py-3 rounded-xl bg-[#10B981] active:bg-emerald-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/20"
+                          >
+                            <Ionicons name="call" size={16} color="#FFFFFF" />
+                            <Text className="text-xs font-black text-white">
+                              {isBangla ? 'কল রাইডার' : 'Call Rider'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            activeOpacity={0.85}
+                            onPress={() => handleOpenChat(order.id, order.rider?.name || 'Rider')}
+                            className="flex-1 py-3 rounded-xl bg-[#F59E0B] active:bg-amber-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-amber-500/20"
+                          >
+                            <Ionicons name="chatbox-ellipses" size={16} color="#FFFFFF" />
+                            <Text className="text-xs font-black text-white">
+                              {isBangla ? 'মেসেজ' : 'Message'}
+                            </Text>
+                          </TouchableOpacity>
                         </View>
                       </View>
+                    )}
 
-                      <View className="flex-row items-center gap-1.5 mt-1">
-                        <Ionicons name="bicycle-outline" size={13} color={isDarkMode ? '#94A3B8' : '#64748B'} />
-                        <Text
-                          numberOfLines={1}
-                          className={`text-[11px] font-semibold ${
-                            isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                    {/* Instant Message Chips */}
+                    {order.rider && (
+                      <View className="flex-row items-center gap-2 flex-wrap pt-1">
+                        <Text className="text-[11px] font-extrabold text-slate-400 mr-1">
+                          {isBangla ? 'দ্রুত বার্তা:' : 'Instant Message:'}
+                        </Text>
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => handleOpenChat(order.id, order.rider?.name || 'Rider')}
+                          className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
                           }`}
                         >
-                          Honda Shine (Dhaka Metro-Ha 45-8921) • 342+ Deliveries
-                        </Text>
-                      </View>
-
-                      <View className="flex-row items-center gap-1 mt-1">
-                        <Ionicons name="lock-closed-outline" size={12} color="#10B981" />
-                        <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                          Number Masked For Privacy
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* 2 Action Buttons Grid */}
-                  <View className="flex-row items-center gap-2.5">
-                    <TouchableOpacity
-                      activeOpacity={0.85}
-                      onPress={() => handleCallRider('+8801712345678')}
-                      className="flex-1 py-3 rounded-xl bg-[#10B981] active:bg-emerald-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/20"
-                    >
-                      <Ionicons name="call" size={16} color="#FFFFFF" />
-                      <Text className="text-xs font-black text-white">Call Rider</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      activeOpacity={0.85}
-                      onPress={() => handleOpenChat('JB-670457', 'Abul Hasan')}
-                      className="flex-1 py-3 rounded-xl bg-[#F59E0B] active:bg-amber-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-amber-500/20"
-                    >
-                      <Ionicons name="chatbox-ellipses" size={16} color="#FFFFFF" />
-                      <Text className="text-xs font-black text-white">Message</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* Instant Message Chips */}
-                <View className="flex-row items-center gap-2 flex-wrap pt-1">
-                  <Text className="text-[11px] font-extrabold text-slate-400 mr-1">
-                    Instant Message:
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-670457', 'Abul Hasan')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="location-outline" size={13} color={isDarkMode ? '#FBBF24' : '#D97706'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      Which road are you on?
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-670457', 'Abul Hasan')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="call-outline" size={13} color={isDarkMode ? '#34D399' : '#059669'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      Please call at gate
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-670457', 'Abul Hasan')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="thumbs-up-outline" size={13} color={isDarkMode ? '#818CF8' : '#4F46E5'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      I am waiting
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Order Card 2: JB-193592 */}
-              <View
-                className={`p-4 rounded-3xl border shadow-sm ${
-                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/90'
-                }`}
-              >
-                {/* Header: Order ID & Track */}
-                <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center gap-2">
-                    <Text
-                      className={`text-base font-black ${
-                        isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                      }`}
-                    >
-                      JB-193592
-                    </Text>
-                    <Text className="text-xs font-bold text-slate-400">• 17 Sept 2026</Text>
-                  </View>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-full border ${
-                      isDarkMode
-                        ? 'bg-amber-950/60 border-amber-800'
-                        : 'bg-amber-50 border-amber-200'
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-black uppercase ${
-                        isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                      }`}
-                    >
-                      ORDER CONFIRMED
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Price & Track Link */}
-                <View className="flex-row items-center justify-between mb-4">
-                  <Text
-                    className={`text-sm font-extrabold ${
-                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                    }`}
-                  >
-                    Total:{' '}
-                    <Text className="font-black text-slate-900 dark:text-slate-50 text-base">
-                      ৳185
-                    </Text>
-                  </Text>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => navigation.navigate('OrderTrackingTab')}
-                    className="flex-row items-center gap-1"
-                  >
-                    <Text className="text-xs font-black text-amber-600 dark:text-amber-400">
-                      Track
-                    </Text>
-                    <Ionicons name="arrow-forward" size={13} color="#F59E0B" />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Divider Line */}
-                <View
-                  className={`h-[1px] w-full mb-3.5 ${
-                    isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
-                  }`}
-                />
-
-                {/* Ordered Items & Delivery Address */}
-                <View className="mb-4 gap-2">
-                  <View>
-                    <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
-                      ORDERED ITEMS:
-                    </Text>
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-200' : 'text-slate-800'
-                      }`}
-                    >
-                      Pusti Maida 2kg x1
-                    </Text>
-                  </View>
-
-                  <View>
-                    <Text className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mb-0.5">
-                      DELIVERY ADDRESS:
-                    </Text>
-                    <Text
-                      numberOfLines={2}
-                      className={`text-xs font-semibold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                      }`}
-                    >
-                      {user.address || 'Parashmoni laboratory school., 16, Road 27, Sector 7, Uttara, Dhaka'}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* RIDER INFO INNER CARD BOX */}
-                <View
-                  className={`p-3.5 rounded-2xl border mb-3 ${
-                    isDarkMode
-                      ? 'bg-slate-950/70 border-slate-800'
-                      : 'bg-slate-50/80 border-slate-100'
-                  }`}
-                >
-                  <View className="flex-row items-center mb-3">
-                    <View className="relative mr-3">
-                      <Image
-                        source={{
-                          uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
-                        }}
-                        className="w-12 h-12 rounded-2xl bg-slate-200 border-2 border-emerald-500"
-                        style={{ width: 48, height: 48, borderRadius: 16 }}
-                      />
-                      <View className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0" />
-                    </View>
-
-                    <View className="flex-1">
-                      <View className="flex-row items-center gap-2">
-                        <Text
-                          className={`text-sm font-black ${
-                            isDarkMode ? 'text-slate-50' : 'text-slate-900'
-                          }`}
-                        >
-                          Kamrul Islam
-                        </Text>
-                        <View className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30">
-                          <Text className="text-[10px] font-black text-amber-600 dark:text-amber-400">
-                            ★ 4.8
+                          <Ionicons name="location-outline" size={13} color={isDarkMode ? '#FBBF24' : '#D97706'} />
+                          <Text
+                            className={`text-xs font-bold ${
+                              isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                            }`}
+                          >
+                            {isBangla ? 'আপনি কোন রোডে আছেন?' : 'Which road are you on?'}
                           </Text>
-                        </View>
-                      </View>
+                        </TouchableOpacity>
 
-                      <View className="flex-row items-center gap-1.5 mt-1">
-                        <Ionicons name="bicycle-outline" size={13} color={isDarkMode ? '#94A3B8' : '#64748B'} />
-                        <Text
-                          numberOfLines={1}
-                          className={`text-[11px] font-semibold ${
-                            isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => handleOpenChat(order.id, order.rider?.name || 'Rider')}
+                          className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
                           }`}
                         >
-                          TVS Metro (Dhaka Metro-L 12-4410) • 185+ Deliveries
-                        </Text>
+                          <Ionicons name="call-outline" size={13} color={isDarkMode ? '#34D399' : '#059669'} />
+                          <Text
+                            className={`text-xs font-bold ${
+                              isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                            }`}
+                          >
+                            {isBangla ? 'গেটে এসে কল দিন' : 'Please call at gate'}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => handleOpenChat(order.id, order.rider?.name || 'Rider')}
+                          className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+                          }`}
+                        >
+                          <Ionicons name="thumbs-up-outline" size={13} color={isDarkMode ? '#818CF8' : '#4F46E5'} />
+                          <Text
+                            className={`text-xs font-bold ${
+                              isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                            }`}
+                          >
+                            {isBangla ? 'আমি অপেক্ষা করছি' : 'I am waiting'}
+                          </Text>
+                        </TouchableOpacity>
                       </View>
-
-                      <View className="flex-row items-center gap-1 mt-1">
-                        <Ionicons name="lock-closed-outline" size={12} color="#10B981" />
-                        <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                          Number Masked For Privacy
-                        </Text>
-                      </View>
-                    </View>
+                    )}
                   </View>
-
-                  {/* 2 Action Buttons Grid */}
-                  <View className="flex-row items-center gap-2.5">
-                    <TouchableOpacity
-                      activeOpacity={0.85}
-                      onPress={() => handleCallRider('+8801812345678')}
-                      className="flex-1 py-3 rounded-xl bg-[#10B981] active:bg-emerald-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/20"
-                    >
-                      <Ionicons name="call" size={16} color="#FFFFFF" />
-                      <Text className="text-xs font-black text-white">Call Rider</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      activeOpacity={0.85}
-                      onPress={() => handleOpenChat('JB-193592', 'Kamrul Islam')}
-                      className="flex-1 py-3 rounded-xl bg-[#F59E0B] active:bg-amber-600 flex-row items-center justify-center gap-1.5 shadow-sm shadow-amber-500/20"
-                    >
-                      <Ionicons name="chatbox-ellipses" size={16} color="#FFFFFF" />
-                      <Text className="text-xs font-black text-white">Message</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* Instant Message Chips */}
-                <View className="flex-row items-center gap-2 flex-wrap pt-1">
-                  <Text className="text-[11px] font-extrabold text-slate-400 mr-1">
-                    Instant Message:
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-193592', 'Kamrul Islam')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="location-outline" size={13} color={isDarkMode ? '#FBBF24' : '#D97706'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      Which road are you on?
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-193592', 'Kamrul Islam')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="call-outline" size={13} color={isDarkMode ? '#34D399' : '#059669'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      Please call at gate
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleOpenChat('JB-193592', 'Kamrul Islam')}
-                    className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
-                      isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    <Ionicons name="thumbs-up-outline" size={13} color={isDarkMode ? '#818CF8' : '#4F46E5'} />
-                    <Text
-                      className={`text-xs font-bold ${
-                        isDarkMode ? 'text-slate-300' : 'text-slate-700'
-                      }`}
-                    >
-                      I am waiting
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+                ))
+              )}
             </View>
           </>
         )}

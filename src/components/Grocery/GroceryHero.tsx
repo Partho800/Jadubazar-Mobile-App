@@ -5,6 +5,7 @@ import {
   ImageBackground,
   useWindowDimensions,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -53,13 +54,32 @@ export const GroceryHero: React.FC<GroceryHeroProps> = ({
   ];
 
   return (
-    <View className="w-full overflow-hidden">
+    <View className="w-full overflow-hidden relative">
       <ImageBackground
         source={require('../../assets/images/grocery-hero-bg.jpg')}
         style={{ width: '100%', minHeight: 440 }}
         imageStyle={{ width: '100%', height: '100%', resizeMode: 'cover' }}
         resizeMode="cover"
       >
+        {/* Top Smooth Transition Fade */}
+        <LinearGradient
+          colors={
+            isDarkMode
+              ? ['#0F172A', 'rgba(15,23,42,0.6)', 'transparent']
+              : ['#FFFFFF', 'rgba(255,255,255,0.7)', 'transparent']
+          }
+          locations={[0, 0.45, 1]}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 55,
+            zIndex: 2,
+          }}
+          pointerEvents="none"
+        />
+
         {/* Soft Contrast Overlay for Readability */}
         <View
           className={`w-full min-h-[440px] px-4 pt-3 pb-6 justify-center ${

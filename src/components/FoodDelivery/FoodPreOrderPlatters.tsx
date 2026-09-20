@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 
 import { foodData } from '../../data/productsData';
@@ -45,7 +46,7 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const { openProductDetails } = useProduct();
   const cardWidth = width >= 640 ? 250 : 220;
@@ -62,10 +63,6 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -144,7 +141,7 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
           }}
         >
           {PREORDER_PLATTERS.map((item, index) => {
-            const isFaved = wishlist[item.id];
+            const isFaved = isWishlisted(item.id);
             const isLast = index === PREORDER_PLATTERS.length - 1;
             return (
               <TouchableOpacity
@@ -161,7 +158,6 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
                     rating: item.rating,
                     reviewsCount: item.reviewsCount,
                     discountBadge: item.discountBadge,
-                    status: 'In Stock',
                   })
                 }
                 style={{
@@ -169,15 +165,17 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
                   flexShrink: 0,
                   borderRadius: 20,
                   backgroundColor: '#FFFFFF',
+                  borderWidth: 1,
+                  borderColor: 'rgba(0, 0, 0, 0.08)',
                   marginRight: isLast ? 0 : 16,
                 }}
                 className="flex-col justify-between overflow-hidden relative shadow-md shrink-0 bg-white"
               >
-                {/* Full Width Top Image */}
+                {/* Image Container with Radii and Relative positioning */}
                 <View
                   style={{
                     width: '100%',
-                    height: 155,
+                    height: 145,
                     borderTopLeftRadius: 20,
                     borderTopRightRadius: 20,
                     overflow: 'hidden',
@@ -211,7 +209,14 @@ export const FoodPreOrderPlatters: React.FC<FoodPreOrderPlattersProps> = ({
                   {/* Top Right Heart Wishlist Button */}
                   <TouchableOpacity
                     activeOpacity={0.8}
-                    onPress={() => toggleWishlist(item.id)}
+                    onPress={() =>
+                      toggleWishlist({
+                        id: item.id,
+                        title: item.name,
+                        price: item.price,
+                        image: item.imageUrl,
+                      })
+                    }
                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
                     className="w-7 h-7 rounded-full items-center justify-center shadow-xs absolute top-2 right-2 z-10"
                   >

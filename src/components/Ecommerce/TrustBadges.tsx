@@ -100,20 +100,20 @@ export const TrustBadges: React.FC = () => {
           <View
             key={item.id}
             style={{ width: '48%', borderRadius: 20 }}
-            className={`p-5 items-center justify-center text-center border shadow-xs ${
+            className={`p-5 items-start justify-center border shadow-xs ${
               isDarkMode
                 ? 'bg-slate-900/90 border-slate-800'
                 : 'bg-white border-slate-100'
             }`}
           >
             {/* Icon */}
-            <View className="mb-3 items-center justify-center">
+            <View className="mb-3 items-start justify-center">
               {renderTrustIcon(item.iconType)}
             </View>
 
             {/* Title */}
             <Text
-              className={`text-xs sm:text-sm font-black text-center tracking-tight mb-1.5 ${
+              className={`text-xs sm:text-sm font-black text-left tracking-tight mb-1.5 ${
                 isDarkMode ? 'text-slate-50' : 'text-slate-900'
               }`}
             >
@@ -122,7 +122,7 @@ export const TrustBadges: React.FC = () => {
 
             {/* Subtitle */}
             <Text
-              className={`text-xs font-semibold text-center leading-4 ${
+              className={`text-xs font-semibold text-left leading-4 ${
                 isDarkMode ? 'text-slate-400' : 'text-slate-500'
               }`}
             >

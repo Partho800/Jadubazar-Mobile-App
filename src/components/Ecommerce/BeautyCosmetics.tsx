@@ -18,6 +18,7 @@ import { cartStore } from '../../store/cartStore';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 import { ecommerceData } from '../../data/productsData';
+import { useWishlist } from '../../hooks/useWishlist';
 
 export interface BeautyProductItem {
   id: string;
@@ -41,7 +42,7 @@ export const BeautyCosmetics: React.FC = () => {
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
   const { openProductDetails } = useProduct();
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const [scrollIndex, setScrollIndex] = useState(0);
 
   const handleViewAll = () => {
@@ -186,7 +187,7 @@ export const BeautyCosmetics: React.FC = () => {
         contentContainerStyle={{ paddingLeft: 16, paddingRight: 8, gap: 14 }}
       >
         {BEAUTY_PRODUCTS.map((item) => {
-          const isFav = !!favorites[item.id];
+          const isFav = isWishlisted(item.id);
           return (
             <TouchableOpacity
               key={item.id}
@@ -227,7 +228,14 @@ export const BeautyCosmetics: React.FC = () => {
                 {/* Favorite Heart Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => toggleFavorite(item.id)}
+                  onPress={() =>
+                    toggleWishlist({
+                      id: item.id,
+                      title: item.title,
+                      price: item.price,
+                      image: item.imageUrl,
+                    })
+                  }
                   className="absolute top-2.5 right-2.5 w-[34px] h-[34px] rounded-full bg-white/85 items-center justify-center z-10"
                 >
                   <Ionicons

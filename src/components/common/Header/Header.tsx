@@ -242,12 +242,6 @@ export const HeaderCategoryBar: React.FC<HeaderCategoryBarProps> = ({
           );
         })}
       </ScrollView>
-      <View
-        style={[
-          styles.divider,
-          { backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9' },
-        ]}
-      />
     </View>
   );
 };

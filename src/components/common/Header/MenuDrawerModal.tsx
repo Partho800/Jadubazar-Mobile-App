@@ -17,6 +17,7 @@ import { useCategory } from '../../../context/CategoryContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useUser } from '../../../context/UserContext';
 import { fonts } from '../../../theme/theme';
+import { DefaultUserAvatar } from '../DefaultUserAvatar';
 import { AppText as Text } from '../AppText';
 
 interface MenuDrawerModalProps {
@@ -242,15 +243,14 @@ export const MenuDrawerModal: React.FC<MenuDrawerModalProps> = ({ onNavigateToTa
                   <>
                     {/* 1. USER PROFILE HEADER */}
                     <View className="flex-row items-center px-2 pt-1 pb-4">
-                      <Image
-                        source={{
-                          uri:
-                            user.avatar ||
-                            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-                        }}
-                        className="w-13 h-13 rounded-full bg-slate-200 mr-3.5 border-2 border-amber-400"
-                        style={{ width: 50, height: 50, borderRadius: 25 }}
-                      />
+                      <View className="mr-3.5">
+                        <DefaultUserAvatar
+                          uri={user.avatar}
+                          size={50}
+                          isDarkMode={isDarkMode}
+                          borderColor="#F59E0B"
+                        />
+                      </View>
                       <View className="flex-1">
                         <Text
                           className={`text-base font-black tracking-tight ${

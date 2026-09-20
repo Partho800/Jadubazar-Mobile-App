@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -24,7 +25,7 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
   ];
 
   return (
-    <View className="w-full relative mb-6">
+    <View className="w-full relative mb-6 overflow-hidden">
       {/* 1. Main Background Image Banner */}
       <ImageBackground
         source={{
@@ -33,6 +34,25 @@ export const FoodHero: React.FC<FoodHeroProps> = ({
         className="w-full min-h-[460px] sm:min-h-[520px] justify-center items-center px-4 pt-10 pb-16 relative"
         resizeMode="cover"
       >
+        {/* Top Smooth Transition Fade */}
+        <LinearGradient
+          colors={
+            isDarkMode
+              ? ['#0F172A', 'rgba(15,23,42,0.6)', 'transparent']
+              : ['#FFFFFF', 'rgba(255,255,255,0.7)', 'transparent']
+          }
+          locations={[0, 0.45, 1]}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 55,
+            zIndex: 5,
+          }}
+          pointerEvents="none"
+        />
+
         {/* Dark Gradient Overlay for Contrast */}
         <View className="absolute inset-0 bg-black/65" />
 

@@ -12,6 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct, DEFAULT_IPHONE_PRODUCT } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
@@ -20,13 +21,14 @@ export const ProductDetailView: React.FC = () => {
   const { isDarkMode, theme } = useTheme();
   const { isBangla, t } = useLanguage();
   const { selectedProduct, closeProductDetails } = useProduct();
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const product = selectedProduct || DEFAULT_IPHONE_PRODUCT;
 
   const sizes = product.sizes || DEFAULT_IPHONE_PRODUCT.sizes || [];
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const isFavorite = isWishlisted(product.id);
   const [isAdded, setIsAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description');
 
@@ -152,7 +154,7 @@ export const ProductDetailView: React.FC = () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
       >
         {/* 1. Top Product Card (First element is the Product Image) */}
         <View
@@ -375,7 +377,14 @@ export const ProductDetailView: React.FC = () => {
             {/* Favorite Button */}
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => setIsFavorite(!isFavorite)}
+              onPress={() =>
+                toggleWishlist({
+                  id: product.id,
+                  title: product.title,
+                  price: activeSize.price || product.price,
+                  image: typeof product.image === 'string' ? product.image : product.imageUrl,
+                })
+              }
               className={`w-12 h-12 rounded-2xl border justify-center items-center shadow-sm ${
                 isDarkMode
                   ? 'border-slate-700 bg-slate-800'

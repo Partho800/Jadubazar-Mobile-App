@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
@@ -82,7 +83,7 @@ export const FoodNightOwlDeals: React.FC<FoodNightOwlDealsProps> = ({
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
   const { openProductDetails } = useProduct();
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const cardStep = width >= 640 ? 246 : 168;
 
@@ -97,10 +98,6 @@ export const FoodNightOwlDeals: React.FC<FoodNightOwlDealsProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -193,13 +190,20 @@ export const FoodNightOwlDeals: React.FC<FoodNightOwlDealsProps> = ({
 
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => toggleWishlist(item.id)}
+                onPress={() =>
+                  toggleWishlist({
+                    id: item.id,
+                    title: item.title,
+                    price: item.price,
+                    image: item.imageUrl,
+                  })
+                }
                 className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200/60 items-center justify-center z-10 shadow-xs"
               >
                 <Ionicons
-                  name={wishlist[item.id] ? 'heart' : 'heart-outline'}
+                  name={isWishlisted(item.id) ? 'heart' : 'heart-outline'}
                   size={15}
-                  color={wishlist[item.id] ? '#EF4444' : '#64748B'}
+                  color={isWishlisted(item.id) ? '#EF4444' : '#64748B'}
                 />
               </TouchableOpacity>
 

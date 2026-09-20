@@ -3,9 +3,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   Image,
-  StyleSheet,
   Alert,
   Platform,
 } from 'react-native';
@@ -21,18 +19,17 @@ import { AppText as Text } from '../../components/common/AppText';
 
 export const CartScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { theme, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
   const { t, isBangla } = useLanguage();
   const { activeCategoryColor } = useCategory();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(cartStore.getItems());
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [promoCode, setPromoCode] = useState<string>('');
   const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
 
   // Sync with cartStore
   useEffect(() => {
-    let items = cartStore.getItems();
+    const items = cartStore.getItems();
     const sanitizedItems = items.map((item) => ({
       ...item,
       image:
@@ -97,33 +94,10 @@ export const CartScreen: React.FC = () => {
           onPress: () => {
             cartStore.clearCart();
             setAppliedDiscount(0);
-            setPromoCode('');
           },
         },
       ]
     );
-  };
-
-  const handleApplyPromo = (codeToApply?: string) => {
-    const code = (codeToApply || promoCode).trim().toUpperCase();
-    if (!code) {
-      Alert.alert(isBangla ? 'প্রোমো কোড' : 'Promo Code', isBangla ? 'অনুগ্রহ করে একটি প্রোমো কোড লিখুন।' : 'Please enter a promo code.');
-      return;
-    }
-    if (code === 'JADUFIRST' || code === 'JADU200') {
-      const discount = Math.round(subtotal * 0.2);
-      setAppliedDiscount(discount);
-      setPromoCode(code);
-      Alert.alert(
-        isBangla ? 'প্রোমো প্রয়োগ সফল!' : 'Promo Applied!',
-        isBangla ? `২০% ছাড় (৳${discount}) আপনার বিলে যুক্ত করা হয়েছে।` : `20% discount (৳${discount}) applied to your order.`
-      );
-    } else {
-      Alert.alert(
-        isBangla ? 'অকার্যকর কোড' : 'Invalid Code',
-        isBangla ? 'কোডটি সঠিক নয়। ২০% ছাড়ের জন্য "JADUFIRST" ব্যবহার করুন।' : 'Code not valid. Try using "JADUFIRST" for 20% off.'
-      );
-    }
   };
 
   const handleCheckout = () => {
@@ -142,40 +116,44 @@ export const CartScreen: React.FC = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC' }]}>
+    <View
+      style={{ backgroundColor: isDarkMode ? '#0F172A' : '#F8FAFC' }}
+      className="flex-1"
+    >
       {/* 1. Global Header Bar */}
       <Header />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          paddingBottom: Platform.OS === 'ios' ? 180 : 160,
+        }}
       >
         {/* 2. Top Title & Header Row */}
-        <View style={styles.bagHeaderRow}>
-          <View style={styles.bagTitleGroup}>
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center gap-2">
             <View
-              style={[
-                styles.bagIconBox,
-                { backgroundColor: activeCategoryColor + '20' },
-              ]}
+              style={{ backgroundColor: `${activeCategoryColor}20` }}
+              className="w-8 h-8 rounded-full items-center justify-center"
             >
-              <Ionicons name="bag-handle" size={20} color={activeCategoryColor} />
+              <Ionicons name="bag-handle" size={18} color={activeCategoryColor} />
             </View>
             <Text
-              style={[
-                styles.bagTitle,
-                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-              ]}
+              className={`text-xl font-black tracking-tight ${
+                isDarkMode ? 'text-slate-50' : 'text-slate-900'
+              }`}
             >
               {t('shoppingBag')}
             </Text>
             <View
-              style={[
-                styles.countBadgePill,
-                { backgroundColor: activeCategoryColor + '20' },
-              ]}
+              style={{ backgroundColor: `${activeCategoryColor}18` }}
+              className="px-2.5 py-0.5 rounded-full"
             >
-              <Text style={[styles.countBadgePillText, { color: activeCategoryColor }]}>{totalItemCount} {t('items')}</Text>
+              <Text style={{ color: activeCategoryColor }} className="text-xs font-black">
+                {totalItemCount} {t('items')}
+              </Text>
             </View>
           </View>
 
@@ -183,46 +161,79 @@ export const CartScreen: React.FC = () => {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={handleClearAll}
-              style={[
-                styles.clearAllBtn,
-                { backgroundColor: isDarkMode ? '#451A1A' : '#FEF2F2' },
-              ]}
+              className={`flex-row items-center gap-1 px-3 py-1.5 rounded-full border active:scale-95 ${
+                isDarkMode
+                  ? 'border-red-900/60 bg-red-950/40'
+                  : 'border-red-200 bg-red-50'
+              }`}
             >
-              <Ionicons name="trash-outline" size={14} color="#EF4444" />
-              <Text style={styles.clearAllBtnText}>{t('clearAll')}</Text>
+              <Ionicons name="trash-outline" size={13} color="#EF4444" />
+              <Text className="text-xs font-extrabold text-red-500">{t('clearAll')}</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* 3. Free Delivery Progress Tracker */}
-        <View style={[styles.deliveryProgressCard, { backgroundColor: activeCategoryColor + '12', borderColor: activeCategoryColor + '35' }]}>
-          <View style={styles.deliveryProgressHeader}>
-            <View style={styles.deliveryLeftRow}>
-              <Ionicons name="car-outline" size={18} color={activeCategoryColor} />
-              <Text style={styles.deliveryProgressText}>
+        <View
+          style={{
+            backgroundColor: `${activeCategoryColor}12`,
+            borderColor: `${activeCategoryColor}30`,
+          }}
+          className="border rounded-2xl p-3.5 mb-4"
+        >
+          <View className="flex-row items-center justify-between mb-2">
+            <View className="flex-row items-center gap-1.5 flex-1 mr-2">
+              <Ionicons name="car-outline" size={17} color={activeCategoryColor} />
+              <Text
+                className={`text-xs font-semibold flex-1 ${
+                  isDarkMode ? 'text-slate-200' : 'text-slate-700'
+                }`}
+              >
                 {remainingForFreeDelivery > 0 ? (
                   isBangla ? (
                     <>
-                      ফ্রি ডেলিভারির জন্য আরও <Text style={[styles.deliveryHighlight, { color: activeCategoryColor }]}>৳{remainingForFreeDelivery}</Text> যোগ করুন!
+                      ফ্রি ডেলিভারির জন্য আরও{' '}
+                      <Text style={{ color: activeCategoryColor }} className="font-black">
+                        ৳{remainingForFreeDelivery}
+                      </Text>{' '}
+                      যোগ করুন!
                     </>
                   ) : (
                     <>
-                      Add <Text style={[styles.deliveryHighlight, { color: activeCategoryColor }]}>৳{remainingForFreeDelivery}</Text> more for{' '}
-                      <Text style={[styles.deliveryBoldGreen, { color: activeCategoryColor }]}>FREE Delivery!</Text>
+                      Add{' '}
+                      <Text style={{ color: activeCategoryColor }} className="font-black">
+                        ৳{remainingForFreeDelivery}
+                      </Text>{' '}
+                      more for{' '}
+                      <Text style={{ color: activeCategoryColor }} className="font-black">
+                        FREE Delivery!
+                      </Text>
                     </>
                   )
                 ) : (
-                  <Text style={[styles.deliveryBoldGreen, { color: activeCategoryColor }]}>
+                  <Text style={{ color: activeCategoryColor }} className="font-black">
                     {t('freeDeliveryUnlocked')}
                   </Text>
                 )}
               </Text>
             </View>
-            <Text style={[styles.deliveryPercentText, { color: activeCategoryColor }]}>{freeDeliveryPercent}%</Text>
+            <Text style={{ color: activeCategoryColor }} className="text-xs font-black">
+              {freeDeliveryPercent}%
+            </Text>
           </View>
 
-          <View style={[styles.progressBarTrack, { backgroundColor: activeCategoryColor + '25' }]}>
-            <View style={[styles.progressBarFill, { width: `${freeDeliveryPercent}%`, backgroundColor: activeCategoryColor }]} />
+          {/* Progress bar line */}
+          <View
+            style={{ backgroundColor: `${activeCategoryColor}25` }}
+            className="h-2 rounded-full overflow-hidden"
+          >
+            <View
+              style={{
+                width: `${freeDeliveryPercent}%`,
+                backgroundColor: activeCategoryColor,
+              }}
+              className="h-full rounded-full"
+            />
           </View>
         </View>
 
@@ -233,166 +244,196 @@ export const CartScreen: React.FC = () => {
           <>
             {/* 4. Select All Items Card */}
             <View
-              style={[
-                styles.cardBox,
-                {
-                  backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-                  borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-                },
-              ]}
+              className={`p-3.5 px-4 rounded-2xl border mb-3.5 shadow-sm flex-row items-center justify-between ${
+                isDarkMode
+                  ? 'bg-slate-900 border-slate-800 shadow-black/30'
+                  : 'bg-white border-slate-200/80 shadow-slate-200/50'
+              }`}
             >
-              <View style={styles.selectAllRow}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={handleToggleSelectAll}
-                  style={styles.checkboxLabelRow}
-                >
-                  <View
-                    style={[
-                      styles.checkboxSquare,
-                      selectedIds.length === cartItems.length
-                        ? [styles.checkboxSquareChecked, { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor }]
-                        : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
-                    ]}
-                  >
-                    {selectedIds.length === cartItems.length && (
-                      <Ionicons name="checkmark" size={14} color="#FFFFFF" />
-                    )}
-                  </View>
-                  <Text
-                    style={[
-                      styles.selectAllText,
-                      { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                    ]}
-                  >
-                    {t('selectAllItems')}
-                  </Text>
-                </TouchableOpacity>
-
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleToggleSelectAll}
+                className="flex-row items-center gap-2.5 flex-1"
+              >
                 <View
-                  style={[
-                    styles.selectedCountBadge,
-                    { backgroundColor: activeCategoryColor + '18' },
-                  ]}
+                  style={{
+                    backgroundColor:
+                      selectedIds.length === cartItems.length
+                        ? activeCategoryColor
+                        : 'transparent',
+                    borderColor:
+                      selectedIds.length === cartItems.length
+                        ? activeCategoryColor
+                        : isDarkMode
+                        ? '#475569'
+                        : '#CBD5E1',
+                  }}
+                  className="w-5 h-5 rounded-md border-2 items-center justify-center"
                 >
-                  <Text style={[styles.selectedCountBadgeText, { color: activeCategoryColor }]}>
-                    {selectedIds.length} / {cartItems.length} {t('selectedCount')}
-                  </Text>
+                  {selectedIds.length === cartItems.length && (
+                    <Ionicons name="checkmark" size={13} color="#FFFFFF" />
+                  )}
                 </View>
+                <Text
+                  className={`text-sm font-black ${
+                    isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                  }`}
+                >
+                  {t('selectAllItems')}
+                </Text>
+              </TouchableOpacity>
+
+              <View
+                style={{ backgroundColor: `${activeCategoryColor}15` }}
+                className="px-2.5 py-1 rounded-full"
+              >
+                <Text style={{ color: activeCategoryColor }} className="text-xs font-black">
+                  {selectedIds.length} / {cartItems.length} {t('selectedCount')}
+                </Text>
               </View>
             </View>
 
-            {/* 5. Category Grouped Items Card (Grocery Essentials / Products) */}
+            {/* 5. Category Grouped Items Card */}
             <View
-              style={[
-                styles.groupContainerCard,
-                {
-                  backgroundColor: isDarkMode ? '#1E293B' : '#F0FDF4',
-                  borderColor: isDarkMode ? '#334155' : '#DCFCE7',
-                },
-              ]}
+              className={`p-3.5 rounded-2xl border mb-4 shadow-sm ${
+                isDarkMode
+                  ? 'bg-slate-900/90 border-slate-800'
+                  : 'bg-white/95 border-slate-200/80'
+              }`}
             >
               {/* Group Header */}
-              <View style={styles.groupHeaderRow}>
-                <View style={styles.groupTitleLeft}>
-                  <Ionicons name="cart" size={20} color={activeCategoryColor} />
+              <View
+                className={`flex-row items-center justify-between mb-3 pb-2.5 border-b ${
+                  isDarkMode ? 'border-slate-800' : 'border-slate-100'
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Ionicons name="cart" size={18} color={activeCategoryColor} />
                   <Text
-                    style={[
-                      styles.groupTitleText,
-                      { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                    ]}
+                    className={`text-sm font-black ${
+                      isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                    }`}
                   >
                     {isBangla ? 'গ্রোসারী প্রয়োজনীয় পণ্য' : 'Grocery Essentials'}
                   </Text>
-                  <View style={[styles.groupCountPill, { backgroundColor: activeCategoryColor }]}>
-                    <Text style={[styles.groupCountPillText, { color: '#FFFFFF' }]}>{cartItems.length}</Text>
+                  <View
+                    style={{ backgroundColor: activeCategoryColor }}
+                    className="px-1.5 py-0.2 rounded-md"
+                  >
+                    <Text className="text-[10px] font-black text-white">{cartItems.length}</Text>
                   </View>
                 </View>
 
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={handleToggleSelectAll}
-                  style={styles.deselectBtn}
+                  className="flex-row items-center gap-1.5"
                 >
                   <View
-                    style={[
-                      styles.checkboxSquare,
-                      styles.checkboxSquareChecked,
-                      { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor, width: 18, height: 18 },
-                    ]}
+                    style={{
+                      backgroundColor:
+                        selectedIds.length === cartItems.length
+                          ? activeCategoryColor
+                          : 'transparent',
+                      borderColor:
+                        selectedIds.length === cartItems.length
+                          ? activeCategoryColor
+                          : isDarkMode
+                          ? '#475569'
+                          : '#CBD5E1',
+                    }}
+                    className="w-4 h-4 rounded border items-center justify-center"
                   >
-                    <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+                    {selectedIds.length === cartItems.length && (
+                      <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+                    )}
                   </View>
-                  <Text style={styles.deselectBtnText}>
-                    {selectedIds.length === cartItems.length ? t('deselectAll') : t('selectAllItems')}
+                  <Text
+                    className={`text-xs font-bold ${
+                      isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                    }`}
+                  >
+                    {selectedIds.length === cartItems.length
+                      ? t('deselectAll')
+                      : t('selectAllItems')}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               {/* Items List Inside Group */}
-              <View style={styles.itemsListContainer}>
+              <View className="gap-2.5">
                 {cartItems.map((item) => {
                   const isSelected = selectedIds.includes(item.id);
 
                   return (
                     <View
                       key={item.id}
-                      style={[
-                        styles.itemCard,
-                        {
-                          backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
-                          borderColor: isDarkMode ? '#334155' : '#F1F5F9',
-                        },
-                      ]}
+                      className={`flex-row items-center p-3 rounded-2xl border ${
+                        isDarkMode
+                          ? 'bg-slate-950/60 border-slate-800/80'
+                          : 'bg-slate-50/70 border-slate-100'
+                      }`}
                     >
                       {/* Left Item Checkbox */}
                       <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => handleToggleItemSelect(item.id)}
-                        style={styles.itemCheckboxArea}
+                        className="mr-2.5 py-2"
                       >
                         <View
-                          style={[
-                            styles.checkboxSquare,
-                            isSelected
-                              ? [styles.checkboxSquareChecked, { backgroundColor: activeCategoryColor, borderColor: activeCategoryColor }]
-                              : { borderColor: isDarkMode ? '#64748B' : '#CBD5E1' },
-                          ]}
+                          style={{
+                            backgroundColor: isSelected ? activeCategoryColor : 'transparent',
+                            borderColor: isSelected
+                              ? activeCategoryColor
+                              : isDarkMode
+                              ? '#475569'
+                              : '#CBD5E1',
+                          }}
+                          className="w-5 h-5 rounded-md border-2 items-center justify-center"
                         >
-                          {isSelected && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+                          {isSelected && <Ionicons name="checkmark" size={13} color="#FFFFFF" />}
                         </View>
                       </TouchableOpacity>
 
-                      {/* Item Thumbnail Image with Category Tag Overlay */}
-                      <View style={styles.itemImageWrapper}>
+                      {/* Item Thumbnail Image with Category Tag */}
+                      <View
+                        className={`w-16 h-16 rounded-xl overflow-hidden relative mr-3 border ${
+                          isDarkMode
+                            ? 'bg-slate-800 border-slate-700/60'
+                            : 'bg-white border-slate-200/60'
+                        }`}
+                      >
                         <Image
                           source={{ uri: item.image }}
-                          style={styles.itemImage}
+                          className="w-full h-full"
                           resizeMode="cover"
                         />
-                        <View style={[styles.categoryImageTag, { backgroundColor: activeCategoryColor }]}>
-                          <Text style={styles.categoryImageTagText}>{t('grocery')}</Text>
+                        <View
+                          style={{ backgroundColor: activeCategoryColor }}
+                          className="absolute bottom-0 left-0 right-0 py-0.5 items-center"
+                        >
+                          <Text className="text-[8px] font-black text-white tracking-widest uppercase">
+                            {t('grocery')}
+                          </Text>
                         </View>
                       </View>
 
                       {/* Right Item Content Info */}
-                      <View style={styles.itemDetailsArea}>
-                        <View style={styles.itemTitleRow}>
-                          <View style={{ flex: 1, marginRight: 8 }}>
+                      <View className="flex-1">
+                        <View className="flex-row items-start justify-between">
+                          <View className="flex-1 mr-2">
                             <Text
                               numberOfLines={1}
-                              style={[
-                                styles.itemNameText,
-                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                              ]}
+                              className={`text-xs font-black ${
+                                isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                              }`}
                             >
                               {item.name}
                             </Text>
                             <Text
-                              style={[
-                                styles.itemSubtext,
-                                { color: isDarkMode ? '#94A3B8' : '#64748B' },
-                              ]}
+                              className={`text-[10px] font-semibold mt-0.5 ${
+                                isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                              }`}
                             >
                               Pusti • 2 kg
                             </Text>
@@ -401,57 +442,56 @@ export const CartScreen: React.FC = () => {
                           <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={() => cartStore.removeItem(item.id)}
-                            style={styles.deleteIconBtn}
+                            className="p-1 rounded-full active:bg-slate-200 dark:active:bg-slate-800"
                           >
                             <Ionicons
                               name="trash-outline"
-                              size={18}
+                              size={16}
                               color={isDarkMode ? '#64748B' : '#94A3B8'}
                             />
                           </TouchableOpacity>
                         </View>
 
-                        <View style={styles.itemPriceQtyRow}>
-                          <View style={styles.priceGroup}>
+                        <View className="flex-row items-center justify-between mt-2">
+                          <View className="flex-row items-baseline gap-1">
                             <Text
-                              style={[
-                                styles.itemPriceText,
-                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                              ]}
+                              className={`text-sm font-black ${
+                                isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                              }`}
                             >
                               ৳{item.price * item.quantity}
                             </Text>
-                            <Text style={styles.itemUnitPriceText}>
+                            <Text className="text-[10px] font-semibold text-slate-400">
                               ৳{item.price}/{isBangla ? 'ইউনিট' : 'unit'}
                             </Text>
                           </View>
 
                           {/* Stepper Quantity Control */}
                           <View
-                            style={[
-                              styles.stepperContainer,
-                              { backgroundColor: isDarkMode ? '#1E293B' : '#F1F5F9' },
-                            ]}
+                            className={`flex-row items-center rounded-xl h-7 px-1.5 gap-1.5 border shadow-sm ${
+                              isDarkMode
+                                ? 'bg-slate-800 border-slate-700'
+                                : 'bg-white border-slate-200'
+                            }`}
                           >
                             <TouchableOpacity
                               activeOpacity={0.7}
                               onPress={() =>
                                 cartStore.updateQuantity(item.id, item.quantity - 1)
                               }
-                              style={styles.stepperBtn}
+                              className="w-5 h-5 items-center justify-center"
                             >
                               <Ionicons
                                 name="remove"
-                                size={14}
+                                size={13}
                                 color={isDarkMode ? '#F8FAFC' : '#0F172A'}
                               />
                             </TouchableOpacity>
 
                             <Text
-                              style={[
-                                styles.stepperValueText,
-                                { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                              ]}
+                              className={`text-xs font-black min-w-[14px] text-center ${
+                                isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                              }`}
                             >
                               {item.quantity}
                             </Text>
@@ -461,11 +501,11 @@ export const CartScreen: React.FC = () => {
                               onPress={() =>
                                 cartStore.updateQuantity(item.id, item.quantity + 1)
                               }
-                              style={styles.stepperBtn}
+                              className="w-5 h-5 items-center justify-center"
                             >
                               <Ionicons
                                 name="add"
-                                size={14}
+                                size={13}
                                 color={isDarkMode ? '#F8FAFC' : '#0F172A'}
                               />
                             </TouchableOpacity>
@@ -478,580 +518,121 @@ export const CartScreen: React.FC = () => {
               </View>
             </View>
 
-            {/* 7. ORDER SUMMARY Card */}
+            {/* 6. ORDER SUMMARY Card */}
             <View
-              style={[
-                styles.cardBox,
-                {
-                  backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-                  borderColor: isDarkMode ? '#334155' : '#E2E8F0',
-                },
-              ]}
+              className={`p-4 rounded-2xl border mb-4 shadow-sm ${
+                isDarkMode
+                  ? 'bg-slate-900 border-slate-800'
+                  : 'bg-white border-slate-200/80 shadow-slate-200/50'
+              }`}
             >
-              <Text style={styles.summaryHeaderTitle}>{t('orderSummaryTitle')}</Text>
+              <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">
+                {t('orderSummaryTitle')}
+              </Text>
 
-              <View style={styles.summaryRow}>
+              <View className="flex-row items-center justify-between mb-2">
                 <Text
-                  style={[
-                    styles.summaryLabelText,
-                    { color: isDarkMode ? '#94A3B8' : '#475569' },
-                  ]}
+                  className={`text-xs font-semibold ${
+                    isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                  }`}
                 >
                   {t('itemsSubtotal')}
                 </Text>
                 <Text
-                  style={[
-                    styles.summaryValText,
-                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                  ]}
+                  className={`text-xs font-black ${
+                    isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                  }`}
                 >
                   ৳{subtotal}
                 </Text>
               </View>
 
-              <View style={styles.summaryRow}>
+              <View className="flex-row items-center justify-between mb-2">
                 <Text
-                  style={[
-                    styles.summaryLabelText,
-                    { color: isDarkMode ? '#94A3B8' : '#475569' },
-                  ]}
+                  className={`text-xs font-semibold ${
+                    isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                  }`}
                 >
                   {t('deliveryCharge')}
                 </Text>
                 <Text
-                  style={[
-                    styles.summaryValText,
-                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                  ]}
+                  className={`text-xs font-black ${
+                    isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                  }`}
                 >
                   {deliveryCharge === 0 ? t('freeText') : `৳${deliveryCharge}`}
                 </Text>
               </View>
 
               {appliedDiscount > 0 && (
-                <View style={styles.summaryRow}>
-                  <Text style={[styles.summaryLabelText, { color: '#10B981' }]}>
+                <View className="flex-row items-center justify-between mb-2">
+                  <Text className="text-xs font-semibold text-emerald-500">
                     {t('promoDiscount')} (20%)
                   </Text>
-                  <Text style={[styles.summaryValText, { color: '#10B981' }]}>
+                  <Text className="text-xs font-black text-emerald-500">
                     -৳{appliedDiscount}
                   </Text>
                 </View>
               )}
 
-              <View style={styles.summaryDivider} />
+              <View
+                className={`h-px my-2.5 ${
+                  isDarkMode ? 'bg-slate-800' : 'bg-slate-100'
+                }`}
+              />
 
-              <View style={styles.summaryRow}>
+              <View className="flex-row items-center justify-between">
                 <Text
-                  style={[
-                    styles.grandTotalLabel,
-                    { color: isDarkMode ? '#F8FAFC' : '#0F172A' },
-                  ]}
+                  className={`text-sm font-black ${
+                    isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                  }`}
                 >
                   {t('grandTotalTitle')}
                 </Text>
-                <Text style={[styles.grandTotalValue, { color: activeCategoryColor }]}>৳{grandTotal}</Text>
+                <Text style={{ color: activeCategoryColor }} className="text-base font-black">
+                  ৳{grandTotal}
+                </Text>
               </View>
             </View>
           </>
         )}
       </ScrollView>
 
-      {/* 8. Sticky Bottom Checkout Bar */}
+      {/* 7. Sticky Bottom Checkout Bar */}
       {cartItems.length > 0 && (
         <View
-          style={[
-            styles.stickyCheckoutBar,
-            {
-              backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-            },
-          ]}
+          style={{
+            bottom: Platform.OS === 'ios' ? 88 : 80,
+          }}
+          className={`absolute left-3 right-3 rounded-2xl flex-row items-center justify-between px-4 py-3 border shadow-xl z-50 ${
+            isDarkMode
+              ? 'bg-slate-900 border-slate-800 shadow-black/50'
+              : 'bg-white border-slate-200/80 shadow-slate-900/10'
+          }`}
         >
-          <View style={styles.stickyLeftGroup}>
-            <Text style={styles.stickyGrandLabel}>
+          <View className="flex-1 mr-2">
+            <Text className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
               {t('grandTotalHeader')} ({selectedIds.length} {t('items')})
             </Text>
-            <Text style={[styles.stickyGrandVal, { color: activeCategoryColor }]}>৳{grandTotal}</Text>
+            <Text style={{ color: activeCategoryColor }} className="text-lg font-black mt-0.5">
+              ৳{grandTotal}
+            </Text>
           </View>
 
           <TouchableOpacity
-            activeOpacity={0.85}
+            activeOpacity={0.88}
             onPress={handleCheckout}
-            style={[styles.checkoutButton, { backgroundColor: activeCategoryColor, shadowColor: activeCategoryColor }]}
+            style={{
+              backgroundColor: activeCategoryColor,
+              shadowColor: activeCategoryColor,
+            }}
+            className="flex-row items-center gap-2 px-5 py-3 rounded-xl shadow-md active:scale-95"
           >
-            <Text style={[styles.checkoutBtnText, { color: '#FFFFFF' }]}>{t('checkoutBtn')}</Text>
-            <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            <Text className="text-xs font-black text-white">{t('checkoutBtn')}</Text>
+            <Ionicons name="arrow-forward" size={15} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: Platform.OS === 'ios' ? 180 : 170,
-  },
-  bagHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  bagTitleGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  bagIconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bagTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    letterSpacing: -0.3,
-  },
-  countBadgePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  countBadgePillText: {
-    color: '#D97706',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  clearAllBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#FCA5A5',
-  },
-  clearAllBtnText: {
-    color: '#EF4444',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  deliveryProgressCard: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 16,
-  },
-  deliveryProgressHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  deliveryLeftRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  deliveryProgressText: {
-    fontSize: 13,
-    color: '#065F46',
-    fontWeight: '600',
-  },
-  deliveryHighlight: {
-    color: '#D97706',
-    fontWeight: '900',
-  },
-  deliveryBoldGreen: {
-    color: '#059669',
-    fontWeight: '900',
-  },
-  deliveryPercentText: {
-    fontSize: 12,
-    fontWeight: '900',
-    color: '#059669',
-  },
-  progressBarTrack: {
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#D1FAE5',
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#10B981',
-    borderRadius: 4,
-  },
-  emptyCartState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
-    gap: 12,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  cardBox: {
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  selectAllRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  checkboxLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  checkboxSquare: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxSquareChecked: {
-    backgroundColor: '#F59E0B',
-    borderColor: '#F59E0B',
-  },
-  selectAllText: {
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  selectedCountBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  selectedCountBadgeText: {
-    color: '#D97706',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  groupContainerCard: {
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 14,
-    marginBottom: 16,
-  },
-  groupHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  groupTitleLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  groupTitleText: {
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  groupCountPill: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 7,
-    paddingVertical: 1,
-    borderRadius: 10,
-  },
-  groupCountPillText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#059669',
-  },
-  deselectBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  deselectBtnText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  itemsListContainer: {
-    gap: 12,
-  },
-  itemCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 12,
-  },
-  itemCheckboxArea: {
-    marginRight: 10,
-  },
-  itemImageWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: 14,
-    overflow: 'hidden',
-    position: 'relative',
-    backgroundColor: '#F8FAFC',
-    marginRight: 12,
-  },
-  itemImage: {
-    width: '100%',
-    height: '100%',
-  },
-  categoryImageTag: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#059669',
-    paddingVertical: 2,
-    alignItems: 'center',
-  },
-  categoryImageTagText: {
-    color: '#FFFFFF',
-    fontSize: 8,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  itemDetailsArea: {
-    flex: 1,
-  },
-  itemTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  itemNameText: {
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  itemSubtext: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: 1,
-  },
-  deleteIconBtn: {
-    padding: 2,
-  },
-  itemPriceQtyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  priceGroup: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 4,
-  },
-  itemPriceText: {
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  itemUnitPriceText: {
-    fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '600',
-  },
-  stepperContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    height: 32,
-    paddingHorizontal: 6,
-    gap: 8,
-  },
-  stepperBtn: {
-    width: 22,
-    height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepperValueText: {
-    fontSize: 13,
-    fontWeight: '900',
-    minWidth: 16,
-    textAlign: 'center',
-  },
-  promoHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 12,
-  },
-  promoHeaderText: {
-    color: '#D97706',
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  promoInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 12,
-  },
-  promoInput: {
-    flex: 1,
-    height: 44,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  applyBtn: {
-    backgroundColor: '#F59E0B',
-    height: 44,
-    paddingHorizontal: 20,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  applyBtnText: {
-    color: '#0F172A',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  promoRecommendationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  recommendationLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  bulbIcon: {
-    fontSize: 12,
-  },
-  recommendationText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  promoCodePillBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  promoCodePillText: {
-    color: '#D97706',
-    fontSize: 11,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  summaryHeaderTitle: {
-    color: '#64748B',
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-    marginBottom: 14,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  summaryLabelText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  summaryValText: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  summaryDivider: {
-    height: 1,
-    backgroundColor: '#E2E8F0',
-    marginVertical: 10,
-  },
-  grandTotalLabel: {
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  grandTotalValue: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#F59E0B',
-  },
-  stickyCheckoutBar: {
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 88 : 80,
-    left: 12,
-    right: 12,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 12,
-    zIndex: 99,
-  },
-  stickyLeftGroup: {
-    flex: 1,
-  },
-  stickyGrandLabel: {
-    color: '#94A3B8',
-    fontSize: 10,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  stickyGrandVal: {
-    color: '#F59E0B',
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  checkoutButton: {
-    backgroundColor: '#F59E0B',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 22,
-    paddingVertical: 12,
-    borderRadius: 16,
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  checkoutBtnText: {
-    color: '#0F172A',
-    fontSize: 14,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-});

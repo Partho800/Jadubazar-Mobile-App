@@ -391,11 +391,7 @@ export const OrderTrackingScreen: React.FC = () => {
             : 'Jadubazar Support Team'
         }
         riderPhone={riderPhone}
-        riderImage={
-          currentStep >= 4
-            ? riderAvatar
-            : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
-        }
+        riderImage={currentStep >= 4 ? riderAvatar : undefined}
       />
     </View>
   );

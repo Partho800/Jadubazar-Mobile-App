@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 import { FoodItem } from './FoodPopularBiryani';
@@ -83,7 +84,7 @@ export const FoodFastFoodBurgers: React.FC<FoodFastFoodBurgersProps> = ({
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
   const { openProductDetails } = useProduct();
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const cardStep = width >= 640 ? 246 : 168;
 
@@ -98,10 +99,6 @@ export const FoodFastFoodBurgers: React.FC<FoodFastFoodBurgersProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -217,9 +214,9 @@ export const FoodFastFoodBurgers: React.FC<FoodFastFoodBurgersProps> = ({
                   }`}
                 >
                   <Ionicons
-                    name={wishlist[item.id] ? 'heart' : 'heart-outline'}
+                    name={isWishlisted(item.id) ? 'heart' : 'heart-outline'}
                     size={15}
-                    color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
+                    color={isWishlisted(item.id) ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
                   />
                 </TouchableOpacity>
 

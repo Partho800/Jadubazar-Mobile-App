@@ -42,126 +42,16 @@ export interface OrderRecord {
   expectedDelivery?: string;
 }
 
-const MOCK_ORDERS: OrderRecord[] = [
-  {
-    id: 'ord-1',
-    orderNumber: 'JB-98421',
-    date: '16 Sep 2026, 04:30 PM',
-    status: 'PROCESSING',
-    statusTextEn: 'Packaging & In-Transit',
-    statusTextBn: 'প্যাকেজিং ও ডেলিভারি হচ্ছে',
-    items: [
-      {
-        id: 'p1',
-        name: 'Fresh Green Organic Cucumber 1kg',
-        nameBn: 'ফ্রেশ দেশি শসা ১ কেজি',
-        quantity: 2,
-        price: 60,
-        image: 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=300',
-      },
-      {
-        id: 'p2',
-        name: 'Aarong Dairy Whole Milk 1L',
-        nameBn: 'আড়ং ডেইরি ফুল ক্রিম দুধ ১ লিটার',
-        quantity: 1,
-        price: 90,
-        image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300',
-      },
-      {
-        id: 'p3',
-        name: 'Premium Minikit Rice 5kg',
-        nameBn: 'প্রিমিয়াম মিনিকেট চাল ৫ কেজি',
-        quantity: 1,
-        price: 360,
-        image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300',
-      },
-    ],
-    subtotal: 570,
-    deliveryFee: 40,
-    discount: 50,
-    totalAmount: 560,
-    paymentMethod: 'Cash on Delivery',
-    paymentMethodBn: 'ক্যাশ অন ডেলিভারি',
-    deliveryAddress: 'House 16, Road 27, Sector 7, Uttara, Dhaka',
-    expectedDelivery: 'Today by 06:30 PM',
-  },
-  {
-    id: 'ord-2',
-    orderNumber: 'JB-91204',
-    date: '12 Sep 2026, 11:15 AM',
-    status: 'DELIVERED',
-    statusTextEn: 'Delivered Successfully',
-    statusTextBn: 'সফলভাবে ডেলিভারি সম্পন্ন',
-    items: [
-      {
-        id: 'p4',
-        name: 'Samsung Galaxy Buds FE Wireless',
-        nameBn: 'স্যামসাং গ্যালাক্সি বাডস এফই ওয়ারলেস',
-        quantity: 1,
-        price: 7500,
-        image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300',
-      },
-      {
-        id: 'p5',
-        name: '65W Fast USB-C Braided Cable',
-        nameBn: '৬৫ ওয়াট ফাস্ট টাইপ-সি ক্যাবল',
-        quantity: 2,
-        price: 350,
-        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300',
-      },
-    ],
-    subtotal: 8200,
-    deliveryFee: 0,
-    discount: 0,
-    totalAmount: 8200,
-    paymentMethod: 'bKash Online',
-    paymentMethodBn: 'বিকাশ অনলাইন পেমেন্ট',
-    deliveryAddress: 'Flat 4B, Sector 7, Uttara, Dhaka',
-  },
-  {
-    id: 'ord-3',
-    orderNumber: 'JB-88301',
-    date: '01 Sep 2026, 08:20 PM',
-    status: 'DELIVERED',
-    statusTextEn: 'Delivered Successfully',
-    statusTextBn: 'সফলভাবে ডেলিভারি সম্পন্ন',
-    items: [
-      {
-        id: 'p6',
-        name: 'Napa Extra 500mg (20 Strips)',
-        nameBn: 'নাপা এক্সট্রা ৫০০ মিগ্রা (২০ পাতা)',
-        quantity: 2,
-        price: 120,
-        image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300',
-      },
-      {
-        id: 'p7',
-        name: 'Seclo 20mg Capsules (1 Box)',
-        nameBn: 'সিকলো ২০ মিগ্রা ক্যাপসুল (১ বক্স)',
-        quantity: 1,
-        price: 180,
-        image: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=300',
-      },
-    ],
-    subtotal: 420,
-    deliveryFee: 30,
-    discount: 0,
-    totalAmount: 450,
-    paymentMethod: 'Cash on Delivery',
-    paymentMethodBn: 'ক্যাশ অন ডেলিভারি',
-    deliveryAddress: 'House 16, Road 27, Sector 7, Uttara, Dhaka',
-  },
-];
-
 export const OrdersScreen: React.FC = () => {
   const { isDarkMode } = useTheme();
   const { isBangla, t } = useLanguage();
   const navigation = useNavigation<any>();
 
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [activeTab, setActiveTab] = useState<'ALL' | 'PROCESSING' | 'DELIVERED' | 'CANCELLED'>('ALL');
   const [selectedTrackingOrder, setSelectedTrackingOrder] = useState<OrderRecord | null>(null);
 
-  const filteredOrders = MOCK_ORDERS.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     if (activeTab === 'ALL') return true;
     return order.status === activeTab;
   });
@@ -242,7 +132,7 @@ export const OrdersScreen: React.FC = () => {
                 </Text>
                 <View className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30">
                   <Text className="text-xs font-black text-amber-500">
-                    {MOCK_ORDERS.length} {isBangla ? 'টি' : 'Total'}
+                    {orders.length} {isBangla ? 'টি' : 'Total'}
                   </Text>
                 </View>
               </View>
@@ -265,24 +155,24 @@ export const OrdersScreen: React.FC = () => {
             contentContainerStyle={{ gap: 8 }}
           >
             {[
-              { key: 'ALL', labelEn: 'All Orders', labelBn: 'সব অর্ডার', count: MOCK_ORDERS.length },
+              { key: 'ALL', labelEn: 'All Orders', labelBn: 'সব অর্ডার', count: orders.length },
               {
                 key: 'PROCESSING',
                 labelEn: 'In Progress',
                 labelBn: 'চলমান',
-                count: MOCK_ORDERS.filter((o) => o.status === 'PROCESSING').length,
+                count: orders.filter((o) => o.status === 'PROCESSING').length,
               },
               {
                 key: 'DELIVERED',
                 labelEn: 'Delivered',
                 labelBn: 'সম্পন্ন',
-                count: MOCK_ORDERS.filter((o) => o.status === 'DELIVERED').length,
+                count: orders.filter((o) => o.status === 'DELIVERED').length,
               },
               {
                 key: 'CANCELLED',
                 labelEn: 'Cancelled',
                 labelBn: 'বাতিল',
-                count: MOCK_ORDERS.filter((o) => o.status === 'CANCELLED').length,
+                count: orders.filter((o) => o.status === 'CANCELLED').length,
               },
             ].map((tab) => {
               const isActive = activeTab === tab.key;
@@ -356,14 +246,23 @@ export const OrdersScreen: React.FC = () => {
                 {isBangla ? 'কোনো অর্ডার পাওয়া যায়নি' : 'No orders found'}
               </Text>
               <Text
-                className={`text-xs font-medium text-center mt-1 ${
+                className={`text-xs font-medium text-center mt-1 leading-relaxed max-w-[260px] ${
                   isDarkMode ? 'text-slate-400' : 'text-slate-500'
                 }`}
               >
                 {isBangla
-                  ? 'আপনার এই ফিল্টারে কোনো সংরক্ষিত অর্ডার নেই।'
-                  : 'You do not have any orders matching this filter category.'}
+                  ? 'আপনার কোনো অর্ডার হিস্ট্রি নেই। নতুন কেনাকাটা করতে ব্রাউজ করুন।'
+                  : 'You do not have any orders yet. Start exploring and placing orders!'}
               </Text>
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => navigation.navigate('HomeTab')}
+                className="mt-4 px-6 py-2.5 rounded-full bg-amber-500 active:bg-amber-600 shadow-sm shadow-amber-500/30"
+              >
+                <Text className="text-xs font-black text-slate-900">
+                  {isBangla ? 'কেনাকাটা শুরু করুন' : 'Start Shopping'}
+                </Text>
+              </TouchableOpacity>
             </View>
           ) : (
             filteredOrders.map((order) => {

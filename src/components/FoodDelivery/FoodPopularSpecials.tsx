@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 
 import { foodData } from '../../data/productsData';
@@ -56,11 +57,11 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const { openProductDetails } = useProduct();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
   const [activeFilter, setActiveFilter] = useState('f1');
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
 
   const cardWidth = width >= 640 ? 260 : 225;
   const cardStep = cardWidth + 16;
@@ -76,10 +77,6 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   // Filter products based on selected tab
@@ -207,7 +204,7 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
         }}
       >
         {filteredDishes.map((item, index) => {
-          const isFaved = wishlist[item.id];
+          const isFaved = isWishlisted(item.id);
           const isLast = index === filteredDishes.length - 1;
           return (
             <TouchableOpacity
@@ -278,7 +275,14 @@ export const FoodPopularSpecials: React.FC<FoodPopularSpecialsProps> = ({
                 {/* Top Right Heart Wishlist Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => toggleWishlist(item.id)}
+                  onPress={() =>
+                    toggleWishlist({
+                      id: item.id,
+                      title: item.name,
+                      price: item.price,
+                      image: item.imageUrl,
+                    })
+                  }
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
                   className="w-8 h-8 rounded-full items-center justify-center shadow-md absolute top-2 right-2 z-10"
                 >

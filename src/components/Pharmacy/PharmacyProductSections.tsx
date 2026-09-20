@@ -16,6 +16,7 @@ import { useProduct } from '../../context/ProductContext';
 import { useCategory } from '../../context/CategoryContext';
 import { cartStore } from '../../store/cartStore';
 import { wishlistStore } from '../../store/wishlistStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 
 import { pharmacyData } from '../../data/productsData';
@@ -58,11 +59,11 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const { openProductDetails } = useProduct();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
-  const [wishlistState, setWishlistState] = useState<Record<string, boolean>>({});
 
   const handleViewAll = (secId: string) => {
     setActiveCategory('pharmacy');
@@ -80,16 +81,13 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
   const cardWidth = width >= 640 ? 276 : 246; // card (260/230) + gap (16)
 
   const handleScrollPrev = () => {
-    const targetX = Math.max(0, scrollX.current - cardWidth);
-    scrollX.current = targetX;
-    scrollRef.current?.scrollTo({ x: targetX, animated: true });
+    const nextX = Math.max(0, scrollX.current - cardWidth * 2);
+    scrollRef.current?.scrollTo({ x: nextX, animated: true });
   };
 
   const handleScrollNext = () => {
-    const maxScroll = (section.products.length - 1) * cardWidth;
-    const targetX = Math.min(maxScroll, scrollX.current + cardWidth);
-    scrollX.current = targetX;
-    scrollRef.current?.scrollTo({ x: targetX, animated: true });
+    const nextX = scrollX.current + cardWidth * 2;
+    scrollRef.current?.scrollTo({ x: nextX, animated: true });
   };
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -112,14 +110,12 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
   };
 
   const handleToggleWishlist = (prod: PharmacyProductItem) => {
-    wishlistStore.toggleWishlist({
+    toggleWishlist({
       id: prod.id,
-      name: prod.defaultTitle,
+      title: prod.defaultTitle,
       price: prod.price,
       image: prod.imageUrl,
-      inStock: true,
     });
-    setWishlistState((prev) => ({ ...prev, [prod.id]: !prev[prod.id] }));
   };
 
   return (
@@ -253,7 +249,7 @@ const SingleSectionCarousel: React.FC<PharmacyProductSectionProps> = ({ section 
       >
         {section.products.map((prod) => {
           const isAdded = addedIds[prod.id];
-          const isLiked = wishlistState[prod.id] || wishlistStore.isInWishlist(prod.id);
+          const isLiked = isWishlisted(prod.id);
 
           return (
             <TouchableOpacity

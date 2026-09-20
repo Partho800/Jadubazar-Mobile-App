@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useService } from '../../context/ServiceContext';
@@ -26,17 +27,17 @@ export const ServiceDetailView: React.FC = () => {
   ];
 
   const dateOptions = [
-    { label: 'Today', date: 'Aug 15' },
-    { label: 'Tomorrow', date: 'Aug 16' },
-    { label: 'Monday', date: 'Aug 17' },
-    { label: 'Tuesday', date: 'Aug 18' },
+    { label: 'Today', date: 'Aug 15', dayShort: 'THU' },
+    { label: 'Tomorrow', date: 'Aug 16', dayShort: 'FRI' },
+    { label: 'Monday', date: 'Aug 17', dayShort: 'MON' },
+    { label: 'Tuesday', date: 'Aug 18', dayShort: 'TUE' },
   ];
 
   const timeSlots = [
-    '09:00 AM - 12:00 PM',
-    '12:00 PM - 03:00 PM',
-    '03:00 PM - 06:00 PM',
-    '06:00 PM - 09:00 PM',
+    { label: '09:00 AM – 12:00 PM', icon: 'sunny-outline' as const },
+    { label: '12:00 PM – 03:00 PM', icon: 'partly-sunny-outline' as const },
+    { label: '03:00 PM – 06:00 PM', icon: 'cloudy-outline' as const },
+    { label: '06:00 PM – 09:00 PM', icon: 'moon-outline' as const },
   ];
 
   const whatsIncluded = [
@@ -47,7 +48,7 @@ export const ServiceDetailView: React.FC = () => {
   ];
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 24, paddingBottom: 160 }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 24, paddingBottom: 40 }}>
       {/* 1. Breadcrumb Path Row */}
       <View className="w-full max-w-[1100px] self-center px-4 mb-2 flex-row items-center flex-wrap gap-1">
         <TouchableOpacity
@@ -374,268 +375,508 @@ export const ServiceDetailView: React.FC = () => {
         )}
       </View>
 
-      {/* ================= 9. BOOKING INTERACTIVE BOX (DATE & TIME PICKER) ================= */}
+      {/* ================= 9. BOOKING BOX — REDESIGNED ================= */}
       <View className="w-full max-w-[1100px] self-center px-4 mb-10">
         <View
-          className={`w-full rounded-3xl p-6 sm:p-8 border shadow-xl ${
-            isDarkMode
-              ? 'bg-slate-900 border-slate-800 shadow-none'
-              : 'bg-white border-slate-100 shadow-slate-200/50'
-          }`}
+          style={[
+            styles.bookingCard,
+            { borderColor: isDarkMode ? '#334155' : '#E0E7FF' },
+          ]}
         >
-          {/* Header Pricing */}
-          <Text className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-1">
-            BASE SERVICE CHARGE (VISITING FEE)
-          </Text>
-          <View className="flex-row items-baseline gap-2 mb-4">
-            <Text
-              className={`text-3xl sm:text-4xl font-black ${
-                isDarkMode ? 'text-slate-50' : 'text-[#0F172A]'
-              }`}
-            >
-              ৳{selectedService.price}
-            </Text>
-            <Text className="text-xs font-semibold text-slate-400">
-              One-time visit (Payable Online)
-            </Text>
-          </View>
+          {/* ── Gradient Header ── */}
+          <LinearGradient
+            colors={isDarkMode ? ['#1E1B4B', '#312E81'] : ['#5B46F6', '#7C3AED']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientHeader}
+          >
+            <Text style={styles.headerLabel}>Base Service Charge (Visiting Fee)</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
+              <Text style={styles.priceText}>৳{selectedService.price}</Text>
+              <View style={styles.pricePill}>
+                <Text style={styles.pricePillText}>One-time visit</Text>
+              </View>
+            </View>
+          </LinearGradient>
 
-          <View className="w-full h-[1px] bg-slate-100 dark:bg-slate-800 mb-6" />
+          {/* ── Body ── */}
+          <View style={[styles.bookingBody, { backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF' }]}>
 
-          {/* Date Picker Section */}
-          <View className="flex-row items-center gap-2 mb-3">
-            <Ionicons name="calendar-outline" size={18} color="#5B46F6" />
-            <Text
-              className={`text-sm sm:text-base font-black ${
-                isDarkMode ? 'text-slate-100' : 'text-slate-800'
-              }`}
-            >
-              Select Service Date
-            </Text>
-          </View>
-
-          <View className="flex-row flex-wrap justify-between gap-3 mb-6">
-            {dateOptions.map((opt, idx) => {
-              const isSelected = selectedDateIndex === idx;
-              return (
-                <TouchableOpacity
-                  key={idx}
-                  activeOpacity={0.8}
-                  onPress={() => setSelectedDateIndex(idx)}
-                  className={`w-[48%] sm:w-[23.5%] py-3 px-4 rounded-2xl border items-center justify-center ${
-                    isSelected
-                      ? 'border-2 border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/60'
-                      : isDarkMode
-                      ? 'border-slate-800 bg-slate-950'
-                      : 'border-slate-200 bg-white'
-                  }`}
-                >
-                  <Text
-                    className={`font-black text-sm mb-0.5 ${
-                      isSelected
-                        ? 'text-indigo-600 dark:text-indigo-300'
-                        : isDarkMode
-                        ? 'text-slate-100'
-                        : 'text-slate-800'
-                    }`}
-                  >
-                    {opt.label}
-                  </Text>
-                  <Text className="text-[11px] font-semibold text-slate-400">
-                    {opt.date}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Time Slot Picker Section */}
-          <View className="flex-row items-center gap-2 mb-3">
-            <Ionicons name="time-outline" size={18} color="#5B46F6" />
-            <Text
-              className={`text-sm sm:text-base font-black ${
-                isDarkMode ? 'text-slate-100' : 'text-slate-800'
-              }`}
-            >
-              Select Time Slot
-            </Text>
-          </View>
-
-          <View className="flex-row flex-wrap justify-between gap-3 mb-6">
-            {timeSlots.map((slot, idx) => {
-              const isSelected = selectedTimeIndex === idx;
-              return (
-                <TouchableOpacity
-                  key={idx}
-                  activeOpacity={0.8}
-                  onPress={() => setSelectedTimeIndex(idx)}
-                  className={`w-[48%] sm:w-[23.5%] py-3 px-3 rounded-2xl border items-center justify-center ${
-                    isSelected
-                      ? 'border-2 border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/60'
-                      : isDarkMode
-                      ? 'border-slate-800 bg-slate-950'
-                      : 'border-slate-200 bg-white'
-                  }`}
-                >
-                  <Text
-                    className={`font-black text-xs text-center ${
-                      isSelected
-                        ? 'text-indigo-600 dark:text-indigo-300'
-                        : isDarkMode
-                        ? 'text-slate-200'
-                        : 'text-slate-800'
-                    }`}
-                  >
-                    {slot}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Free Cancellation Banner */}
-          <View className="bg-sky-50/80 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60 rounded-2xl p-4 flex-row items-center gap-3 mb-5">
-            <Ionicons name="shield-checkmark" size={20} color="#0284C7" />
-            <Text className="text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 leading-relaxed">
-              Free cancellation up to 4 hours before scheduled timing slot. Fully background verified.
-            </Text>
-          </View>
-
-          {/* Additional Work Billing Warning */}
-          <View className="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 rounded-2xl p-4 flex-row items-start gap-3 mb-6">
-            <Ionicons
-              name="warning-outline"
-              size={20}
-              color="#D97706"
-              style={{ marginTop: 1 }}
-            />
-            <View className="flex-1">
-              <Text className="text-xs font-black uppercase text-amber-900 dark:text-amber-400 mb-0.5">
-                ADDITIONAL WORK BILLING
-              </Text>
-              <Text className="text-xs font-medium text-amber-800/90 dark:text-amber-300/90 leading-relaxed">
-                This is the base visiting fee. Additional labor & parts charge will be calculated by the service pro after inspecting the task at your home.
+            {/* Date Picker */}
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIconBg, { backgroundColor: isDarkMode ? '#1E1B4B' : '#EEF2FF' }]}>
+                <Ionicons name="calendar-outline" size={17} color="#5B46F6" />
+              </View>
+              <Text style={[styles.sectionTitle, { color: isDarkMode ? '#F1F5F9' : '#1E293B' }]}>
+                Select Service Date
               </Text>
             </View>
-          </View>
 
-          {/* Main Book Service Button */}
-          <TouchableOpacity
-            activeOpacity={0.88}
-            className="w-full bg-[#5B46F6] hover:bg-indigo-600 py-4 rounded-2xl flex-row items-center justify-center gap-2 shadow-lg shadow-indigo-500/40"
-          >
-            <Ionicons name="bag-handle-outline" size={20} color="#FFFFFF" />
-            <Text className="text-white font-black text-base uppercase tracking-wider">
-              Book Service Now
-            </Text>
-          </TouchableOpacity>
+            <View style={styles.tilesRow}>
+              {dateOptions.map((opt, idx) => {
+                const isSelected = selectedDateIndex === idx;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    activeOpacity={0.8}
+                    onPress={() => setSelectedDateIndex(idx)}
+                    style={[
+                      styles.dateTile,
+                      isSelected
+                        ? { borderWidth: 0 }
+                        : { borderColor: isDarkMode ? '#334155' : '#E2E8F0', backgroundColor: isDarkMode ? '#1E293B' : '#F8FAFC' },
+                    ]}
+                  >
+                    {isSelected ? (
+                      <LinearGradient
+                        colors={['#5B46F6', '#7C3AED']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.tileGradientInner}
+                      >
+                        <Text style={styles.dayShortSelected}>{opt.dayShort}</Text>
+                        <Text style={styles.tileLabelSelected}>{opt.label}</Text>
+                        <Text style={styles.tileDateSelected}>{opt.date}</Text>
+                      </LinearGradient>
+                    ) : (
+                      <View style={styles.tileInner}>
+                        <Text style={[styles.dayShort, { color: isDarkMode ? '#64748B' : '#94A3B8' }]}>{opt.dayShort}</Text>
+                        <Text style={[styles.tileLabel, { color: isDarkMode ? '#E2E8F0' : '#1E293B' }]}>{opt.label}</Text>
+                        <Text style={[styles.tileDate, { color: isDarkMode ? '#64748B' : '#94A3B8' }]}>{opt.date}</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Time Slot Picker */}
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIconBg, { backgroundColor: isDarkMode ? '#1E1B4B' : '#EEF2FF' }]}>
+                <Ionicons name="time-outline" size={17} color="#5B46F6" />
+              </View>
+              <Text style={[styles.sectionTitle, { color: isDarkMode ? '#F1F5F9' : '#1E293B' }]}>
+                Select Time Slot
+              </Text>
+            </View>
+
+            <View style={styles.tilesRow}>
+              {timeSlots.map((slot, idx) => {
+                const isSelected = selectedTimeIndex === idx;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    activeOpacity={0.8}
+                    onPress={() => setSelectedTimeIndex(idx)}
+                    style={[
+                      styles.timeTile,
+                      isSelected
+                        ? { borderWidth: 0 }
+                        : { borderColor: isDarkMode ? '#334155' : '#E2E8F0', backgroundColor: isDarkMode ? '#1E293B' : '#F8FAFC' },
+                    ]}
+                  >
+                    {isSelected ? (
+                      <LinearGradient
+                        colors={['#5B46F6', '#7C3AED']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.tileGradientInner}
+                      >
+                        <Ionicons name={slot.icon} size={18} color="rgba(255,255,255,0.9)" style={{ marginBottom: 5 }} />
+                        <Text style={styles.timeTextSelected}>{slot.label}</Text>
+                      </LinearGradient>
+                    ) : (
+                      <View style={styles.tileInner}>
+                        <Ionicons name={slot.icon} size={18} color={isDarkMode ? '#64748B' : '#94A3B8'} style={{ marginBottom: 5 }} />
+                        <Text style={[styles.timeText, { color: isDarkMode ? '#CBD5E1' : '#475569' }]}>{slot.label}</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Free Cancellation Banner */}
+            <View style={[
+              styles.infoBanner,
+              { backgroundColor: isDarkMode ? 'rgba(14,165,233,0.08)' : '#F0F9FF', borderColor: isDarkMode ? 'rgba(14,165,233,0.2)' : '#BAE6FD' },
+            ]}>
+              <View style={[styles.bannerIconCircle, { backgroundColor: isDarkMode ? 'rgba(14,165,233,0.15)' : '#E0F2FE' }]}>
+                <Ionicons name="shield-checkmark" size={18} color="#0284C7" />
+              </View>
+              <Text style={[styles.bannerText, { color: isDarkMode ? '#7DD3FC' : '#0369A1' }]}>
+                Free cancellation up to 4 hours before scheduled timing slot. Fully background verified.
+              </Text>
+            </View>
+
+            {/* Additional Billing Warning */}
+            <View style={[
+              styles.infoBanner,
+              styles.infoBannerAlignStart,
+              { backgroundColor: isDarkMode ? 'rgba(217,119,6,0.08)' : '#FFFBEB', borderColor: isDarkMode ? 'rgba(217,119,6,0.25)' : '#FDE68A', marginBottom: 24 },
+            ]}>
+              <View style={[styles.bannerIconCircle, { backgroundColor: isDarkMode ? 'rgba(217,119,6,0.15)' : '#FEF3C7', marginTop: 2 }]}>
+                <Ionicons name="warning-outline" size={18} color="#D97706" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.billingTitle, { color: isDarkMode ? '#FCD34D' : '#92400E' }]}>
+                  Additional Work Billing
+                </Text>
+                <Text style={[styles.billingBody, { color: isDarkMode ? '#FDE68A' : '#78350F' }]}>
+                  This is the base visiting fee. Additional labor & parts charge will be calculated by the service pro after inspecting the task at your home.
+                </Text>
+              </View>
+            </View>
+
+            {/* Book CTA */}
+            <TouchableOpacity activeOpacity={0.88}>
+              <LinearGradient
+                colors={['#5B46F6', '#7C3AED']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.bookButton}
+              >
+                <Ionicons name="bag-handle-outline" size={22} color="#FFFFFF" />
+                <Text style={styles.bookButtonText}>Book Service Now</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
       {/* ================= 10. TRUST BADGES SECTION ================= */}
       <View className="w-full max-w-[1100px] self-center px-4 mb-8">
-        <View className="gap-4">
-          {/* Card 1 */}
-          <View
-            className={`w-full rounded-2xl p-5 border flex-row items-center gap-4 ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-800'
-                : 'bg-slate-50/80 border-slate-100'
-            }`}
-          >
-            <View className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 items-center justify-center">
-              <Ionicons name="bus-outline" size={22} color="#059669" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={`text-sm sm:text-base font-black mb-0.5 ${
-                  isDarkMode ? 'text-slate-100' : 'text-[#0F172A]'
-                }`}
+        <View style={{ gap: 8 }}>
+          {[
+            {
+              icon: 'bus-outline' as const,
+              iconColor: '#059669',
+              gradientColors: ['#ECFDF5', '#D1FAE5'] as [string, string],
+              gradientColorsDark: ['#022C22', '#064E3B'] as [string, string],
+              accentColor: '#059669',
+              title: 'Express Fast Delivery',
+              subtitle: 'Swift delivery directly to your doorstep',
+            },
+            {
+              icon: 'shield-checkmark-outline' as const,
+              iconColor: '#0284C7',
+              gradientColors: ['#EFF6FF', '#DBEAFE'] as [string, string],
+              gradientColorsDark: ['#0C1A3A', '#1E3A5F'] as [string, string],
+              accentColor: '#0284C7',
+              title: '100% Genuine & Fresh',
+              subtitle: 'Directly sourced from verified merchants',
+            },
+            {
+              icon: 'card-outline' as const,
+              iconColor: '#4F46E5',
+              gradientColors: ['#EEF2FF', '#E0E7FF'] as [string, string],
+              gradientColorsDark: ['#1E1B4B', '#2E2A6B'] as [string, string],
+              accentColor: '#4F46E5',
+              title: 'Secure & Easy Payment',
+              subtitle: 'bKash, Nagad, Cards & Cash on Delivery',
+            },
+            {
+              icon: 'headset-outline' as const,
+              iconColor: '#7C3AED',
+              gradientColors: ['#F5F3FF', '#EDE9FE'] as [string, string],
+              gradientColorsDark: ['#2E1065', '#3B0764'] as [string, string],
+              accentColor: '#7C3AED',
+              title: '24/7 Dedicated Support',
+              subtitle: 'Instant support assistance anytime',
+            },
+          ].map((badge, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.trustCard,
+                {
+                  backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+                  borderColor: isDarkMode ? '#1E293B' : '#F1F5F9',
+                },
+              ]}
+            >
+              {/* Gradient Icon Box */}
+              <LinearGradient
+                colors={isDarkMode ? badge.gradientColorsDark : badge.gradientColors}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.trustIconBox}
               >
-                Express Fast Delivery
-              </Text>
-              <Text className="text-xs font-medium text-slate-500">
-                Swift delivery directly to your doorstep
-              </Text>
-            </View>
-          </View>
+                <Ionicons name={badge.icon} size={24} color={badge.iconColor} />
+              </LinearGradient>
 
-          {/* Card 2 */}
-          <View
-            className={`w-full rounded-2xl p-5 border flex-row items-center gap-4 ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-800'
-                : 'bg-slate-50/80 border-slate-100'
-            }`}
-          >
-            <View className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 items-center justify-center">
-              <Ionicons name="shield-checkmark-outline" size={22} color="#059669" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={`text-sm sm:text-base font-black mb-0.5 ${
-                  isDarkMode ? 'text-slate-100' : 'text-[#0F172A]'
-                }`}
-              >
-                100% Genuine & Fresh
-              </Text>
-              <Text className="text-xs font-medium text-slate-500">
-                Directly sourced from verified merchants
-              </Text>
-            </View>
-          </View>
+              {/* Text */}
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={[
+                    styles.trustTitle,
+                    { color: isDarkMode ? '#F1F5F9' : '#0F172A' },
+                  ]}
+                >
+                  {badge.title}
+                </Text>
+                <Text style={styles.trustSubtitle}>{badge.subtitle}</Text>
+              </View>
 
-          {/* Card 3 */}
-          <View
-            className={`w-full rounded-2xl p-5 border flex-row items-center gap-4 ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-800'
-                : 'bg-slate-50/80 border-slate-100'
-            }`}
-          >
-            <View className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 items-center justify-center">
-              <Ionicons name="card-outline" size={22} color="#4F46E5" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={`text-sm sm:text-base font-black mb-0.5 ${
-                  isDarkMode ? 'text-slate-100' : 'text-[#0F172A]'
-                }`}
+              {/* Right Arrow */}
+              <View
+                style={[
+                  styles.trustArrow,
+                  { backgroundColor: isDarkMode ? '#1E293B' : '#F8FAFC' },
+                ]}
               >
-                Secure & Easy Payment
-              </Text>
-              <Text className="text-xs font-medium text-slate-500">
-                bKash, Nagad, Cards & Cash on Delivery
-              </Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={14}
+                  color={badge.accentColor}
+                />
+              </View>
             </View>
-          </View>
-
-          {/* Card 4 */}
-          <View
-            className={`w-full rounded-2xl p-5 border flex-row items-center gap-4 ${
-              isDarkMode
-                ? 'bg-slate-900 border-slate-800'
-                : 'bg-slate-50/80 border-slate-100'
-            }`}
-          >
-            <View className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/80 items-center justify-center">
-              <Ionicons name="headset-outline" size={22} color="#7C3AED" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={`text-sm sm:text-base font-black mb-0.5 ${
-                  isDarkMode ? 'text-slate-100' : 'text-[#0F172A]'
-                }`}
-              >
-                24/7 Dedicated Support
-              </Text>
-              <Text className="text-xs font-medium text-slate-500">
-                Instant support assistance anytime
-              </Text>
-            </View>
-          </View>
+          ))}
         </View>
       </View>
+
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  bookingCard: {
+    borderRadius: 28,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+    shadowColor: '#5B46F6',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 28,
+    elevation: 14,
+  },
+  gradientHeader: {
+    padding: 24,
+    paddingBottom: 28,
+  },
+  headerLabel: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 2,
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  priceText: {
+    color: '#FFFFFF',
+    fontSize: 42,
+    fontWeight: '900',
+    letterSpacing: -1,
+  },
+  pricePill: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  pricePillText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  bookingBody: {
+    padding: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 14,
+  },
+  sectionIconBg: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  tilesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 24,
+  },
+  dateTile: {
+    width: '48%',
+    borderRadius: 18,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+    minHeight: 88,
+  },
+  timeTile: {
+    width: '48%',
+    borderRadius: 18,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+    minHeight: 80,
+  },
+  tileGradientInner: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    minHeight: 80,
+  },
+  tileInner: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    minHeight: 80,
+  },
+  dayShortSelected: {
+    color: 'rgba(255,255,255,0.65)',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  dayShort: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  tileLabelSelected: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  tileLabel: {
+    fontWeight: '900',
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  tileDateSelected: {
+    color: 'rgba(255,255,255,0.65)',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  tileDate: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  timeTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  timeText: {
+    fontWeight: '700',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  infoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+  },
+  infoBannerAlignStart: {
+    alignItems: 'flex-start',
+  },
+  bannerIconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  bannerText: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '600',
+    lineHeight: 18,
+  },
+  billingTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  billingBody: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 18,
+  },
+  bookButton: {
+    borderRadius: 18,
+    paddingVertical: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    shadowColor: '#5B46F6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 18,
+    elevation: 12,
+  },
+  bookButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 16,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  trustCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  trustIconBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  trustTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    marginBottom: 3,
+  },
+  trustSubtitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#94A3B8',
+    lineHeight: 17,
+  },
+  trustArrow: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+});

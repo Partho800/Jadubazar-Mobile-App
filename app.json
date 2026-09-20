@@ -4,17 +4,17 @@
     "slug": "Jadubazar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/image.jpeg",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/images/image.jpeg",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#FFBE00"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jadubazar.app",
-      "icon": "./src/assets/images/image.jpeg",
+      "icon": "./assets/icon.png",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "JaduBazar needs access to your location to accurately detect your delivery address for order checkout and live rider tracking.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "JaduBazar needs your location to track live delivery order status in real time.",
@@ -26,8 +26,8 @@
     "android": {
       "package": "com.jadubazar.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./src/assets/images/image.jpeg"
+        "backgroundColor": "#FFBE00",
+        "foregroundImage": "./assets/icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -43,7 +43,7 @@
       ]
     },
     "web": {
-      "favicon": "./src/assets/images/image.jpeg"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {

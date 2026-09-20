@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 
 import { foodData } from '../../data/productsData';
@@ -47,7 +48,7 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const { openProductDetails } = useProduct();
   const cardWidth = width >= 640 ? 260 : 225;
@@ -64,10 +65,6 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -150,7 +147,7 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
         }}
       >
         {FAST_FOOD_DISHES.map((item) => {
-          const isFaved = wishlist[item.id];
+          const isFaved = isWishlisted(item.id);
           return (
             <TouchableOpacity
               key={item.id}
@@ -166,7 +163,7 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
                   rating: item.rating,
                   reviewsCount: item.reviewsCount,
                   discountBadge: item.discountBadge,
-                  status: 'In Stock',
+                  status: item.isOutOfStock ? 'Stock Out' : 'In Stock',
                 })
               }
               style={{
@@ -200,7 +197,7 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
                 {/* Top Left Ribbon Badges */}
                 <View className="absolute top-0 left-2 flex-row items-start gap-1 z-10">
                   {item.discountBadge && (
-                    <View className="bg-[#E11D48] px-2 py-1 rounded-b-md shadow-sm">
+                    <View className="bg-red-600 px-2 py-1 rounded-b-md shadow-sm">
                       <Text className="text-white text-[10px] font-black leading-tight text-center">
                         {item.discountBadge}
                       </Text>
@@ -219,7 +216,14 @@ export const FoodGourmetBurgers: React.FC<FoodGourmetBurgersProps> = ({
                 {/* Top Right Heart Wishlist Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => toggleWishlist(item.id)}
+                  onPress={() =>
+                    toggleWishlist({
+                      id: item.id,
+                      title: item.name,
+                      price: item.price,
+                      image: item.imageUrl,
+                    })
+                  }
                   className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md items-center justify-center shadow-md absolute top-2 right-2 z-10"
                 >
                   <Ionicons

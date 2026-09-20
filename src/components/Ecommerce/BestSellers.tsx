@@ -17,6 +17,8 @@ import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
 import { ecommerceData } from '../../data/productsData';
 
+import { useWishlist } from '../../hooks/useWishlist';
+
 export interface BestSellerProductItem {
   id: string;
   brand: string;
@@ -47,7 +49,7 @@ export const BestSellers: React.FC<BestSellersProps> = ({
   const { width } = useWindowDimensions();
   const { t, isBangla } = useLanguage();
   const { openProductDetails } = useProduct();
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const handleViewAll = () => {
     if (onViewAllPress) {
@@ -58,10 +60,6 @@ export const BestSellers: React.FC<BestSellersProps> = ({
     try {
       navigation.navigate('CategoriesTab');
     } catch (e) {}
-  };
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -101,7 +99,7 @@ export const BestSellers: React.FC<BestSellersProps> = ({
       {/* 3 Vertically Stacked Product Cards */}
       <View className="gap-5">
         {BEST_SELLER_PRODUCTS.map((item) => {
-          const isFav = !!favorites[item.id];
+          const isFav = isWishlisted(item.id);
           return (
             <TouchableOpacity
               key={item.id}
@@ -142,7 +140,14 @@ export const BestSellers: React.FC<BestSellersProps> = ({
                 {/* Floating Wishlist Heart Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => toggleFavorite(item.id)}
+                  onPress={() =>
+                    toggleWishlist({
+                      id: item.id,
+                      title: item.title,
+                      price: item.price,
+                      image: item.imageUrl,
+                    })
+                  }
                   className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 items-center justify-center z-10 shadow-sm"
                 >
                   <Ionicons

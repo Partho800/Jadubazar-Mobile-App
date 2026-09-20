@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useProduct } from '../../context/ProductContext';
 import { cartStore } from '../../store/cartStore';
+import { useWishlist } from '../../hooks/useWishlist';
 import { AppText as Text } from '../common/AppText';
 import { DiscountRibbonBadge } from '../common/DiscountRibbonBadge';
 
@@ -49,8 +50,8 @@ export const FoodPopularBiryani: React.FC<FoodPopularBiryaniProps> = ({
   const scrollRef = useRef<ScrollView>(null);
   const scrollX = useRef<number>(0);
   const { openProductDetails } = useProduct();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const [activeFilter, setActiveFilter] = useState<string>('All Dishes');
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
 
   const cardStep = width >= 640 ? 246 : 168;
 
@@ -65,10 +66,6 @@ export const FoodPopularBiryani: React.FC<FoodPopularBiryaniProps> = ({
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollX.current = event.nativeEvent.contentOffset.x;
-  };
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const filteredProducts =
@@ -222,15 +219,22 @@ export const FoodPopularBiryani: React.FC<FoodPopularBiryaniProps> = ({
 
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => toggleWishlist(item.id)}
+                  onPress={() =>
+                    toggleWishlist({
+                      id: item.id,
+                      title: item.title,
+                      price: item.price,
+                      image: item.imageUrl,
+                    })
+                  }
                   className={`absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full items-center justify-center z-10 shadow-sm border ${
                     isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                   }`}
                 >
                   <Ionicons
-                    name={wishlist[item.id] ? 'heart' : 'heart-outline'}
+                    name={isWishlisted(item.id) ? 'heart' : 'heart-outline'}
                     size={15}
-                    color={wishlist[item.id] ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
+                    color={isWishlisted(item.id) ? '#EF4444' : isDarkMode ? '#F8FAFC' : '#334155'}
                   />
                 </TouchableOpacity>
 
